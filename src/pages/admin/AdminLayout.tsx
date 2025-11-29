@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import Sidebar from '../../components/admin/Sidebar.tsx';
-import { useAuth } from '../../contexts/AuthContext.tsx';
-import { useCrmUpdates } from '../../contexts/CrmUpdatesContext.tsx';
-import Toast from '../../components/admin/Toast.tsx';
-import ThemeToggle from '../../components/admin/ThemeToggle.tsx';
+import Sidebar from '../../components/admin/Sidebar';
+import { useAuth } from '../../contexts/AuthContext';
+import { useCrmUpdates } from '../../contexts/CrmUpdatesContext';
+import Toast from '../../components/admin/Toast';
+import { NotificationProvider } from '../../contexts/NotificationContext';
+import NotificationBell from '../../components/common/NotificationBell';
 
 const API_BASE_URL = import.meta.env.VITE_CRM_API_URL || 'http://localhost:3001';
 
@@ -50,7 +51,7 @@ const UserDropdown: React.FC = () => {
                 <svg className="w-4 h-4 text-gray-500 dark:text-text-secondary hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
             </button>
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-glass-surface backdrop-blur-lg rounded-lg shadow-lg py-1 z-50 ring-1 ring-black/5 dark:ring-glass-border">
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 backdrop-blur-lg rounded-lg shadow-lg py-1 z-[100] ring-1 ring-black/5 dark:ring-glass-border">
                     <Link to="/admin/profile" onClick={() => setIsOpen(false)} className="block px-4 py-2 text-sm text-gray-700 dark:text-text-primary hover:bg-gray-100 dark:hover:bg-electric-blue">My Profile</Link>
                 </div>
             )}
@@ -96,6 +97,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                         setToastMessage(`New lead received: ${event.data.name || 'N/A'}`);
                     } else if (event.type === 'LEAD_UPDATE') {
                         setToastMessage(`Lead updated: ${event.data.name || 'N/A'}`);
+                    } else if (event.type === 'NOTIFICATION') {
+                        // Dispatch to NotificationContext via window event
+                        const customEvent = new CustomEvent('crm-notification', { detail: event.data });
+                        window.dispatchEvent(customEvent);
+                        setToastMessage(`New Notification: ${event.data.message}`);
                     }
                     triggerUpdate();
                 }
@@ -123,47 +129,47 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     }, [triggerUpdate]);
 
     return (
-        <div className="flex h-screen font-sans overflow-hidden text-gray-900 dark:text-text-primary">
-            <Sidebar
-                isCollapsed={isSidebarCollapsed}
-                setCollapsed={setIsSidebarCollapsed}
-                isMobileOpen={isMobileSidebarOpen}
-                onMobileClose={() => setIsMobileSidebarOpen(false)}
-            />
+        <NotificationProvider>
+            <div className="flex h-screen font-sans overflow-hidden text-gray-900 dark:text-text-primary">
+                <Sidebar
+                    isCollapsed={isSidebarCollapsed}
+                    setCollapsed={setIsSidebarCollapsed}
+                    isMobileOpen={isMobileSidebarOpen}
+                    onMobileClose={() => setIsMobileSidebarOpen(false)}
+                />
 
-            <div className="flex-1 flex flex-col min-w-0">
-                <header className="flex justify-between items-center px-4 sm:px-6 h-20 bg-white/80 dark:bg-glass-surface/50 backdrop-blur-lg border-b border-gray-200 dark:border-glass-border flex-shrink-0">
-                    <div className="flex items-center">
-                        <button
-                            onClick={() => setIsMobileSidebarOpen(true)}
-                            className="p-2 rounded-md text-gray-500 dark:text-text-secondary md:hidden mr-2"
-                            aria-label="Open sidebar"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
-                        </button>
-                        {/* Search Bar */}
-                        <div className="relative hidden sm:block">
-                            <input type="text" placeholder="Search..." className="bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-glass-border rounded-lg py-2 pl-10 pr-4 text-sm focus:ring-neon-cyan focus:border-neon-cyan w-full max-w-xs transition-all" />
-                            <svg className="w-5 h-5 text-gray-500 dark:text-text-secondary absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <div className="flex-1 flex flex-col min-w-0">
+                    <header className="relative z-20 flex justify-between items-center px-4 sm:px-6 h-20 bg-white/80 dark:bg-glass-surface/50 backdrop-blur-lg border-b border-gray-200 dark:border-glass-border flex-shrink-0">
+                        <div className="flex items-center">
+                            <button
+                                onClick={() => setIsMobileSidebarOpen(true)}
+                                className="p-2 rounded-md text-gray-500 dark:text-text-secondary md:hidden mr-2"
+                                aria-label="Open sidebar"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+                            </button>
+                            {/* Search Bar */}
+                            <div className="relative hidden sm:block">
+                                <input type="text" placeholder="Search..." className="bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-glass-border rounded-lg py-2 pl-10 pr-4 text-sm focus:ring-neon-cyan focus:border-neon-cyan w-full max-w-xs transition-all" />
+                                <svg className="w-5 h-5 text-gray-500 dark:text-text-secondary absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            </div>
                         </div>
-                    </div>
-                    <div className="flex items-center space-x-2 sm:space-x-4">
-                        <ThemeToggle />
-                        <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 dark:text-text-secondary hover:text-gray-900 dark:hover:text-text-primary transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
-                        </button>
-                        <UserDropdown />
-                    </div>
-                </header>
+                        <div className="flex items-center space-x-2 sm:space-x-4">
+                            {/* ThemeToggle removed to enforce dark mode themes */}
+                            <NotificationBell />
+                            <UserDropdown />
+                        </div>
+                    </header>
 
-                <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6">
-                    <div key={location.pathname} className="animate-fade-in">
-                        {children}
-                    </div>
-                </main>
+                    <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6">
+                        <div key={location.pathname} className="animate-fade-in">
+                            {children}
+                        </div>
+                    </main>
+                </div>
+                {toastMessage && <Toast message={toastMessage} type="info" onDismiss={() => setToastMessage(null)} />}
             </div>
-            {toastMessage && <Toast message={toastMessage} type="info" onDismiss={() => setToastMessage(null)} />}
-        </div>
+        </NotificationProvider>
     );
 };
 

@@ -26,13 +26,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setCollapsed, isMobileOp
     };
 
     const sidebarContent = (
-        <div className={`flex flex-col h-full bg-white dark:bg-glass-surface dark:backdrop-blur-xl border-r border-gray-200 dark:border-glass-border`}>
+        <div className={`flex flex-col h-full bg-white dark:bg-glass-surface/60 dark:backdrop-blur-xl border-r border-gray-200 dark:border-glass-border relative`}>
             <div className={`flex items-center h-20 flex-shrink-0 px-4 ${isCollapsed && 'lg:px-0 lg:justify-center'}`}>
                 <div className={`${isCollapsed ? 'lg:hidden' : ''} md:hidden lg:block text-gray-800 dark:text-text-primary`}>
                     <Logo />
                 </div>
                 <div className={`hidden ${isCollapsed ? 'lg:block' : ''} md:block lg:hidden text-gray-800 dark:text-text-primary`}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-neon-cyan" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9 5a1 1 0 112 0v2.25a.75.75 0 01-1.5 0V5zm1.5 5.5a1 1 0 00-1 1v4a1 1 0 102 0v-4a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8 text-neon-cyan"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                 </div>
             </div>
             <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
@@ -55,17 +55,18 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setCollapsed, isMobileOp
                     className={`${linkClass} w-full`}
                     title="Logout"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                     <span className={`ml-4 whitespace-nowrap transition-opacity duration-200 md:hidden ${isCollapsed ? 'lg:hidden' : 'lg:inline-block'}`}>Logout</span>
                 </button>
             </div>
             {/* Collapse button for desktop */}
             <button
                 onClick={() => setCollapsed(!isCollapsed)}
-                className="absolute top-6 p-2 rounded-full text-gray-500 dark:text-text-secondary hover:text-gray-900 dark:hover:text-text-primary bg-white dark:bg-glass-surface border border-gray-200 dark:border-glass-border hidden lg:block transition-all duration-300"
+                className="absolute top-6 p-2 rounded-full text-gray-500 dark:text-text-secondary hover:text-gray-900 dark:hover:text-text-primary bg-white dark:bg-glass-surface border border-gray-200 dark:border-glass-border hidden lg:block transition-all duration-300 z-50"
                 style={{ right: '-16px' }}
+                title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
             >
-                <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`h-4 w-4 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}><polyline points="15 18 9 12 15 6"></polyline></svg>
             </button>
         </div>
     );
@@ -81,7 +82,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setCollapsed, isMobileOp
             </div>
 
             {/* Static Sidebar for Tablet/Desktop */}
-            <div className={`hidden md:flex md:flex-shrink-0 relative transition-all duration-300 ${isCollapsed ? 'lg:w-20' : 'lg:w-64'} md:w-20`}>
+            <div className={`hidden md:flex md:flex-shrink-0 relative z-30 transition-all duration-300 ${isCollapsed ? 'lg:w-20' : 'lg:w-64'} md:w-20`}>
                 {sidebarContent}
             </div>
         </>

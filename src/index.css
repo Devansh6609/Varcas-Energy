@@ -13,10 +13,121 @@ body {
 }
 
 /* Apply electric gradient background ONLY for the dark theme (CRM) */
-.dark body, body:has(.dark) {
-  @apply bg-electric-gradient from-night-sky to-deep-violet bg-fixed text-text-primary;
+/* --- Theme Variables --- */
+/* --- Theme Variables (RGB Channels) --- */
+[data-theme='light-sky'] {
+  /* Theme: Daylight Sky (Light Mode) */
+  --bg-primary: 248 250 252; /* #f8fafc Slate-50 */
+  --bg-secondary: 255 255 255; /* #ffffff */
+  --bg-glass: 255 255 255; /* #ffffff */
+  --border-glass: 226 232 240; /* #e2e8f0 Slate-200 */
+  
+  --accent-primary: 14 165 233; /* #0ea5e9 Sky-500 */
+  --accent-primary-hover: 2 132 199; /* #0284c7 Sky-600 */
+  --accent-secondary: 59 130 246; /* #3b82f6 Blue-500 */
+  --accent-tertiary: 99 102 241; /* #6366f1 Indigo-500 */
+  --accent-glow: 14 165 233;
+  
+  --text-primary: 15 23 42; /* #0f172a Slate-900 */
+  --text-secondary: 71 85 105; /* #475569 Slate-600 */
+  --text-accent: 14 165 233; /* #0ea5e9 */
+  
+  --glass-opacity: 0.7;
+  --glass-border-opacity: 1;
+  
+  --gradient-stops: rgb(var(--bg-primary)), rgb(var(--bg-secondary));
 }
 
+:root {
+  /* Default Theme: Deep Space Glass */
+  --bg-primary: 15 23 42; /* #0f172a */
+  --bg-secondary: 30 27 75; /* #1e1b4b */
+  --bg-glass: 15 23 42; /* #0f172a (Opacity handled in utility) */
+  --border-glass: 255 255 255; /* White (Opacity handled in utility) */
+  
+  --accent-primary: 59 130 246; /* #3b82f6 Electric Blue */
+  --accent-primary-hover: 96 165 250; /* #60a5fa */
+  --accent-secondary: 6 182 212; /* #06b6d4 Neon Cyan */
+  --accent-tertiary: 167 139 250; /* #a78bfa */
+  --accent-glow: 56 189 248; /* #38bdf8 */
+  
+  --text-primary: 248 250 252; /* #f8fafc */
+  --text-secondary: 148 163 184; /* #94a3b8 */
+  --text-accent: 103 232 249; /* #67e8f9 */
+  
+  --glass-opacity: 0.4;
+  --glass-border-opacity: 0.1;
+  
+  --gradient-stops: rgb(var(--bg-primary)), rgb(var(--bg-secondary));
+}
+
+[data-theme='midnight'] {
+  /* Theme: Midnight Obsidian */
+  --bg-primary: 2 6 23; /* #020617 */
+  --bg-secondary: 30 41 59; /* #1e293b */
+  --bg-glass: 30 41 59; /* #1e293b */
+  --border-glass: 255 255 255;
+  
+  --accent-primary: 245 158 11; /* #f59e0b Solar Gold */
+  --accent-primary-hover: 251 191 36; /* #fbbf24 */
+  --accent-secondary: 249 115 22; /* #f97316 Copper */
+  --accent-tertiary: 217 119 6; /* #d97706 */
+  --accent-glow: 245 158 11;
+  
+  --text-primary: 255 255 255;
+  --text-secondary: 203 213 225; /* #cbd5e1 */
+  --text-accent: 252 211 77; /* #fcd34d */
+  
+  --glass-opacity: 0.9;
+  --glass-border-opacity: 0.1;
+  
+  --gradient-stops: rgb(var(--bg-primary)), rgb(var(--bg-secondary));
+}
+
+[data-theme='aurora'] {
+  /* Theme: Aurora Borealis */
+  --bg-primary: 2 6 23; /* #020617 (Darker base) */
+  --bg-secondary: 15 23 42; /* #0f172a */
+  --bg-glass: 15 23 42; /* #0f172a (Dark glass for contrast) */
+  --border-glass: 255 255 255;
+  
+  --accent-primary: 52 211 153; /* #34d399 Emerald */
+  --accent-primary-hover: 16 185 129; /* #10b981 */
+  --accent-secondary: 167 139 250; /* #a78bfa Soft Violet */
+  --accent-tertiary: 244 114 182; /* #f472b6 Pink */
+  --accent-glow: 52 211 153;
+  
+  --text-primary: 241 245 249; /* #f1f5f9 */
+  --text-secondary: 148 163 184; /* #94a3b8 */
+  --text-accent: 110 231 183; /* #6ee7b7 */
+  
+  --glass-opacity: 0.3;
+  --glass-border-opacity: 0.1;
+  
+  --gradient-stops: rgb(var(--bg-primary)), rgb(var(--bg-secondary));
+}
+
+/* Apply electric gradient background ONLY for the dark theme (CRM) */
+.dark body,
+body:has(.dark) {
+  background: linear-gradient(135deg, var(--gradient-stops));
+  background-attachment: fixed;
+  color: rgb(var(--text-primary));
+}
+
+/* Aurora Animation Background */
+[data-theme='aurora'] body {
+    /* Deep space base with shifting aurora curtains */
+    background: linear-gradient(125deg, #020617 0%, #0f172a 30%, #1e1b4b 50%, #0f172a 70%, #115e59 85%, #020617 100%);
+    background-size: 300% 300%;
+    animation: auroraGradient 25s ease infinite;
+}
+
+@keyframes auroraGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 
 /* Custom Scrollbar for the new electric theme */
 .dark ::-webkit-scrollbar {
@@ -35,9 +146,13 @@ body {
   background: rgba(6, 182, 212, 0.5);
 }
 
-
 @layer base {
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-sans font-bold;
   }
 }
@@ -49,20 +164,20 @@ body {
   }
 
   .nav-link-animated::after {
-    content: '';
+    content: "";
     position: absolute;
     width: 100%;
     transform: scaleX(0);
     height: 2px;
     bottom: 0;
     left: 0;
-    background-color: theme('colors.neon-cyan');
+    background-color: theme("colors.neon-cyan");
     transform-origin: bottom right;
     transition: transform 0.25s ease-out;
   }
-  
+
   .nav-link-animated.text-white::after {
-     background-color: white;
+    background-color: white;
   }
 
   .nav-link-animated:hover::after,
@@ -81,10 +196,54 @@ body {
     position: sticky;
     top: 0;
   }
+
+  /* Glassmorphism Utilities */
+  .glass-panel {
+    @apply backdrop-blur-md shadow-xl;
+    background-color: rgb(var(--bg-glass) / var(--glass-opacity));
+    border: 1px solid rgb(var(--border-glass) / var(--glass-border-opacity));
+  }
+
+  .glass-card {
+    @apply backdrop-blur-sm shadow-lg hover:bg-white/10 transition-all duration-300;
+    background-color: rgb(var(--bg-glass) / var(--glass-opacity));
+    border: 1px solid rgb(var(--border-glass) / var(--glass-border-opacity));
+  }
+
+  /* Animations */
+  .animate-fade-in-up {
+    animation: fadeInUp 0.5s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.5s ease-out forwards;
+  }
 }
 
 @layer utilities {
-    .text-glow {
-        text-shadow: 0 0 8px theme('colors.glow-cyan');
-    }
+  .text-glow {
+    text-shadow: 0 0 8px theme("colors.glow-cyan");
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }

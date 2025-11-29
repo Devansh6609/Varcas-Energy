@@ -10,40 +10,40 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', ...defaultTheme.fontFamily.sans],
+        sans: ['Roboto', ...defaultTheme.fontFamily.sans],
       },
       colors: {
-        // New Electric Dark Theme
-        'night-sky': '#0f172a', // Deep navy blue
-        'deep-violet': '#1e1b4b', // Dark, rich violet
-        'glass-surface': 'rgba(28, 25, 64, 0.4)', // Semi-transparent surface for cards
-        'glass-border': 'rgba(107, 114, 128, 0.2)', // Subtle border for glassmorphism
-        'glow-cyan': 'rgba(56, 189, 248, 0.5)', // Neon cyan for glows
-
-        'electric-blue': '#3b82f6',
-        'electric-blue-hover': '#60a5fa',
-        'neon-cyan': '#06b6d4',
-        'bright-violet': '#a78bfa',
+        // Theme-aware colors (mapped to CSS variables with alpha support)
+        'night-sky': 'rgb(var(--bg-primary) / <alpha-value>)', 
+        'deep-violet': 'rgb(var(--bg-secondary) / <alpha-value>)',
+        'glass-surface': 'rgb(var(--bg-glass) / <alpha-value>)',
+        'glass-border': 'rgb(var(--border-glass) / <alpha-value>)',
+        'glow-cyan': 'rgb(var(--accent-glow) / <alpha-value>)',
         
-        'text-primary': '#f8fafc', // Brighter white for primary text
-        'text-secondary': '#94a3b8', // Softer gray for secondary text
-        'text-accent': '#67e8f9', // Neon cyan for accents
+        'electric-blue': 'rgb(var(--accent-primary) / <alpha-value>)',
+        'electric-blue-hover': 'rgb(var(--accent-primary-hover) / <alpha-value>)',
+        'neon-cyan': 'rgb(var(--accent-secondary) / <alpha-value>)',
+        'bright-violet': 'rgb(var(--accent-tertiary) / <alpha-value>)',
+        
+        'text-primary': 'rgb(var(--text-primary) / <alpha-value>)',
+        'text-secondary': 'rgb(var(--text-secondary) / <alpha-value>)',
+        'text-accent': 'rgb(var(--text-accent) / <alpha-value>)',
 
         // Status Colors
         'status-green': '#22c55e',
         'error-red': '#ef4444',
         'warning-yellow': '#f59e0b',
         
-        // --- Shared dark theme colors ---
-        'primary-background': '#0f172a', // Re-mapped to night-sky
-        'secondary-background': '#1f2937', // Re-mapped for compatibility
-        'accent-blue': '#3b82f6', // Re-mapped to electric-blue
-        'accent-blue-hover': '#60a5fa',
-        'secondary-cyan': '#06b6d4', // Re-mapped to neon-cyan
+        // --- Shared dark theme colors (Legacy mapping support) ---
+        'primary-background': 'rgb(var(--bg-primary) / <alpha-value>)',
+        'secondary-background': 'rgb(var(--bg-secondary) / <alpha-value>)',
+        'accent-blue': 'rgb(var(--accent-primary) / <alpha-value>)',
+        'accent-blue-hover': 'rgb(var(--accent-primary-hover) / <alpha-value>)',
+        'secondary-cyan': 'rgb(var(--accent-secondary) / <alpha-value>)',
         'success-green': '#22c55e',
-        'text-light': '#f8fafc', // Re-mapped
-        'text-muted': '#94a3b8', // Re-mapped
-        'border-color': 'rgba(107, 114, 128, 0.2)', // Re-mapped
+        'text-light': 'rgb(var(--text-primary) / <alpha-value>)',
+        'text-muted': 'rgb(var(--text-secondary) / <alpha-value>)',
+        'border-color': 'rgb(var(--border-glass) / <alpha-value>)',
         
         // Original Light Theme Colors (for Public Site)
         'brand-blue': '#293B5F',

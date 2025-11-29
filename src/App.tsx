@@ -1,109 +1,103 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { HashRouter, Routes, Route, Outlet } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext.tsx';
-import { CrmUpdatesProvider } from './contexts/CrmUpdatesContext.tsx';
+import { AuthProvider } from './contexts/AuthContext';
+import { CrmUpdatesProvider } from './contexts/CrmUpdatesContext';
+import { ThemeProvider } from './contexts/ThemeContext';
+import ProtectedRoute from './components/admin/ProtectedRoute';
+import MasterRoute from './components/auth/MasterRoute';
+import LoadingSpinner from './components/LoadingSpinner';
 
-// Layouts
-import MainLayout from './pages/MainLayout.tsx';
-import AdminLayout from './pages/admin/AdminLayout.tsx';
-import FullScreenLoader from './components/FullScreenLoader.tsx';
-import ProtectedRoute from './components/admin/ProtectedRoute.tsx';
-import MasterRoute from './components/admin/MasterRoute.tsx';
+// Lazy load layouts
+const MainLayout = lazy(() => import('./pages/MainLayout'));
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
 
-
-// Public Pages
-import HomePage from './pages/HomePage.tsx';
-import RooftopSolarPage from './pages/RooftopSolarPage.tsx';
-import SolarPumpsPage from './pages/SolarPumpsPage.tsx';
-import CalculatorPage from './pages/CalculatorPage.tsx';
-import SuccessStoriesPage from './pages/SuccessStoriesPage.tsx';
-import SuccessStoryDetailPage from './pages/SuccessStoryDetailPage.tsx';
-import SubsidiesPage from './pages/SubsidiesPage.tsx';
-import AboutUsPage from './pages/AboutUsPage.tsx';
-import ContactPage from './pages/ContactPage.tsx';
-
-// Auth Pages
-import LoginPage from './pages/LoginPage.tsx';
-import ForgotPasswordPage from './pages/ForgotPasswordPage.tsx';
-import ResetPasswordPage from './pages/ResetPasswordPage.tsx';
+// Lazy load pages
+const HomePage = lazy(() => import('./pages/HomePage'));
+const RooftopSolarPage = lazy(() => import('./pages/RooftopSolarPage'));
+const SolarPumpsPage = lazy(() => import('./pages/SolarPumpsPage'));
+const CalculatorPage = lazy(() => import('./pages/CalculatorPage'));
+const SuccessStoriesPage = lazy(() => import('./pages/SuccessStoriesPage'));
+const SuccessStoryDetailPage = lazy(() => import('./pages/SuccessStoryDetailPage'));
+const SubsidiesPage = lazy(() => import('./pages/SubsidiesPage'));
+const AboutUsPage = lazy(() => import('./pages/AboutUsPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
 
 // Admin Pages
-import DashboardPage from './pages/admin/DashboardPage.tsx';
-import LeadsListPage from './pages/admin/LeadsListPage.tsx';
-import LeadDetailPage from './pages/admin/LeadDetailPage.tsx';
-import DataExplorerPage from './pages/admin/DataExplorerPage.tsx';
-import FormBuilderPage from './pages/admin/FormBuilderPage.tsx';
-import SettingsPage from './pages/admin/SettingsPage.tsx';
-import UserProfilePage from './pages/admin/UserProfilePage.tsx';
-import VendorManagementPage from './pages/admin/VendorManagementPage.tsx';
-import AdminManagementPage from './pages/admin/AdminManagementPage.tsx';
+const DashboardPage = lazy(() => import('./pages/admin/DashboardPage'));
+const LeadsListPage = lazy(() => import('./pages/admin/LeadsListPage'));
+const LeadDetailPage = lazy(() => import('./pages/admin/LeadDetailPage'));
+const DataExplorerPage = lazy(() => import('./pages/admin/DataExplorerPage'));
+const FormBuilderPage = lazy(() => import('./pages/admin/FormBuilderPage'));
+const SettingsPage = lazy(() => import('./pages/admin/SettingsPage'));
 
+const UserProfilePage = lazy(() => import('./pages/admin/UserProfilePage'));
+const VendorManagementPage = lazy(() => import('./pages/admin/VendorManagementPage'));
+const AdminManagementPage = lazy(() => import('./pages/admin/AdminManagementPage'));
 
 const AppRoutes: React.FC = () => {
-    const { isLoading } = useAuth();
-
-    if (isLoading) {
-        return <FullScreenLoader message="Loading Application..." />;
-    }
-
     return (
-        <Routes>
-            {/* Public Website Routes */}
-            <Route path="/" element={<MainLayout />}>
-                <Route index element={<HomePage />} />
-                <Route path="rooftop-solar" element={<RooftopSolarPage />} />
-                <Route path="solar-pumps" element={<SolarPumpsPage />} />
-                <Route path="calculator/:type" element={<CalculatorPage />} />
-                <Route path="success-stories" element={<SuccessStoriesPage />} />
-                <Route path="success-stories/:storyId" element={<SuccessStoryDetailPage />} />
-                <Route path="subsidies" element={<SubsidiesPage />} />
-                <Route path="about" element={<AboutUsPage />} />
-                <Route path="contact" element={<ContactPage />} />
-            </Route>
+        <Suspense fallback={<div className="flex h-screen items-center justify-center"><LoadingSpinner size="lg" /></div>}>
+            <Routes>
+                {/* Public Routes */}
+                <Route element={<MainLayout />}>
+                    <Route index element={<HomePage />} />
+                    <Route path="rooftop-solar" element={<RooftopSolarPage />} />
+                    <Route path="solar-pumps" element={<SolarPumpsPage />} />
+                    <Route path="calculator/:type" element={<CalculatorPage />} />
+                    <Route path="success-stories" element={<SuccessStoriesPage />} />
+                    <Route path="success-stories/:storyId" element={<SuccessStoryDetailPage />} />
+                    <Route path="subsidies" element={<SubsidiesPage />} />
+                    <Route path="about" element={<AboutUsPage />} />
+                    <Route path="contact" element={<ContactPage />} />
+                </Route>
 
-            {/* Auth Routes */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+                {/* Auth Routes */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
-            {/* Protected Admin Routes */}
-            <Route
-                path="/admin"
-                element={
-                    <ProtectedRoute>
-                        <CrmUpdatesProvider>
-                            <AdminLayout>
-                                <Outlet />
-                            </AdminLayout>
-                        </CrmUpdatesProvider>
-                    </ProtectedRoute>
-                }
-            >
-                <Route index element={<DashboardPage />} />
-                <Route path="leads" element={<LeadsListPage />} />
-                <Route path="leads/:leadId" element={<LeadDetailPage />} />
-                <Route path="data-explorer" element={<DataExplorerPage />} />
-                <Route path="form-builder" element={<FormBuilderPage />} />
-                <Route path="settings" element={<SettingsPage />} />
-                <Route path="profile" element={<UserProfilePage />} />
+                {/* Protected Admin Routes */}
                 <Route
-                    path="vendors"
+                    path="/admin"
                     element={
-                        <MasterRoute>
-                            <VendorManagementPage />
-                        </MasterRoute>
+                        <ProtectedRoute>
+                            <CrmUpdatesProvider>
+                                <AdminLayout>
+                                    <Outlet />
+                                </AdminLayout>
+                            </CrmUpdatesProvider>
+                        </ProtectedRoute>
                     }
-                />
-                <Route
-                    path="admins"
-                    element={
-                        <MasterRoute>
-                            <AdminManagementPage />
-                        </MasterRoute>
-                    }
-                />
-            </Route>
-        </Routes>
+                >
+                    <Route index element={<DashboardPage />} />
+                    <Route path="leads" element={<LeadsListPage />} />
+                    <Route path="leads/:leadId" element={<LeadDetailPage />} />
+                    <Route path="data-explorer" element={<DataExplorerPage />} />
+                    <Route path="form-builder" element={<FormBuilderPage />} />
+                    <Route path="settings" element={<SettingsPage />} />
+                    <Route path="profile" element={<UserProfilePage />} />
+                    <Route
+                        path="vendors"
+                        element={
+                            <MasterRoute>
+                                <VendorManagementPage />
+                            </MasterRoute>
+                        }
+                    />
+                    <Route
+                        path="admins"
+                        element={
+                            <MasterRoute>
+                                <AdminManagementPage />
+                            </MasterRoute>
+                        }
+                    />
+                </Route>
+            </Routes>
+        </Suspense>
     );
 };
 
@@ -111,7 +105,9 @@ const App: React.FC = () => {
     return (
         <HashRouter>
             <AuthProvider>
-                <AppRoutes />
+                <ThemeProvider>
+                    <AppRoutes />
+                </ThemeProvider>
             </AuthProvider>
         </HashRouter>
     );

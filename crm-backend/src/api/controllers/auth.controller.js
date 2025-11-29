@@ -1,6 +1,8 @@
 const prisma = require('../../config/prisma');
 const bcrypt = require('bcrypt');
 const sgMail = require('@sendgrid/mail');
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 const login = async (req, res) => {
     const { email, password } = req.body;
@@ -9,9 +11,14 @@ const login = async (req, res) => {
 
         if (user && await bcrypt.compare(password, user.password)) {
             const { password, ...userWithoutPassword } = user;
-            // The token is simply the user's email for this mock setup.
-            // In a real app, this would be a signed JWT.
-            res.json({ token: user.email, user: userWithoutPassword });
+            
+            const token = jwt.sign(
+                { userId: user.id, email: user.email, role: user.role },
+                process.env.JWT_SECRET || 'your-secret-key', // Use env var in production
+                { expiresIn: '1h' }
+            );
+
+            res.json({ token, user: userWithoutPassword });
         } else {
             res.status(401).json({ message: 'Invalid credentials' });
         }
@@ -27,8 +34,8 @@ const requestPasswordReset = async (req, res) => {
         const user = await prisma.user.findUnique({ where: { email } });
 
         if (user) {
-            // In a real app, generate a secure, random, expiring token.
-            const resetToken = `reset-token-${user.id}-${Date.now()}`;
+            // Generate a secure, random, expiring token.
+            const resetToken = crypto.randomBytes(32).toString('hex');
 
             await prisma.user.update({
                 where: { email },

@@ -5,6 +5,7 @@ const path = require('path');
 const { GoogleGenAI } = require('@google/genai');
 const sgMail = require('@sendgrid/mail');
 const { calculateScore, getScoreStatus } = require('../utils/leadScoring');
+const { createNotification } = require('./notification.controller');
 
 // In-memory store for OTPs. In production, use Redis or a similar shared store.
 const deletionOtpSessions = new Map();
@@ -29,16 +30,27 @@ const denormalizeStage = (stage) => {
 
 // --- SSE (Real-time updates) ---
 let clients = [];
+
 const sendEventsToAll = (data) => {
     clients.forEach(client => client.res.write(`data: ${JSON.stringify(data)}\n\n`));
 };
+
+const sendEventToUser = (userId, data) => {
+    const userClients = clients.filter(c => c.userId === userId);
+    userClients.forEach(client => client.res.write(`data: ${JSON.stringify(data)}\n\n`));
+};
+
 const getRealtimeEvents = (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
+    
     const clientId = Date.now();
-    const newClient = { id: clientId, res };
+    const userId = req.user ? req.user.id : null;
+    
+    const newClient = { id: clientId, userId, res };
     clients.push(newClient);
+    
     req.on('close', () => {
         clients = clients.filter(c => c.id !== clientId);
     });
@@ -84,6 +96,7 @@ const getDashboardStats = async (req, res) => {
         });
     } catch (e) { res.status(500).json({ message: 'Error fetching stats' }); }
 };
+
 const getChartData = async (req, res) => {
     const { vendorId, startDate, endDate, groupBy = 'month' } = req.query;
     let where = {};
@@ -92,43 +105,81 @@ const getChartData = async (req, res) => {
     } else if (vendorId) {
         where.assignedVendorId = vendorId;
     }
-     if (startDate) where.createdAt = { ...where.createdAt, gte: new Date(startDate) };
-    if (endDate) {
-        const endOfDay = new Date(endDate);
-        endOfDay.setHours(23, 59, 59, 999);
-        where.createdAt = { ...where.createdAt, lte: endOfDay };
+    
+    let startFilterDate = null;
+    let endFilterDate = new Date();
+
+    if (startDate) {
+        startFilterDate = new Date(startDate);
+        where.createdAt = { ...where.createdAt, gte: startFilterDate };
     }
+    if (endDate) {
+        endFilterDate = new Date(endDate);
+        endFilterDate.setHours(23, 59, 59, 999);
+        where.createdAt = { ...where.createdAt, lte: endFilterDate };
+    }
+
     try {
-        const relevantLeads = await prisma.lead.findMany({ where });
+        const relevantLeads = await prisma.lead.findMany({ where, orderBy: { createdAt: 'asc' } });
+
+        let chartStartDate = startFilterDate;
+        if (!chartStartDate) {
+            if (relevantLeads.length > 0) {
+                chartStartDate = new Date(relevantLeads[0].createdAt);
+            } else {
+                chartStartDate = new Date();
+                chartStartDate.setDate(chartStartDate.getDate() - 30);
+            }
+        }
+
+        const getKey = (date, type) => {
+            const d = new Date(date);
+            if (type === 'day') return d.toISOString().split('T')[0];
+            if (type === 'week') {
+                const day = d.getDay();
+                d.setDate(d.getDate() - day);
+                return d.toISOString().split('T')[0];
+            }
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        };
+
+        const allKeys = [];
+        let current = new Date(chartStartDate);
+        // Normalize start
+        if (groupBy === 'month') current.setDate(1);
+        if (groupBy === 'week') current.setDate(current.getDate() - current.getDay());
+
+        while (current <= endFilterDate) {
+            allKeys.push(getKey(current, groupBy));
+            if (groupBy === 'day') current.setDate(current.getDate() + 1);
+            else if (groupBy === 'week') current.setDate(current.getDate() + 7);
+            else current.setMonth(current.getMonth() + 1);
+        }
 
         const leadsByTime = {};
         const revenueByTime = {};
 
+        allKeys.forEach(k => {
+            leadsByTime[k] = 0;
+            revenueByTime[k] = 0;
+        });
+
         relevantLeads.forEach(lead => {
-            const date = new Date(lead.createdAt);
-            let key;
-
-            if (groupBy === 'day') {
-                key = date.toISOString().split('T')[0]; // YYYY-MM-DD
-            } else if (groupBy === 'week') {
-                const firstDayOfWeek = new Date(date.setDate(date.getDate() - date.getDay()));
-                key = firstDayOfWeek.toISOString().split('T')[0]; // YYYY-MM-DD of the week's Sunday
-            } else { // month
-                key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`; // YYYY-MM
-            }
-
-            leadsByTime[key] = (leadsByTime[key] || 0) + 1;
-            if (lead.pipelineStage === 'Closed_Won') {
-                revenueByTime[key] = (revenueByTime[key] || 0) + 150000;
+            const key = getKey(lead.createdAt, groupBy);
+            if (leadsByTime.hasOwnProperty(key)) {
+                leadsByTime[key] = (leadsByTime[key] || 0) + 1;
+                if (lead.pipelineStage === 'Closed_Won') {
+                    revenueByTime[key] = (revenueByTime[key] || 0) + 150000;
+                }
             }
         });
-        
-        const formatName = (key, groupBy) => {
-            if (groupBy === 'day') {
+
+        const formatName = (key, type) => {
+            if (type === 'day') {
                 const [y, m, d] = key.split('-');
                 return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             }
-            if (groupBy === 'week') {
+            if (type === 'week') {
                 const [y, m, d] = key.split('-');
                 return `W/O ${new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
             }
@@ -136,16 +187,14 @@ const getChartData = async (req, res) => {
             return new Date(y, m - 1, 1).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
         };
 
-        const sortedKeys = Object.keys(leadsByTime).sort();
-        
-        const timeSeriesLeads = sortedKeys.map(key => ({
+        const timeSeriesLeads = allKeys.map(key => ({
             name: formatName(key, groupBy),
             leads: leadsByTime[key]
         }));
-        
-        const timeSeriesRevenue = sortedKeys.map(key => ({
+
+        const timeSeriesRevenue = allKeys.map(key => ({
             name: formatName(key, groupBy),
-            revenue: revenueByTime[key] || 0
+            revenue: revenueByTime[key]
         }));
 
         const leadSourceMap = new Map();
@@ -154,11 +203,11 @@ const getChartData = async (req, res) => {
             leadSourceMap.set(source, (leadSourceMap.get(source) || 0) + 1);
         });
         const leadSourceData = Array.from(leadSourceMap, ([name, value]) => ({ name, value }));
-        
+
         res.json({ timeSeriesLeads, leadSources: leadSourceData, timeSeriesRevenue });
-    } catch (e) { 
+    } catch (e) {
         console.error("Chart data error:", e);
-        res.status(500).json({ message: 'Error fetching chart data' }); 
+        res.status(500).json({ message: 'Error fetching chart data' });
     }
 };
 
@@ -226,7 +275,19 @@ const updateLead = async (req, res) => {
             assignedVendorName: updatedLead.assignedTo?.name || 'Unassigned' 
         };
         res.json(leadWithDetails);
+        
+        // Send global update
         sendEventsToAll({ type: 'LEAD_UPDATE', data: leadWithDetails });
+
+        // Send targeted notification if assigned to a vendor
+        if (assignedVendorId && assignedVendorId !== lead.assignedVendorId) {
+             const vendor = await prisma.user.findUnique({ where: { id: assignedVendorId } });
+             if (vendor) {
+                const message = `You have been assigned a new lead: ${lead.name}`;
+                await createNotification(assignedVendorId, 'INFO', message, `/admin/leads/${lead.id}`);
+                sendEventToUser(assignedVendorId, { type: 'NOTIFICATION', data: { message, link: `/admin/leads/${lead.id}` } });
+             }
+        }
     } catch (e) { res.status(500).json({ message: 'Error updating lead' }); }
 };
 const addLeadNote = async (req, res) => {
@@ -556,7 +617,7 @@ const requestUserDeletionOtp = async (req, res) => {
     } catch (error) {
         console.error("Request user deletion OTP error:", error);
         if (error.code === 'ENOTFOUND') {
-            return res.status(503).json({ message: 'Mail Service Unavailable: Could not connect to the email provider. Please check the server\'s network configuration.' });
+            return res.status(500).json({ message: 'Mail Service Unavailable: Could not connect to the email provider. Please check the server\'s network configuration.' });
         }
         res.status(500).json({ message: 'An internal server error occurred while trying to send the email.' });
     }

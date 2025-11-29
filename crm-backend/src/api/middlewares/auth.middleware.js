@@ -1,24 +1,25 @@
-
+const jwt = require('jsonwebtoken');
 const prisma = require('../../config/prisma');
 
-const authMiddleware = async (req, res, next) => {
-    try {
-        const token = req.headers.authorization?.split(' ')[1];
-        if (!token) {
-            return res.status(401).json({ message: 'Authentication required.' });
-        }
+const authenticate = async (req, res, next) => {
+    const authHeader = req.headers.authorization;
 
-        const user = await prisma.user.findUnique({ where: { email: token } });
-        if (!user) {
-            return res.status(403).json({ message: 'Invalid token.' });
-        }
-        
-        const { password, ...userWithoutPassword } = user;
-        req.user = userWithoutPassword;
-        next();
-    } catch (error) {
-        res.status(500).json({ message: 'Authentication error.' });
+    if (authHeader) {
+        const token = authHeader.split(' ')[1];
+
+        jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key', async (err, user) => {
+            if (err) {
+                return res.sendStatus(403); // Forbidden if token is invalid
+            }
+
+            // Optional: Fetch fresh user data from DB if needed, or just use the payload
+            // For now, we'll attach the payload to req.user
+            req.user = user; 
+            next();
+        });
+    } else {
+        res.sendStatus(401); // Unauthorized
     }
 };
 
-module.exports = authMiddleware;
+module.exports = authenticate;

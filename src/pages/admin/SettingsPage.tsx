@@ -1,123 +1,90 @@
-import React, { useState, useEffect, FormEvent } from 'react';
-import { getSettings, updateSettings } from '../../service/adminService';
-import Card from '../../components/admin/Card.tsx';
-import ThemeToggle from '../../components/admin/ThemeToggle.tsx';
-import LoadingSpinner from '../../components/LoadingSpinner.tsx';
+import React from 'react';
+import { useTheme, Theme } from '../../contexts/ThemeContext';
 
 const SettingsPage: React.FC = () => {
-    const [apiKey, setApiKey] = useState('');
-    const [apiKeyIsSet, setApiKeyIsSet] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isSaving, setIsSaving] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const { theme, setTheme } = useTheme();
 
-    useEffect(() => {
-        const fetchSettings = async () => {
-            try {
-                setIsLoading(true);
-                const settings = await getSettings();
-                setApiKeyIsSet(settings.apiKeyIsSet);
-            } catch (err) {
-                setError('Failed to load settings status.');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchSettings();
-    }, []);
-
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-        if (!apiKey) {
-            setError('API Key cannot be empty.');
-            return;
+    const themes: { id: Theme; name: string; description: string; colors: string[] }[] = [
+        {
+            id: 'light-sky',
+            name: 'Daylight Sky',
+            description: 'Clean, bright interface with crisp white surfaces and sky blue accents.',
+            colors: ['#f8fafc', '#0ea5e9', '#3b82f6']
+        },
+        {
+            id: 'deep-space',
+            name: 'Deep Space Glass',
+            description: 'Futuristic, high-transparency interface with neon cyan and electric blue accents.',
+            colors: ['#0f172a', '#3b82f6', '#06b6d4']
+        },
+        {
+            id: 'midnight',
+            name: 'Midnight Obsidian',
+            description: 'Premium, grounded dark mode with rich matte surfaces and solar gold accents.',
+            colors: ['#020617', '#f59e0b', '#f97316']
+        },
+        {
+            id: 'aurora',
+            name: 'Aurora Borealis',
+            description: 'Vibrant and dynamic with animated gradients and frosted glass effects.',
+            colors: ['#312e81', '#10b981', '#8b5cf6']
         }
-        setIsSaving(true);
-        setError(null);
-        setSuccessMessage(null);
-        try {
-            await updateSettings(apiKey);
-            setSuccessMessage('API Key saved successfully! AI features are now active.');
-            setApiKeyIsSet(true);
-            setApiKey(''); // Clear the input field for security
-        } catch (err) {
-            setError('Failed to save API Key. Please check the key and try again.');
-        } finally {
-            setIsSaving(false);
-        }
-    };
+    ];
 
     return (
-        <div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-text-light mb-6">Settings</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <Card>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-text-light mb-4 border-b border-gray-200 dark:border-border-color pb-2">Gemini API Configuration</h3>
+        <div className="p-6 space-y-8">
+            <div className="flex flex-col gap-2">
+                <h1 className="text-3xl font-bold text-text-primary">Settings</h1>
+                <p className="text-text-secondary">Customize your CRM experience.</p>
+            </div>
 
-                    {isLoading && (
-                        <div className="flex justify-center p-8">
-                            <LoadingSpinner />
-                        </div>
-                    )}
+            <div className="glass-panel p-6 rounded-2xl border border-glass-border">
+                <h2 className="text-xl font-semibold text-text-primary mb-6">Appearance</h2>
 
-                    {!isLoading && (
-                        <>
-                            <div className="mb-4">
-                                <p className="text-sm font-medium text-gray-500 dark:text-text-muted">API Key Status:</p>
-                                {apiKeyIsSet ? (
-                                    <span className="text-success-green font-bold bg-success-green/20 px-2 py-1 rounded-md">Configured</span>
-                                ) : (
-                                    <span className="text-error-red font-bold bg-error-red/20 px-2 py-1 rounded-md">Not Configured</span>
-                                )}
-                                <p className="text-xs text-gray-500 dark:text-text-muted mt-2">
-                                    AI-powered features like lead summaries will be disabled until a valid API key is provided.
-                                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {themes.map((t) => (
+                        <button
+                            key={t.id}
+                            onClick={() => setTheme(t.id)}
+                            className={`relative group flex flex-col items-start p-4 rounded-xl border-2 transition-all duration-300 ${theme === t.id
+                                ? 'border-electric-blue bg-electric-blue/10 shadow-glow-md shadow-electric-blue/20'
+                                : 'border-glass-border hover:border-text-secondary/50 hover:bg-white/5'
+                                }`}
+                        >
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="flex -space-x-2">
+                                    {t.colors.map((color, i) => (
+                                        <div
+                                            key={i}
+                                            className="w-6 h-6 rounded-full border border-white/10 shadow-sm"
+                                            style={{ backgroundColor: color }}
+                                        />
+                                    ))}
+                                </div>
+                                <span className={`font-medium ${theme === t.id ? 'text-electric-blue' : 'text-text-primary'}`}>
+                                    {t.name}
+                                </span>
                             </div>
+                            <p className="text-sm text-text-secondary text-left">
+                                {t.description}
+                            </p>
 
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <div>
-                                    <label htmlFor="apiKey" className="block text-sm font-medium text-gray-500 dark:text-text-muted">
-                                        {apiKeyIsSet ? 'Update Gemini API Key' : 'Enter Gemini API Key'}
-                                    </label>
-                                    <input
-                                        type="password"
-                                        id="apiKey"
-                                        value={apiKey}
-                                        onChange={(e) => setApiKey(e.target.value)}
-                                        className="mt-1 block w-full px-3 py-2 bg-white dark:bg-primary-background border border-gray-300 dark:border-border-color rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-accent-blue focus:border-accent-blue sm:text-sm"
-                                        placeholder="Enter your new API key here"
-                                    />
+                            {theme === t.id && (
+                                <div className="absolute top-4 right-4 text-electric-blue">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                    </svg>
                                 </div>
+                            )}
+                        </button>
+                    ))}
+                </div>
+            </div>
 
-                                {error && <p className="text-error-red text-sm">{error}</p>}
-                                {successMessage && <p className="text-success-green text-sm">{successMessage}</p>}
-
-                                <div>
-                                    <button
-                                        type="submit"
-                                        disabled={isSaving || isLoading}
-                                        className="w-full flex justify-center items-center font-bold bg-accent-blue text-white py-3 px-4 rounded-lg shadow-lg hover:bg-accent-blue-hover transition-colors duration-300 disabled:bg-gray-500"
-                                    >
-                                        {isSaving ? (
-                                            <>
-                                                <LoadingSpinner size="sm" className="mr-2 !text-white" />
-                                                Saving...
-                                            </>
-                                        ) : 'Save API Key'}
-                                    </button>
-                                </div>
-                            </form>
-                        </>
-                    )}
-                </Card>
-                <Card>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-text-light mb-4 border-b border-gray-200 dark:border-border-color pb-2">User Preferences</h3>
-                    <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-gray-500 dark:text-text-muted">Theme</span>
-                        <ThemeToggle />
-                    </div>
-                </Card>
+            {/* Placeholder for other settings */}
+            <div className="glass-panel p-6 rounded-2xl border border-glass-border bg-glass-surface backdrop-blur-xl opacity-50 pointer-events-none">
+                <h2 className="text-xl font-semibold text-text-primary mb-4">Notifications (Coming Soon)</h2>
+                <p className="text-text-secondary">Manage your email and push notification preferences.</p>
             </div>
         </div>
     );

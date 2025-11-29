@@ -36,7 +36,7 @@ router.get('/dashboard/charts', adminController.getChartData);
 
 // --- Leads ---
 router.get('/leads', adminController.getLeads);
-router.get('/leads/export', adminController.exportLeads);
+// router.get('/leads/export', adminController.exportLeads); // TODO: Implement exportLeads function
 router.post('/leads/import', masterOnlyMiddleware, upload.single('leadsCsv'), adminController.importLeads);
 router.get('/leads/:id', adminController.getLeadDetails);
 router.patch('/leads/:id', adminController.updateLead);
