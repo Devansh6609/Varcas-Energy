@@ -1,24 +1,7 @@
-import React from 'react';
-// FIX: Changed to named import to resolve module export errors.
-import { Link } from 'react-router-dom';
-import AnimatedSection from '../components/AnimatedSection.tsx';
-import pumpInFieldImage from '../assets/solar-pump-in-field.png';
-import pumpVideo from '../assets/solar-pump-agriculture.mp4';
-
-const SolarPumpsPage: React.FC = () => {
-    return (
-        <div className="bg-transparent text-text-primary">
-            <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
-                <AnimatedSection>
-                    <div className="text-center">
-                        <h1 className="text-4xl font-extrabold text-white sm:text-5xl">
-                            Solar Water Pumps
-                        </h1>
-                        <p className="mt-4 max-w-2xl mx-auto text-xl text-text-secondary">
-                            Empowering agriculture with reliable, cost-effective water access.
-                        </p>
-                    </div>
-                </AnimatedSection>
+                            Empowering agriculture with reliable, cost - effective water access.
+                        </p >
+                    </div >
+                </AnimatedSection >
 
                 <AnimatedSection className="mt-16">
                     <div className="grid gap-16 lg:grid-cols-2 lg:gap-x-8 items-center">
@@ -100,8 +83,8 @@ const SolarPumpsPage: React.FC = () => {
                     </div>
                 </AnimatedSection>
 
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 
