@@ -10,7 +10,13 @@ const app = express();
 // --- Middlewares ---
 app.use(helmet());
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:4173', 'https://suryakiran-solar.onrender.com'], // Allow Dev, Preview, and Production
+  origin: [
+    'http://localhost:5173', 
+    'http://localhost:4173', 
+    'http://127.0.0.1:5173', 
+    'http://127.0.0.1:4173',
+    'https://suryakiran-solar.onrender.com'
+  ], // Allow Dev (localhost & 127.0.0.1), Preview, and Production
   methods: 'GET,POST,PATCH,PUT,DELETE',
   allowedHeaders: 'Content-Type,Authorization',
 }));
