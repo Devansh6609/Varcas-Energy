@@ -26,7 +26,7 @@ const TimelineSection: React.FC<TimelineSectionProps> = ({ title, steps }) => {
 
             <div className="relative wrap overflow-hidden p-0 sm:p-10 h-full">
                 {/* Center line */}
-                <div className="absolute border-opacity-20 border-gray-400 h-full border hidden sm:block" style={{ left: '50%' }}></div>
+                <div className="absolute border-opacity-20 border-gray-400 h-full border left-7 sm:left-1/2"></div>
 
                 {steps.map((step, index) => {
                     const isEven = index % 2 === 0;
@@ -40,7 +40,7 @@ const TimelineSection: React.FC<TimelineSectionProps> = ({ title, steps }) => {
                     const OrderContainer = () => <div className="order-1 w-5/12 hidden sm:block"></div>;
 
                     const TimelineNode = () => (
-                        <div className="z-20 flex items-center order-1 bg-primary-green shadow-xl w-14 h-14 rounded-full">
+                        <div className="z-20 flex items-center order-1 bg-primary-green shadow-xl w-14 h-14 rounded-full flex-shrink-0">
                             <div className="mx-auto text-white">
                                 {React.cloneElement(step.icon, { className: "h-7 w-7" })}
                             </div>
@@ -52,10 +52,10 @@ const TimelineSection: React.FC<TimelineSectionProps> = ({ title, steps }) => {
                             <FlexContainer>
                                 <OrderContainer />
                                 <TimelineNode />
-                                <div className="order-1 w-full sm:w-5/12 px-1 py-4">
-                                    <div className={`p-6 rounded-lg shadow-lg bg-glass-surface backdrop-blur-md border border-glass-border`}>
-                                        <h3 className="font-bold text-accent-yellow text-xl">{step.title}</h3>
-                                        <p className="mt-2 text-text-secondary leading-snug tracking-wide">{step.description}</p>
+                                <div className="order-1 w-full sm:w-5/12 px-1 py-4 pl-4 sm:pl-1">
+                                    <div className={`p-4 md:p-6 rounded-lg shadow-lg bg-glass-surface backdrop-blur-md border border-glass-border`}>
+                                        <h3 className="font-bold text-accent-yellow text-lg md:text-xl">{step.title}</h3>
+                                        <p className="mt-2 text-sm md:text-base text-text-secondary leading-snug tracking-wide">{step.description}</p>
                                     </div>
                                 </div>
                             </FlexContainer>

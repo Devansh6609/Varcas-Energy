@@ -8,10 +8,10 @@ import rooftopThumbnail from '../assets/rooftop-solar-thumbnail.png';
 const RooftopSolarPage: React.FC = () => {
     return (
         <div className="bg-transparent text-text-primary">
-            <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto py-8 md:py-16 px-4 sm:px-6 lg:px-8">
                 <AnimatedSection>
                     <div className="text-center">
-                        <h1 className="text-4xl font-extrabold text-white sm:text-5xl">
+                        <h1 className="text-3xl font-extrabold text-white sm:text-5xl">
                             Rooftop Solar Systems
                         </h1>
                         <p className="mt-4 max-w-2xl mx-auto text-xl text-text-secondary">
@@ -20,8 +20,8 @@ const RooftopSolarPage: React.FC = () => {
                     </div>
                 </AnimatedSection>
 
-                <AnimatedSection className="mt-16">
-                    <div className="grid gap-16 lg:grid-cols-2 lg:gap-x-8 items-center">
+                <AnimatedSection className="mt-10 md:mt-16">
+                    <div className="grid gap-8 md:gap-16 lg:grid-cols-2 lg:gap-x-8 items-center">
                         <div>
                             <h2 className="text-3xl font-extrabold text-white">Witness Our Professional Installation</h2>
                             <p className="mt-4 text-lg text-text-secondary">
@@ -62,10 +62,10 @@ const RooftopSolarPage: React.FC = () => {
                     </div>
                 </AnimatedSection>
 
-                <AnimatedSection className="mt-20">
+                <AnimatedSection className="mt-10 md:mt-20">
                     <div className="bg-glass-surface backdrop-blur-sm border border-glass-border p-8 rounded-lg">
                         <div className="text-center">
-                            <h2 className="text-3xl font-extrabold text-primary-green text-glow">Unlock Your Maximum ₹78,000 Subsidy</h2>
+                            <h2 className="text-2xl md:text-3xl font-extrabold text-primary-green text-glow">Unlock Your Maximum ₹78,000 Subsidy</h2>
                             <p className="mt-4 text-lg text-text-secondary">
                                 With the "PM Surya Ghar: Muft Bijli Yojana", going solar has never been more affordable. We are experts in navigating the 45-120 day approval process for you.
                             </p>
@@ -90,7 +90,7 @@ const RooftopSolarPage: React.FC = () => {
                     </div>
                 </AnimatedSection>
 
-                <AnimatedSection className="mt-20">
+                <AnimatedSection className="mt-10 md:mt-20">
                     <div className="grid lg:grid-cols-5 gap-8 items-center">
                         <div className="lg:col-span-2">
                             <img className="rounded-lg shadow-xl" src={mehraResidenceImage} alt="Happy family in front of their solar-powered home" />

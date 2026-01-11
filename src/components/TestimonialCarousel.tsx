@@ -10,7 +10,7 @@ const segmentColors = {
 };
 
 const QuoteIcon = () => (
-    <svg className="absolute top-4 left-4 w-16 h-16 text-white/10" width="45" height="34" viewBox="0 0 45 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg className="absolute top-4 left-4 w-12 h-12 md:w-16 md:h-16 text-white/10" width="45" height="34" viewBox="0 0 45 34" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M44.5 0.5H29.9375L22.6562 12.875V33.5H44.5V0.5Z" fill="currentColor" />
         <path d="M21.8438 0.5H7.28125L0 12.875V33.5H21.8438V0.5Z" fill="currentColor" />
     </svg>
@@ -56,14 +56,14 @@ const TestimonialCarousel: React.FC = () => {
     const currentTestimonial = TESTIMONIALS[currentIndex];
 
     return (
-        <div className="w-full max-w-3xl mx-auto bg-slate-800/50 p-8 rounded-xl relative overflow-hidden group">
+        <div className="w-full max-w-3xl mx-auto bg-slate-800/50 p-4 md:p-8 rounded-xl relative overflow-hidden group">
             <QuoteIcon />
 
             <div className={`transition-opacity duration-300 ease-in-out ${isFading ? 'opacity-0' : 'opacity-100'}`}>
-                <div className="flex flex-col items-center text-center min-h-[280px] justify-center relative z-10">
+                <div className="flex flex-col items-center text-center min-h-[200px] md:min-h-[280px] justify-center relative z-10">
                     <img
                         key={currentTestimonial.name} // Force re-render on change
-                        className="w-24 h-24 rounded-full mb-4 object-cover ring-2 ring-white/20"
+                        className="w-16 h-16 md:w-24 md:h-24 rounded-full mb-4 object-cover ring-2 ring-white/20"
                         src={currentTestimonial.image}
                         alt={currentTestimonial.name}
                     />

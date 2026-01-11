@@ -14,19 +14,19 @@ const TrustBar: React.FC = () => (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white w-full max-w-7xl">
         <AnimatedSection delay="delay-100">
             <div className="flex flex-col items-center">
-                <span className="text-3xl lg:text-4xl font-bold">MNRE</span>
+                <span className="text-2xl md:text-3xl lg:text-4xl font-bold">MNRE</span>
                 <p className="text-sm lg:text-base text-gray-200">Approved Installer</p>
             </div>
         </AnimatedSection>
         <AnimatedSection delay="delay-200">
             <div className="flex flex-col items-center">
-                <span className="text-3xl lg:text-4xl font-bold">ISO</span>
+                <span className="text-2xl md:text-3xl lg:text-4xl font-bold">ISO</span>
                 <p className="text-sm lg:text-base text-gray-200">9001:2015 Certified</p>
             </div>
         </AnimatedSection>
         <AnimatedSection delay="delay-300">
             <div className="flex flex-col items-center">
-                <div className="text-3xl lg:text-4xl font-bold">
+                <div className="text-2xl md:text-3xl lg:text-4xl font-bold">
                     <AnimatedCounter target={50} suffix=" Cr+" />
                 </div>
                 <p className="text-sm lg:text-base text-gray-200">Customer Savings</p>
@@ -34,7 +34,7 @@ const TrustBar: React.FC = () => (
         </AnimatedSection>
         <AnimatedSection delay="delay-400">
             <div className="flex flex-col items-center">
-                <div className="text-3xl lg:text-4xl font-bold">
+                <div className="text-2xl md:text-3xl lg:text-4xl font-bold">
                     <AnimatedCounter target={10000} suffix="+" />
                 </div>
                 <p className="text-sm lg:text-base text-gray-200">Pumps Installed</p>
@@ -65,8 +65,8 @@ const HomePage: React.FC = () => {
             </section>
 
             <section className="panel px-4 bg-slate-900/80 backdrop-blur-lg">
-                <div className="text-center text-white max-w-7xl w-full mx-auto overflow-y-auto max-h-[100vh] py-36 md:py-0 md:max-h-[80vh]">
-                    <h2 className="text-4xl font-extrabold sm:text-5xl">Your Comprehensive Solar Solution</h2>
+                <div className="text-center text-white max-w-7xl w-full mx-auto overflow-y-auto max-h-[100vh] py-20 md:py-0 md:max-h-[80vh]">
+                    <h2 className="text-3xl font-extrabold sm:text-5xl">Your Comprehensive Solar Solution</h2>
                     <p className="mt-4 text-lg text-gray-200">From homes to farms, we power your future with sustainable energy.</p>
                     <div className="mt-12 grid gap-8 md:grid-cols-3">
                         <ValuePillar
@@ -96,8 +96,8 @@ const HomePage: React.FC = () => {
             </section>
 
             <section className="panel bg-slate-700/80 backdrop-blur-lg px-4">
-                <div className="max-w-7xl w-full mx-auto text-center overflow-y-auto max-h-[100vh] py-36 md:py-0 md:max-h-[80vh]">
-                    <h2 className="text-4xl font-extrabold text-white sm:text-5xl">Trusted by Thousands of Indians</h2>
+                <div className="max-w-7xl w-full mx-auto text-center overflow-y-auto max-h-[100vh] py-20 md:py-0 md:max-h-[80vh]">
+                    <h2 className="text-3xl font-extrabold text-white sm:text-5xl">Trusted by Thousands of Indians</h2>
                     <p className="mt-4 text-lg text-gray-300">Hear what our happy customers have to say.</p>
                     <div className="mt-12">
                         <TestimonialCarousel />
@@ -106,8 +106,8 @@ const HomePage: React.FC = () => {
             </section>
 
             <section className="panel bg-slate-600/80 backdrop-blur-lg px-4">
-                <div className="max-w-7xl w-full mx-auto text-center overflow-y-auto max-h-[100vh] py-36 md:py-0 md:max-h-[80vh]">
-                    <h2 className="text-4xl font-extrabold text-white sm:text-5xl">Frequently Asked Questions</h2>
+                <div className="max-w-7xl w-full mx-auto text-center overflow-y-auto max-h-[100vh] py-20 md:py-0 md:max-h-[80vh]">
+                    <h2 className="text-3xl font-extrabold text-white sm:text-5xl">Frequently Asked Questions</h2>
                     <p className="mt-4 text-lg text-gray-300">
                         Have questions? We have answers. Here are some of the most common inquiries we receive.
                     </p>

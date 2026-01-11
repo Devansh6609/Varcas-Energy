@@ -31,8 +31,8 @@ const Header: React.FC = () => {
     return (
         <header className={headerClass}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-[99px]">
-                    <div className="flex-shrink-0 -ml-12">
+                <div className="flex items-center justify-between h-16 md:h-[99px]">
+                    <div className="flex-shrink-0 ml-0 md:-ml-12">
                         <Link to="/" onClick={() => setIsOpen(false)}>
                             <Logo />
                         </Link>

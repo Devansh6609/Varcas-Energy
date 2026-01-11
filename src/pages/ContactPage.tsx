@@ -85,9 +85,9 @@ const ContactPage: React.FC = () => {
 
     return (
         <div className="bg-transparent text-text-primary">
-            <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-16">
+            <div className="max-w-7xl mx-auto py-8 md:py-16 px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-8 md:gap-16">
                 <div>
-                    <h1 className="text-4xl font-extrabold text-white sm:text-5xl">
+                    <h1 className="text-3xl font-extrabold text-white sm:text-5xl">
                         Get in Touch
                     </h1>
                     <p className="mt-4 text-xl text-text-secondary">

@@ -9,15 +9,15 @@ interface FaqItemProps {
 
 const FaqItem: React.FC<FaqItemProps> = ({ question, answer, isOpen, onClick }) => {
     return (
-        <div className="border-b border-white/20 py-4">
+        <div className="border-b border-white/20 py-3 md:py-4">
             <button
                 onClick={onClick}
-                className="w-full flex justify-between items-center text-left text-lg font-medium text-white focus:outline-none"
+                className="w-full flex justify-between items-center text-left text-base md:text-lg font-medium text-white focus:outline-none"
                 aria-expanded={isOpen}
             >
                 <span>{question}</span>
                 <svg
-                    className={`w-6 h-6 transition-transform duration-300 text-accent-orange ${isOpen ? 'transform rotate-180' : ''}`}
+                    className={`w-5 h-5 md:w-6 md:h-6 transition-transform duration-300 text-accent-orange ${isOpen ? 'transform rotate-180' : ''}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

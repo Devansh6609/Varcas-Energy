@@ -132,7 +132,7 @@ export const FAQ_DATA = [
 ];
 
 export const Logo: React.FC<{ className?: string }> = ({ className }) => (
-    <img src={logoUrl} alt="SuryaKiran Solar Solutions Logo" className={`h-[150px] w-auto ${className}`} />
+    <img src={logoUrl} alt="SuryaKiran Solar Solutions Logo" className={`h-20 md:h-[150px] w-auto ${className}`} />
 );
 
 export const ADMIN_NAV_LINKS = [

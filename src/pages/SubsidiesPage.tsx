@@ -20,10 +20,10 @@ const pmKusumBreakdown = [
 const SubsidiesPage: React.FC = () => {
     return (
         <div className="bg-transparent text-text-primary">
-            <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto py-8 md:py-16 px-4 sm:px-6 lg:px-8">
                 <AnimatedSection>
                     <div className="text-center mb-4">
-                        <h1 className="text-4xl font-extrabold text-white sm:text-5xl">
+                        <h1 className="text-3xl font-extrabold text-white sm:text-5xl">
                             Subsidies & Finance
                         </h1>
                         <p className="mt-4 max-w-2xl mx-auto text-xl text-text-secondary">
@@ -37,7 +37,7 @@ const SubsidiesPage: React.FC = () => {
                     steps={pmSuryaGharProcess}
                 />
 
-                <div className="mt-16">
+                <div className="mt-10 md:mt-16">
                     <TimelineSection
                         title="PM-KUSUM Scheme Explained"
                         steps={pmKusumBreakdown}
@@ -45,8 +45,8 @@ const SubsidiesPage: React.FC = () => {
                 </div>
 
                 <AnimatedSection>
-                    <div className="mt-16 text-center">
-                        <h2 className="text-3xl font-extrabold text-white">Flexible Financing Options</h2>
+                    <div className="mt-10 md:mt-16 text-center">
+                        <h2 className="text-2xl md:text-3xl font-extrabold text-white">Flexible Financing Options</h2>
                         <p className="mt-4 max-w-3xl mx-auto text-lg text-text-secondary">Don't let upfront costs stop you. We partner with leading financial institutions to offer attractive loan and EMI options tailored to your needs.</p>
                         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div className="bg-glass-surface backdrop-blur-sm border border-glass-border p-6 rounded-lg shadow transform hover:-translate-y-1 transition-transform">

@@ -20,6 +20,7 @@ const SuccessStoriesPage = lazy(() => import('./pages/SuccessStoriesPage'));
 const SuccessStoryDetailPage = lazy(() => import('./pages/SuccessStoryDetailPage'));
 const SubsidiesPage = lazy(() => import('./pages/SubsidiesPage'));
 const AboutUsPage = lazy(() => import('./pages/AboutUsPage'));
+const CareerPage = lazy(() => import('./pages/CareerPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
@@ -51,6 +52,7 @@ const AppRoutes: React.FC = () => {
                     <Route path="success-stories/:storyId" element={<SuccessStoryDetailPage />} />
                     <Route path="subsidies" element={<SubsidiesPage />} />
                     <Route path="about" element={<AboutUsPage />} />
+                    <Route path="career" element={<CareerPage />} />
                     <Route path="contact" element={<ContactPage />} />
                 </Route>
 

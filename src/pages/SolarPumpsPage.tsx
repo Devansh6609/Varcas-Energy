@@ -8,10 +8,10 @@ import pumpThumbnail from '../assets/solar-pump-thumbnail.png';
 const SolarPumpsPage: React.FC = () => {
     return (
         <div className="bg-transparent text-text-primary">
-            <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto py-8 md:py-16 px-4 sm:px-6 lg:px-8">
                 <AnimatedSection>
                     <div className="text-center">
-                        <h1 className="text-4xl font-extrabold text-white sm:text-5xl">
+                        <h1 className="text-3xl font-extrabold text-white sm:text-5xl">
                             Solar Water Pumps
                         </h1>
                         <p className="mt-4 max-w-2xl mx-auto text-xl text-text-secondary">
@@ -20,8 +20,8 @@ const SolarPumpsPage: React.FC = () => {
                     </div>
                 </AnimatedSection>
 
-                <AnimatedSection className="mt-16">
-                    <div className="grid gap-16 lg:grid-cols-2 lg:gap-x-8 items-center">
+                <AnimatedSection className="mt-10 md:mt-16">
+                    <div className="grid gap-8 md:gap-16 lg:grid-cols-2 lg:gap-x-8 items-center">
                         <div className="rounded-lg shadow-xl overflow-hidden lg:order-2">
                             <video
                                 className="w-full h-full object-cover"
@@ -62,11 +62,11 @@ const SolarPumpsPage: React.FC = () => {
                     </div>
                 </AnimatedSection>
 
-                <AnimatedSection className="mt-20">
+                <AnimatedSection className="mt-10 md:mt-20">
                     <div className="bg-glass-surface backdrop-blur-sm border border-glass-border p-8 rounded-lg relative overflow-hidden">
                         <img src="https://picsum.photos/1200/400?random=8" alt="Farmer with solar pump" className="absolute top-0 left-0 w-full h-full object-cover opacity-10 z-0" />
                         <div className="relative z-10 text-center">
-                            <h2 className="text-3xl font-extrabold text-electric-blue text-glow">Secure Your Solar Pump with Up to 60%+ Subsidy</h2>
+                            <h2 className="text-2xl md:text-3xl font-extrabold text-electric-blue text-glow">Secure Your Solar Pump with Up to 60%+ Subsidy</h2>
                             <p className="mt-4 max-w-3xl mx-auto text-lg text-text-secondary">
                                 Under PM-KUSUM Component B & C, farmers can get substantial financial assistance. We guide you through the entire process.
                             </p>
@@ -83,8 +83,8 @@ const SolarPumpsPage: React.FC = () => {
                     </div>
                 </AnimatedSection>
 
-                <AnimatedSection className="mt-20">
-                    <div className="grid lg:grid-cols-2 gap-12 items-center">
+                <AnimatedSection className="mt-10 md:mt-20">
+                    <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
                         <div>
                             <h2 className="text-3xl font-extrabold text-white">Eliminate Diesel Costs, Boost Your Yield</h2>
                             <p className="mt-4 text-lg text-text-secondary">A solar pump is not an expense; it's an investment in your farm's profitability. With a typical payback period of less than 2 years, the benefits are immediate and long-lasting.</p>

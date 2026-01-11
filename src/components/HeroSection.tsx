@@ -33,20 +33,20 @@ const HeroSection: React.FC = () => {
 
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-black/60 via-black/40 to-transparent z-10"></div>
 
-            <div className="relative z-20 p-8 md:p-12 lg:p-16 max-w-7xl w-full">
+            <div className="relative z-20 p-4 md:p-12 lg:p-16 max-w-7xl w-full">
                 <div className="max-w-3xl text-left">
-                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight min-h-[144px] md:min-h-[240px]">
+                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-extrabold tracking-tight min-h-[100px] md:min-h-[240px]">
                         {typedText}
                         <span className="animate-blink text-accent-yellow">|</span>
                     </h1>
-                    <p className="mt-4 max-w-2xl text-lg md:text-xl text-gray-200">
+                    <p className="mt-4 max-w-2xl text-base md:text-xl text-gray-200">
                         Maximize PM Surya Ghar & PM-KUSUM Benefits. Start Saving Today.
                     </p>
-                    <div className="mt-10 flex flex-col sm:flex-row items-start justify-start gap-4">
-                        <Link to="/calculator/rooftop" className="w-full sm:w-auto text-lg text-center font-bold bg-accent-orange text-white py-4 px-8 rounded-lg shadow-lg hover:bg-accent-orange-hover transform hover:-translate-y-1 transition-all duration-300">
+                    <div className="mt-6 md:mt-10 flex flex-col sm:flex-row items-start justify-start gap-4">
+                        <Link to="/calculator/rooftop" className="w-full sm:w-auto text-base md:text-lg text-center font-bold bg-accent-orange text-white py-3 px-6 md:py-4 md:px-8 rounded-lg shadow-lg hover:bg-accent-orange-hover transform hover:-translate-y-1 transition-all duration-300">
                             Calculate Rooftop Savings
                         </Link>
-                        <Link to="/calculator/pump" className="w-full sm:w-auto text-lg text-center font-bold bg-accent-yellow text-white py-4 px-8 rounded-lg shadow-lg hover:bg-accent-yellow-hover transform hover:-translate-y-1 transition-all duration-300">
+                        <Link to="/calculator/pump" className="w-full sm:w-auto text-base md:text-lg text-center font-bold bg-accent-yellow text-white py-3 px-6 md:py-4 md:px-8 rounded-lg shadow-lg hover:bg-accent-yellow-hover transform hover:-translate-y-1 transition-all duration-300">
                             Estimate Pump Subsidy
                         </Link>
                     </div>

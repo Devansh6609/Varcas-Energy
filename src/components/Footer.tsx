@@ -45,6 +45,7 @@ const Footer: React.FC = () => {
                                 <ul className="mt-4 space-y-4">
                                     <li><Link to="/about" className={linkStyle}>About Us</Link></li>
                                     <li><Link to="/subsidies" className={linkStyle}>Subsidies & Finance</Link></li>
+                                    <li><Link to="/career" className={linkStyle}>Career</Link></li>
                                     <li><Link to="/contact" className={linkStyle}>Contact</Link></li>
                                 </ul>
                             </div>
