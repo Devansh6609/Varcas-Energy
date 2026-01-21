@@ -12,6 +12,12 @@ const SettingsPage: React.FC = () => {
             colors: ['#f8fafc', '#0ea5e9', '#3b82f6']
         },
         {
+            id: 'professional-light',
+            name: 'Professional Light',
+            description: 'A simple, non-glowing light theme for a professional corporate look.',
+            colors: ['#ffffff', '#2563eb', '#64748b']
+        },
+        {
             id: 'deep-space',
             name: 'Deep Space Glass',
             description: 'Futuristic, high-transparency interface with neon cyan and electric blue accents.',

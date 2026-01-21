@@ -1,14 +1,15 @@
 import React, { useState, useEffect, FormEvent, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Lead, LeadActivity, LeadDocument, PipelineStage, FormField, User } from '../../types';
-import { getLeadDetails, getFormSchema, getVendors, updateLead, addLeadNote, generateLeadSummary, uploadDocument, deleteLead } from '../../service/adminService';
+import { getLeadDetails, getFormSchema, getVendors, updateLead, addLeadNote, uploadDocument, deleteLead } from '../../service/adminService';
 import { PIPELINE_STAGES } from '../../constants';
-import PipelineTracker from '../../components/admin/PipelineTracker.tsx';
-import { useAuth } from '../../contexts/AuthContext.tsx';
-import Card from '../../components/admin/Card.tsx';
+import PipelineTracker from '../../components/admin/PipelineTracker';
+import { LeadsWorkflowSection } from '../../components/admin/LeadsWorkflowSection';
+import { useAuth } from '../../contexts/AuthContext';
+import Card from '../../components/admin/Card';
 import LoadingSpinner from '../../components/LoadingSpinner';
-import { useCrmUpdates } from '../../contexts/CrmUpdatesContext.tsx';
-import DeleteConfirmationModal from '../../components/admin/DeleteConfirmationModal.tsx';
+import { useCrmUpdates } from '../../contexts/CrmUpdatesContext';
+import DeleteConfirmationModal from '../../components/admin/DeleteConfirmationModal';
 
 
 const API_BASE_URL = import.meta.env.VITE_CRM_API_URL || 'http://localhost:3001';
@@ -18,7 +19,12 @@ const DetailItem: React.FC<{ label: string, value: any, isImage?: boolean }> = (
         <dt className="text-sm font-medium text-gray-500 dark:text-text-muted">{label}</dt>
         <dd className="mt-1 text-sm text-gray-900 dark:text-text-light">
             {isImage && value ? (
-                <a href={`${API_BASE_URL}/files/${value}`} target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline font-medium">
+                <a
+                    href={value.startsWith('http') ? value : `${API_BASE_URL}/files/${value}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-accent-blue hover:underline font-medium"
+                >
                     View Document
                 </a>
             ) : (
@@ -42,9 +48,7 @@ const LeadDetailPage: React.FC = () => {
     const [newNote, setNewNote] = useState('');
     const [isSubmittingNote, setIsSubmittingNote] = useState(false);
 
-    const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
-    const [summary, setSummary] = useState<string | null>(null);
-    const [summaryError, setSummaryError] = useState<string | null>(null);
+
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -115,19 +119,7 @@ const LeadDetailPage: React.FC = () => {
         }
     };
 
-    const handleGenerateSummary = async () => {
-        if (!leadId) return;
-        setIsGeneratingSummary(true);
-        setSummaryError(null);
-        try {
-            const result = await generateLeadSummary(leadId);
-            setSummary(result.summary);
-        } catch (err: any) {
-            setSummaryError(err.message || "Failed to generate summary. Ensure API key is set in Settings.");
-        } finally {
-            setIsGeneratingSummary(false);
-        }
-    };
+
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!leadId || !e.target.files || e.target.files.length === 0) return;
@@ -210,6 +202,13 @@ const LeadDetailPage: React.FC = () => {
                         <PipelineTracker currentStage={lead.pipelineStage} allStages={PIPELINE_STAGES} onStageChange={handleStageChange} />
                     </Card>
 
+                    {/* Manual Workflow Section */}
+                    {lead.source === 'Manual_Offline' && (
+                        <Card>
+                            <LeadsWorkflowSection lead={lead} onUpdate={setLead} />
+                        </Card>
+                    )}
+
                     <Card>
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-text-light mb-4">Application Details</h3>
                         <dl className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
@@ -217,9 +216,21 @@ const LeadDetailPage: React.FC = () => {
                             <DetailItem label="Email" value={lead.email} />
                             <DetailItem label="Phone" value={lead.phone} />
                             <DetailItem label="Product Type" value={lead.productType} />
+                            {/* Manual Workflow Fields Display */}
+                            {lead.source === 'Manual_Offline' && (
+                                <>
+                                    <DetailItem label="Father Name" value={lead.fatherName} />
+                                    <DetailItem label="District" value={lead.district} />
+                                    <DetailItem label="Tehsil" value={lead.tehsil} />
+                                    <DetailItem label="Village" value={lead.village} />
+                                    <DetailItem label="HP" value={lead.hp} />
+                                    <DetailItem label="Connection Type" value={lead.connectionType} />
+                                </>
+                            )}
                             {/* FIX: The 'location' property does not exist on the Lead type. Use customFields.district instead. */}
-                            <DetailItem label="Location (District)" value={lead.customFields?.district} />
-                            {Object.entries(lead.customFields).filter(([key]) => key !== 'district').map(([key, value]) => (
+                            {lead.source !== 'Manual_Offline' && <DetailItem label="Location (District)" value={lead.customFields?.district} />}
+
+                            {Object.entries(lead.customFields).filter(([key]) => key !== 'district' && key !== 'basicProfile').map(([key, value]) => (
                                 <DetailItem
                                     key={key}
                                     label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
@@ -251,23 +262,7 @@ const LeadDetailPage: React.FC = () => {
                         </Card>
                     )}
 
-                    <Card>
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-text-light mb-4">AI-Powered Summary</h3>
-                        <button onClick={handleGenerateSummary} disabled={isGeneratingSummary} className="w-full flex items-center justify-center bg-accent-blue text-white font-bold py-2 px-4 rounded-lg hover:bg-accent-blue-hover transition-colors disabled:bg-gray-500">
-                            {isGeneratingSummary ? (
-                                <>
-                                    <LoadingSpinner size="sm" className="mr-2 !text-white" />
-                                    Generating...
-                                </>
-                            ) : '✨ Generate Lead Summary'}
-                        </button>
-                        {summaryError && <p className="mt-2 text-sm text-error-red">{summaryError}</p>}
-                        {summary && (
-                            <div className="mt-4 p-4 bg-gray-50 dark:bg-primary-background rounded-md border border-gray-200 dark:border-border-color text-sm text-gray-600 dark:text-text-muted whitespace-pre-wrap">
-                                {summary}
-                            </div>
-                        )}
-                    </Card>
+
 
                     <Card>
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-text-light mb-4">Activity & Notes</h3>
@@ -305,7 +300,14 @@ const LeadDetailPage: React.FC = () => {
                             {lead.documents.map((doc: LeadDocument) => (
                                 <div key={doc.filename} className="flex justify-between items-center bg-gray-100 dark:bg-primary-background p-2 rounded-md">
                                     <span className="text-sm truncate pr-2 text-gray-700 dark:text-text-primary" title={doc.filename}>{doc.filename}</span>
-                                    <a href={`${API_BASE_URL}/files/${doc.filename}`} target="_blank" rel="noopener noreferrer" className="text-xs text-accent-blue hover:underline">View</a>
+                                    <a
+                                        href={doc.filename.startsWith('http') ? doc.filename : `${API_BASE_URL}/files/${doc.filename}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs text-accent-blue hover:underline"
+                                    >
+                                        View
+                                    </a>
                                 </div>
                             ))}
                             {lead.documents.length === 0 && <p className="text-sm text-gray-500 dark:text-text-muted">No documents uploaded.</p>}

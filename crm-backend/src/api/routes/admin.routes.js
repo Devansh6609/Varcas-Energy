@@ -9,19 +9,22 @@ const masterOnlyMiddleware = require('../middlewares/masterOnly.middleware');
 
 const router = express.Router();
 
-// --- Multer Setup for admin document uploads ---
-const uploadsDir = path.join(__dirname, '../../../uploads');
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
+const upload = require('../../config/storage.config');
+
+// --- Multer Setup for CSV Import (Local Temp Storage) ---
+// We use local storage for CSVs because we need to read them with fs.readFileSync immediately
+const tempUploadsDir = path.join(__dirname, '../../../temp_uploads');
+if (!fs.existsSync(tempUploadsDir)) {
+    fs.mkdirSync(tempUploadsDir, { recursive: true });
 }
-const fileStorage = multer.diskStorage({
-    destination: (req, file, cb) => { cb(null, uploadsDir); },
+const tempStorage = multer.diskStorage({
+    destination: (req, file, cb) => { cb(null, tempUploadsDir); },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, `${uniqueSuffix}-${file.originalname.replace(/\s/g, '_')}`);
+        cb(null, `${uniqueSuffix}-${file.originalname}`);
     }
 });
-const upload = multer({ storage: fileStorage });
+const uploadTemp = multer({ storage: tempStorage });
 
 
 // Protect all admin routes
@@ -37,12 +40,13 @@ router.get('/dashboard/charts', adminController.getChartData);
 // --- Leads ---
 router.get('/leads', adminController.getLeads);
 // router.get('/leads/export', adminController.exportLeads); // TODO: Implement exportLeads function
-router.post('/leads/import', masterOnlyMiddleware, upload.single('leadsCsv'), adminController.importLeads);
+router.post('/leads/import', masterOnlyMiddleware, uploadTemp.single('leadsCsv'), adminController.importLeads);
 router.get('/leads/:id', adminController.getLeadDetails);
-router.patch('/leads/:id', adminController.updateLead);
+router.patch('/leads/:id', upload.any(), adminController.updateLead);
 router.delete('/leads/:id', masterOnlyMiddleware, adminController.deleteLead);
 router.post('/leads/:id/notes', adminController.addLeadNote);
 router.post('/leads/:id/documents', upload.single('document'), adminController.uploadLeadDocument);
+router.post('/leads/manual', upload.single('basicProfile'), adminController.createManualLead);
 // FIX: Add route for bulk lead actions.
 router.post('/leads/bulk-action', adminController.performBulkLeadAction);
 

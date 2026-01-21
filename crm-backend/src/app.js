@@ -24,6 +24,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // --- Static File Serving ---
+// --- Document Serving (DB) ---
+const documentController = require('./api/controllers/document.controller');
+app.get('/files/:id', documentController.getFile);
+
+// --- Static File Serving (Legacy/Fallback) ---
 app.use('/files', express.static(path.join(__dirname, '../uploads')));
 
 // --- API Routes ---

@@ -217,10 +217,19 @@ const getLeads = async (req, res) => {
     if (req.user.role === 'Vendor') {
         where.assignedVendorId = req.user.id;
     } else { // Master can filter
-        const { assignedVendorId, state, district } = req.query;
+        const { assignedVendorId, state, district, source } = req.query;
         if (assignedVendorId && assignedVendorId !== 'all') where.assignedVendorId = assignedVendorId;
         if (state && state !== 'all') where.customFields = { ...where.customFields, path: ['state'], equals: state };
         if (district && district !== 'all') where.customFields = { ...where.customFields, path: ['district'], equals: district };
+        
+        if (source === 'Offline') {
+            where.source = 'Manual_Offline';
+        } else if (source === 'Online') {
+            where.OR = [
+                { source: { not: 'Manual_Offline' } },
+                { source: null }
+            ];
+        }
     }
     try {
         const leads = await prisma.lead.findMany({ where, include: { assignedTo: { select: { name: true } } }, orderBy: { createdAt: 'desc' } });
@@ -247,28 +256,95 @@ const getLeadDetails = async (req, res) => {
 };
 const updateLead = async (req, res) => {
     try {
-        const { pipelineStage, assignedVendorId } = req.body;
+        const { 
+            pipelineStage, assignedVendorId,
+            fatherName, district, tehsil, village, hp, connectionType,
+            approvalStatus, paymentStatus, allotmentStatus, surveyStatus, ntpStatus,
+            aifStatus, cifStatus, workStatus, bankAccountOpen,
+            meterSerialNo, panelSerialNo
+        } = req.body;
         const lead = await prisma.lead.findUnique({ where: { id: req.params.id } });
         if (!lead) return res.status(404).json({ message: 'Lead not found' });
 
         const dataToUpdate = {};
         const activityLogs = [];
+
+        // Legacy & Workflow Steps
         if (pipelineStage) {
             dataToUpdate.pipelineStage = normalizeStage(pipelineStage);
             activityLogs.push({ action: `Stage changed to ${pipelineStage}`, user: req.user.name });
         }
         if (assignedVendorId !== undefined) {
-            dataToUpdate.assignedVendorId = assignedVendorId || null;
-            const vendor = assignedVendorId ? await prisma.user.findUnique({ where: { id: assignedVendorId } }) : null;
-            activityLogs.push({ action: `Assigned to ${vendor ? vendor.name : 'Unassigned'}`, user: req.user.name });
+             // Handle explicit unassignment or assignment
+            if (assignedVendorId === 'unassigned' || assignedVendorId === null || assignedVendorId === '') {
+                 dataToUpdate.assignedVendorId = null;
+                 activityLogs.push({ action: `Unassigned`, user: req.user.name });
+            } else {
+                 dataToUpdate.assignedVendorId = assignedVendorId;
+                 const vendor = await prisma.user.findUnique({ where: { id: assignedVendorId } });
+                 activityLogs.push({ action: `Assigned to ${vendor ? vendor.name : 'Unknown'}`, user: req.user.name });
+            }
         }
-        dataToUpdate.activityLog = { create: activityLogs };
+
+        // Direct Field Mapping
+        const fields = { fatherName, district, tehsil, village, hp, connectionType, meterSerialNo, panelSerialNo };
+        for (const [key, val] of Object.entries(fields)) {
+            if (val !== undefined) dataToUpdate[key] = val;
+        }
+
+        // Enums (Ensure valid values if needed, otherwise Prisma errors)
+        const enums = { approvalStatus, paymentStatus, allotmentStatus, surveyStatus, ntpStatus, aifStatus, workStatus };
+        for (const [key, val] of Object.entries(enums)) {
+            if (val !== undefined) dataToUpdate[key] = val;
+        }
+
+        // Booleans
+        if (cifStatus !== undefined) dataToUpdate.cifStatus = (String(cifStatus).toLowerCase() === 'true');
+        if (bankAccountOpen !== undefined) dataToUpdate.bankAccountOpen = (String(bankAccountOpen).toLowerCase() === 'true');
+
+        // File Uploads (Multipart Patch)
+        let customFieldsUpdate = lead.customFields ? { ...lead.customFields } : {};
+        if (req.files && req.files.length > 0) {
+            for (const file of req.files) {
+                 let docId;
+                 if (file.buffer) {
+                     const doc = await prisma.document.create({
+                        data: {
+                            filename: file.originalname,
+                            mimeType: file.mimetype,
+                            data: file.buffer,
+                            size: file.size,
+                            leadId: lead.id
+                        }
+                    });
+                    docId = doc.id;
+                 } else {
+                    docId = (file.path && file.path.startsWith('http')) ? file.path : file.filename;
+                    await prisma.document.create({
+                        data: {
+                            filename: docId,
+                            leadId: lead.id,
+                            data: Buffer.from([]),
+                            mimeType: file.mimetype
+                        }
+                    });
+                 }
+                 customFieldsUpdate[file.fieldname] = docId;
+                 activityLogs.push({ action: `File '${file.fieldname}' uploaded`, user: req.user.name });
+            }
+            dataToUpdate.customFields = customFieldsUpdate;
+        }
+
+        if (activityLogs.length > 0) {
+            dataToUpdate.activityLog = { create: activityLogs };
+        }
         
         const updatedLead = await prisma.lead.update({
             where: { id: req.params.id },
             data: dataToUpdate,
             include: { assignedTo: true, activityLog: true, documents: true }
         });
+        
         const leadWithDetails = { 
             ...updatedLead, 
             pipelineStage: denormalizeStage(updatedLead.pipelineStage),
@@ -279,16 +355,19 @@ const updateLead = async (req, res) => {
         // Send global update
         sendEventsToAll({ type: 'LEAD_UPDATE', data: leadWithDetails });
 
-        // Send targeted notification if assigned to a vendor
+        // Notification logic (only if assignedVendorId changed)
         if (assignedVendorId && assignedVendorId !== lead.assignedVendorId) {
              const vendor = await prisma.user.findUnique({ where: { id: assignedVendorId } });
              if (vendor) {
-                const message = `You have been assigned a new lead: ${lead.name}`;
+                const message = `You have been assigned a lead update: ${lead.name}`;
                 await createNotification(assignedVendorId, 'INFO', message, `/admin/leads/${lead.id}`);
                 sendEventToUser(assignedVendorId, { type: 'NOTIFICATION', data: { message, link: `/admin/leads/${lead.id}` } });
              }
         }
-    } catch (e) { res.status(500).json({ message: 'Error updating lead' }); }
+    } catch (e) { 
+        console.error("Update lead error:", e);
+        res.status(500).json({ message: 'Error updating lead' }); 
+    }
 };
 const addLeadNote = async (req, res) => {
     try {
@@ -303,10 +382,36 @@ const addLeadNote = async (req, res) => {
 const uploadLeadDocument = async (req, res) => {
     if (!req.file) return res.status(400).json({ message: 'File upload failed' });
     try {
+        let docFilename;
+        if (req.file.buffer) {
+             const doc = await prisma.document.create({
+                data: {
+                    filename: req.file.originalname,
+                    mimeType: req.file.mimetype,
+                    data: req.file.buffer,
+                    size: req.file.size,
+                    leadId: req.params.id
+                }
+            });
+            docFilename = doc.id; // Use ID for DB files
+        } else {
+            // Cloudinary or Disk
+            docFilename = (req.file.path && req.file.path.startsWith('http')) ? req.file.path : req.file.filename;
+            // Create metadata doc
+             await prisma.document.create({
+                data: {
+                    filename: docFilename,
+                    leadId: req.params.id,
+                    data: Buffer.from([]),
+                    mimeType: req.file.mimetype
+                }
+            });
+        }
+
         const updatedLead = await prisma.lead.update({
             where: { id: req.params.id },
             data: {
-                documents: { create: { filename: req.file.filename } },
+                // documents: { create: ... } // Already created above
                 activityLog: { create: { action: `Document '${req.file.originalname}' uploaded`, user: req.user.name } }
             },
             include: { activityLog: true, documents: true, assignedTo: true }
@@ -730,7 +835,7 @@ const updateProfile = async (req, res) => {
         }
 
         if (req.file) {
-            dataToUpdate.profileImage = req.file.filename;
+            dataToUpdate.profileImage = (req.file.path && req.file.path.startsWith('http')) ? req.file.path : req.file.filename;
         }
 
         if (Object.keys(dataToUpdate).length === 0) {
@@ -754,6 +859,108 @@ const updateProfile = async (req, res) => {
 };
 
 
+// --- Manual Workflow ---
+const createManualLead = async (req, res) => {
+    try {
+        const {
+            name, fatherName, phone, district, tehsil, village, hp, 
+            connectionType, productType, assignedVendorId,
+            meterSerialNo, panelSerialNo
+        } = req.body;
+
+        // 1. Validation
+        if (!name || !phone) {
+            return res.status(400).json({ message: 'Name and Mobile Number are required.' });
+        }
+
+        // 2. Duplicate Check
+        const existingLead = await prisma.lead.findFirst({
+            where: { phone: phone }
+        });
+        if (existingLead) {
+            return res.status(409).json({ message: 'A lead with this mobile number already exists.' });
+        }
+
+        // 3. Vendor Assignment
+        let vendorIdToAssign = null;
+        if (req.user.role === 'Vendor') {
+            vendorIdToAssign = req.user.id;
+        } else if (req.user.role === 'Master' && assignedVendorId && assignedVendorId !== 'unassigned') {
+            vendorIdToAssign = assignedVendorId;
+        }
+
+        // 4. File Handling (Validation)
+        if (!req.file) {
+            return res.status(400).json({ message: 'Basic Profile PDF is required.' });
+        }
+
+        // 5. Create Lead
+        const newLeadData = {
+            name,
+            fatherName,
+            phone,
+            district,
+            tehsil,
+            village,
+            hp,
+            connectionType,
+            productType: productType || 'rooftop', // Default or required
+            source: 'Manual_Offline',
+            assignedVendorId: vendorIdToAssign,
+            pipelineStage: 'New_Lead',
+            meterSerialNo, 
+            panelSerialNo,
+            activityLog: { create: { action: 'Manual Lead Entry created', user: req.user.name } },
+            // customFields will be populated after if we have file
+        };
+
+        const createdLead = await prisma.lead.create({
+            data: newLeadData
+        });
+
+        // 6. Handle File Upload (Post-Creation)
+        if (req.file) {
+            let docIdentifier;
+            if (req.file.buffer) {
+                const doc = await prisma.document.create({
+                    data: {
+                        filename: req.file.originalname,
+                        mimeType: req.file.mimetype,
+                        data: req.file.buffer,
+                        size: req.file.size,
+                        leadId: createdLead.id
+                    }
+                });
+                docIdentifier = doc.id;
+            } else {
+                docIdentifier = (req.file.path && req.file.path.startsWith('http')) ? req.file.path : req.file.filename;
+                await prisma.document.create({
+                     data: {
+                         filename: docIdentifier,
+                         leadId: createdLead.id,
+                         data: Buffer.from([]),
+                         mimeType: req.file.mimetype
+                     }
+                });
+            }
+            
+            // Store reference in customFields as 'basicProfile'
+            await prisma.lead.update({
+                where: { id: createdLead.id },
+                data: {
+                    customFields: { basicProfile: docIdentifier }
+                }
+            });
+        }
+        
+        res.status(201).json(createdLead);
+
+    } catch (error) {
+        console.error("Create manual lead error:", error);
+        res.status(500).json({ message: 'Error creating manual lead.' });
+    }
+};
+
 module.exports = {
     getRealtimeEvents, getDashboardStats, getChartData, getLeads, getLeadDetails,
     updateLead, addLeadNote, uploadLeadDocument, exportLeads, getVendors, createVendor,
@@ -766,4 +973,5 @@ module.exports = {
     createMasterAdmin,
     requestUserDeletionOtp,
     deleteUserWithOtp,
+    createManualLead,
 };

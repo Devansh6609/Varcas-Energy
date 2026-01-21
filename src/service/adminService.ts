@@ -4,7 +4,7 @@ import { User } from "../types";
 const API_BASE_URL =
   import.meta.env.VITE_CRM_API_URL || "http://localhost:3001";
 
-const getAuthHeaders = () => {
+const getAuthHeaders = (): Record<string, string> => {
   const token = localStorage.getItem("authToken");
   if (!token) {
     // Handle case where token is missing. Maybe redirect to login.
@@ -35,16 +35,16 @@ const handleResponse = async (response: Response) => {
 
 // Dashboard
 async function getDashboardStats(
-  filters: { vendorId?: string; startDate?: string; endDate?: string } = {}
+  filters: { vendorId?: string; startDate?: string; endDate?: string } = {},
 ) {
   const params = new URLSearchParams(
     Object.fromEntries(
-      Object.entries(filters).filter(([, value]) => value && value !== "all")
-    )
+      Object.entries(filters).filter(([, value]) => value && value !== "all"),
+    ),
   ).toString();
   const response = await fetch(
     `${API_BASE_URL}/api/admin/dashboard/stats?${params}`,
-    { headers: getAuthHeaders() }
+    { headers: getAuthHeaders() },
   );
   return handleResponse(response);
 }
@@ -55,16 +55,16 @@ async function getChartData(
     startDate?: string;
     endDate?: string;
     groupBy?: string;
-  } = {}
+  } = {},
 ) {
   const params = new URLSearchParams(
     Object.fromEntries(
-      Object.entries(filters).filter(([, value]) => value && value !== "all")
-    )
+      Object.entries(filters).filter(([, value]) => value && value !== "all"),
+    ),
   ).toString();
   const response = await fetch(
     `${API_BASE_URL}/api/admin/dashboard/charts?${params}`,
-    { headers: getAuthHeaders() }
+    { headers: getAuthHeaders() },
   );
   return handleResponse(response);
 }
@@ -85,11 +85,19 @@ async function getLeadDetails(leadId: string) {
   return handleResponse(response);
 }
 
-async function updateLead(leadId: string, updateData: Record<string, any>) {
+async function updateLead(
+  leadId: string,
+  updateData: Record<string, any> | FormData,
+) {
+  const isFormData = updateData instanceof FormData;
+  const headers = isFormData
+    ? { Authorization: `Bearer ${localStorage.getItem("authToken")}` }
+    : getAuthHeaders();
+
   const response = await fetch(`${API_BASE_URL}/api/admin/leads/${leadId}`, {
     method: "PATCH",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(updateData),
+    headers: headers,
+    body: isFormData ? updateData : JSON.stringify(updateData),
   });
   return handleResponse(response);
 }
@@ -109,7 +117,7 @@ async function addLeadNote(leadId: string, note: string) {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify({ note }),
-    }
+    },
   );
   return handleResponse(response);
 }
@@ -120,7 +128,7 @@ async function generateLeadSummary(leadId: string) {
     {
       method: "POST",
       headers: getAuthHeaders(),
-    }
+    },
   );
   return handleResponse(response);
 }
@@ -136,7 +144,7 @@ async function uploadDocument(leadId: string, file: File) {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` }, // No Content-Type for FormData
       body: formData,
-    }
+    },
   );
   return handleResponse(response);
 }
@@ -144,7 +152,7 @@ async function uploadDocument(leadId: string, file: File) {
 async function performBulkLeadAction(
   action: "changeStage" | "assignVendor",
   value: string,
-  leadIds: string[]
+  leadIds: string[],
 ) {
   const response = await fetch(`${API_BASE_URL}/api/admin/leads/bulk-action`, {
     method: "POST",
@@ -159,6 +167,19 @@ async function importLeads(formData: FormData) {
   const response = await fetch(`${API_BASE_URL}/api/admin/leads/import`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  return handleResponse(response);
+}
+
+async function createManualLead(formData: FormData) {
+  const token = localStorage.getItem("authToken");
+  const headers: Record<string, string> = {};
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  const response = await fetch(`${API_BASE_URL}/api/admin/leads/manual`, {
+    method: "POST",
+    headers: headers, // No Content-Type for FormData
     body: formData,
   });
   return handleResponse(response);
@@ -200,7 +221,7 @@ async function createMasterAdmin(adminData: any): Promise<User> {
 
 // --- User Deletion ---
 async function requestUserDeletionOtp(
-  userIdToDelete: string
+  userIdToDelete: string,
 ): Promise<{ message: string }> {
   const response = await fetch(
     `${API_BASE_URL}/api/admin/users/request-deletion-otp`,
@@ -208,14 +229,14 @@ async function requestUserDeletionOtp(
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify({ userIdToDelete }),
-    }
+    },
   );
   return handleResponse(response);
 }
 
 async function deleteUserWithOtp(
   userIdToDelete: string,
-  otp: string
+  otp: string,
 ): Promise<{ message: string }> {
   const response = await fetch(
     `${API_BASE_URL}/api/admin/users/confirm-deletion`,
@@ -223,7 +244,7 @@ async function deleteUserWithOtp(
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify({ userIdToDelete, otp }),
-    }
+    },
   );
   return handleResponse(response);
 }
@@ -262,7 +283,7 @@ async function getStates() {
 }
 async function getDistricts(state: string) {
   const response = await fetch(
-    `${API_BASE_URL}/api/locations/districts/${state}`
+    `${API_BASE_URL}/api/locations/districts/${state}`,
   );
   if (!response.ok) throw new Error("Failed to load districts");
   return response.json();
@@ -321,6 +342,7 @@ export {
   uploadDocument,
   performBulkLeadAction,
   importLeads,
+  createManualLead,
   getVendors,
   createVendor,
   getMasterAdmins,

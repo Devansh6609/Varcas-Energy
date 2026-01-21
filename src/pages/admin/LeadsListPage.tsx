@@ -41,6 +41,7 @@ const LeadsListPage: React.FC = () => {
         assignedVendorId: 'all',
         state: 'all',
         district: 'all',
+        source: 'all',
     });
     const [vendors, setVendors] = useState<User[]>([]);
     const [states, setStates] = useState<string[]>([]);
@@ -241,6 +242,11 @@ const LeadsListPage: React.FC = () => {
                         {vendors.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
                     </select>
                 )}
+                <select name="source" value={filters.source} onChange={handleFilterChange} className={formElementClasses} aria-label="Filter by Source" title="Filter by Source">
+                    <option value="all">All Sources</option>
+                    <option value="Online">Online Leads</option>
+                    <option value="Offline">Offline Leads</option>
+                </select>
                 <select name="state" value={filters.state} onChange={handleFilterChange} className={formElementClasses} aria-label="Filter by State" title="Filter by State">
                     <option value="all">All States</option>
                     {states.map(s => <option key={s} value={s}>{s}</option>)}
@@ -306,6 +312,7 @@ const LeadsListPage: React.FC = () => {
                                             <tr>
                                                 <th className="px-4 py-3 text-left"><input type="checkbox" ref={headerCheckboxRef} onChange={handleSelectAll} className="rounded border-gray-300 dark:border-gray-600 text-electric-blue focus:ring-electric-blue dark:bg-gray-700" aria-label="Select All Leads" title="Select All Leads" /></th>
                                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-text-secondary uppercase tracking-wider cursor-pointer" onClick={() => handleSort('name')}>Name <SortIcon direction={sortConfig.key === 'name' ? sortConfig.direction : undefined} /></th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-text-secondary uppercase tracking-wider">Source</th>
                                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-text-secondary uppercase tracking-wider">Product</th>
                                                 {user?.role === 'Master' && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-text-secondary uppercase tracking-wider">Assigned To</th>}
                                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-text-secondary uppercase tracking-wider cursor-pointer" onClick={() => handleSort('score')}>Score <SortIcon direction={sortConfig.key === 'score' ? sortConfig.direction : undefined} /></th>
@@ -317,6 +324,11 @@ const LeadsListPage: React.FC = () => {
                                                 <tr key={lead.id} className={`hover:bg-gray-50 dark:hover:bg-primary-background transition-colors ${selectedLeads.includes(lead.id) ? 'bg-electric-blue/10' : ''}`}>
                                                     <td className="px-4 py-4"><input type="checkbox" checked={selectedLeads.includes(lead.id)} onChange={(e) => handleSelectOne(e, lead.id)} className="rounded border-gray-300 dark:border-gray-600 text-electric-blue focus:ring-electric-blue dark:bg-gray-700" aria-label={`Select lead ${lead.name}`} title={`Select lead ${lead.name}`} /></td>
                                                     <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => navigate(`/admin/leads/${lead.id}`)}><div className="text-sm font-medium text-gray-900 dark:text-text-primary">{lead.name || 'N/A'}</div><div className="text-sm text-gray-500 dark:text-text-secondary">{lead.email}</div><div className="text-sm text-gray-500 dark:text-text-secondary">{lead.phone}</div></td>
+                                                    <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => navigate(`/admin/leads/${lead.id}`)}>
+                                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${lead.source === 'Manual_Offline' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'}`}>
+                                                            {lead.source === 'Manual_Offline' ? 'Offline' : 'Online'}
+                                                        </span>
+                                                    </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-text-secondary cursor-pointer" onClick={() => navigate(`/admin/leads/${lead.id}`)}>{lead.productType}</td>
                                                     {user?.role === 'Master' && <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-text-secondary cursor-pointer" onClick={() => navigate(`/admin/leads/${lead.id}`)}>{lead.assignedVendorName || 'Unassigned'}</td>}
                                                     <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => navigate(`/admin/leads/${lead.id}`)}><span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(lead.scoreStatus)}`}>{lead.scoreStatus} ({lead.score})</span></td>

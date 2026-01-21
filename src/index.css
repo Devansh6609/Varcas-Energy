@@ -38,6 +38,29 @@ body {
   --gradient-stops: rgb(var(--bg-primary)), rgb(var(--bg-secondary));
 }
 
+[data-theme='professional-light'] {
+  /* Theme: Professional Light (Clean Corporate) */
+  --bg-primary: 241 245 249; /* #f1f5f9 Slate-100 */
+  --bg-secondary: 226 232 240; /* #e2e8f0 Slate-200 */
+  --bg-glass: 255 255 255; /* #ffffff */
+  --border-glass: 203 213 225; /* #cbd5e1 Slate-300 */
+  
+  --accent-primary: 37 99 235; /* #2563eb Blue-600 */
+  --accent-primary-hover: 29 78 216; /* #1d4ed8 Blue-700 */
+  --accent-secondary: 71 85 105; /* #475569 Slate-600 */
+  --accent-tertiary: 100 116 139; /* #64748b Slate-500 */
+  --accent-glow: 255 255 255; /* White (invisible) */
+  
+  --text-primary: 15 23 42; /* #0f172a Slate-900 */
+  --text-secondary: 71 85 105; /* #475569 Slate-600 */
+  --text-accent: 37 99 235; /* #2563eb Blue-600 */
+  
+  --glass-opacity: 0.95;
+  --glass-border-opacity: 1;
+  
+  --gradient-stops: 241 245 249, 226 232 240;
+}
+
 :root {
   /* Default Theme: Deep Space Glass */
   --bg-primary: 15 23 42; /* #0f172a */

@@ -273,20 +273,57 @@ const handleApplicationFileUpload = async (req, res) => {
         if (!lead) return res.status(404).json({ message: 'Lead not found.' });
         
         const customFieldsUpdate = { ...lead.customFields };
-        const documentsToCreate = [];
         const activityLogToCreate = [];
 
-        req.files.forEach(file => {
-            customFieldsUpdate[file.fieldname] = file.filename;
-            documentsToCreate.push({ filename: file.filename });
+        // Process files sequentially to handle async DB operations
+        for (const file of req.files) {
+            let storedValue;
+            
+            if (file.buffer) {
+                // Database Storage
+                const doc = await prisma.document.create({
+                    data: {
+                        filename: file.originalname,
+                        mimeType: file.mimetype,
+                        data: file.buffer, // Save file content to DB
+                        size: file.size,
+                        leadId: leadId
+                    }
+                });
+                storedValue = doc.id; // Use ID as the reference
+            } else if (file.path && file.path.startsWith('http')) {
+                // Cloudinary Storage
+                storedValue = file.path;
+                // Create metadata record
+                await prisma.document.create({
+                    data: {
+                        filename: storedValue,
+                        leadId: leadId,
+                        data: Buffer.from([]), // Empty buffer for cloud files
+                        mimeType: file.mimetype || 'application/octet-stream'
+                    }
+                });
+            } else {
+                // Disk Storage (Legacy/Fallback)
+                storedValue = file.filename;
+                 await prisma.document.create({
+                    data: {
+                        filename: storedValue,
+                        leadId: leadId,
+                        data: Buffer.from([]),
+                        mimeType: file.mimetype || 'application/octet-stream'
+                    }
+                });
+            }
+
+            customFieldsUpdate[file.fieldname] = storedValue;
             activityLogToCreate.push({ action: `Document '${file.originalname}' uploaded via form`, user: 'System' });
-        });
+        }
         
         const updatedLead = await prisma.lead.update({
             where: { id: leadId },
             data: {
                 customFields: customFieldsUpdate,
-                documents: { create: documentsToCreate },
                 activityLog: { create: activityLogToCreate },
             }
         });

@@ -5,7 +5,7 @@ const API_BASE_URL =
 
 export const login = async (
   email: string,
-  password: string
+  password: string,
 ): Promise<{ token: string; user: User }> => {
   const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
     method: "POST",
@@ -22,7 +22,7 @@ export const login = async (
 };
 
 export const requestPasswordReset = async (
-  email: string
+  email: string,
 ): Promise<{ message: string }> => {
   const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
     method: "POST",
@@ -40,7 +40,7 @@ export const requestPasswordReset = async (
 
 export const resetPassword = async (
   token: string,
-  password: string
+  password: string,
 ): Promise<{ message: string }> => {
   const response = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
     method: "POST",

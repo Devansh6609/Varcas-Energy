@@ -76,7 +76,31 @@ model Lead {
 
   pipelineStage PipelineStage @default(New_Lead)
   score         Int           @default(30)
+
   scoreStatus   LeadScoreStatus @default(Cold)
+
+  // --- Manual Workflow Fields ---
+  fatherName      String?
+  district        String?
+  tehsil          String?
+  village         String?
+  hp              String?
+  connectionType  String?
+  
+  approvalStatus  ApprovalStatus?
+  paymentStatus   PaymentStatus?
+  allotmentStatus AllotmentStatus?
+  surveyStatus    SurveyStatus?
+  ntpStatus       NtpStatus?
+  aifStatus       AifStatus?
+  cifStatus       Boolean?
+  workStatus      WorkStatus?
+  
+  bankAccountOpen Boolean?
+  meterSerialNo   String?
+  panelSerialNo   String?
+  // Structure Image & Customer Image will be stored in 'documents' relation or customFields if specific URLs needed.
+  // We can use the generic 'documents' relation for "Structure Image", "Passbook", etc.
 
   assignedTo        User?     @relation("VendorLeads", fields: [assignedVendorId], references: [id])
   assignedVendorId  String?
@@ -91,6 +115,9 @@ model Lead {
 model Document {
   id        String   @id @default(cuid())
   filename  String
+  mimeType  String   @default("application/octet-stream")
+  data      Bytes
+  size      Int      @default(0)
   lead      Lead     @relation(fields: [leadId], references: [id])
   leadId    String
   uploadedAt DateTime @default(now())
@@ -121,4 +148,45 @@ model Notification {
   isRead    Boolean  @default(false)
   link      String?
   createdAt DateTime @default(now())
+}
+
+// --- NEW ENUMS for Manual Workflow ---
+
+enum ApprovalStatus {
+  Approved
+  Rejected
+  Discom_Pending
+}
+
+enum PaymentStatus {
+  Complete
+  Hold
+  Payment_Slip_Uploaded
+  Other
+}
+
+enum AllotmentStatus {
+  Received
+  Pending
+}
+
+enum SurveyStatus {
+  Pending
+  Completed
+}
+
+enum NtpStatus {
+  Received
+  Not_Received
+}
+
+enum AifStatus {
+  Done
+  Pending
+}
+
+enum WorkStatus {
+  Pending
+  Material_Dispatched
+  Work_Complete
 }

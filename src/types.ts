@@ -87,6 +87,27 @@ export interface Lead {
 
   assignedVendorId: string | null;
   assignedVendorName?: string;
+
+  // Manual Workflow Fields
+  source?: string;
+  fatherName?: string;
+  district?: string;
+  tehsil?: string;
+  village?: string;
+  hp?: string;
+  connectionType?: string;
+
+  approvalStatus?: string;
+  paymentStatus?: string;
+  allotmentStatus?: string;
+  surveyStatus?: string;
+  ntpStatus?: string;
+  aifStatus?: string;
+  cifStatus?: boolean;
+  workStatus?: string;
+  bankAccountOpen?: boolean;
+  meterSerialNo?: string;
+  panelSerialNo?: string;
 }
 
 // --- Form Builder Types ---
