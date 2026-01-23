@@ -46,6 +46,7 @@ router.patch('/leads/:id', upload.any(), adminController.updateLead);
 router.delete('/leads/:id', masterOnlyMiddleware, adminController.deleteLead);
 router.post('/leads/:id/notes', adminController.addLeadNote);
 router.post('/leads/:id/documents', upload.single('document'), adminController.uploadLeadDocument);
+router.delete('/leads/:id/documents/:docId', adminController.deleteLeadDocument);
 router.post('/leads/manual', upload.single('basicProfile'), adminController.createManualLead);
 // FIX: Add route for bulk lead actions.
 router.post('/leads/bulk-action', adminController.performBulkLeadAction);

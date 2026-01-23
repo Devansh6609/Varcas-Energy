@@ -1,8 +1,9 @@
 import React, { useState, useEffect, FormEvent, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Lead, LeadActivity, LeadDocument, PipelineStage, FormField, User } from '../../types';
-import { getLeadDetails, getFormSchema, getVendors, updateLead, addLeadNote, uploadDocument, deleteLead } from '../../service/adminService';
+import { getLeadDetails, getFormSchema, getVendors, updateLead, addLeadNote, uploadDocument, deleteLead, deleteDocument } from '../../service/adminService';
 import { PIPELINE_STAGES } from '../../constants';
+import { Trash2 } from 'lucide-react';
 import PipelineTracker from '../../components/admin/PipelineTracker';
 import { LeadsWorkflowSection } from '../../components/admin/LeadsWorkflowSection';
 import { useAuth } from '../../contexts/AuthContext';
@@ -10,23 +11,35 @@ import Card from '../../components/admin/Card';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { useCrmUpdates } from '../../contexts/CrmUpdatesContext';
 import DeleteConfirmationModal from '../../components/admin/DeleteConfirmationModal';
+import { DocumentPreviewModal } from '../../components/ui/DocumentPreviewModal';
 
 
 const API_BASE_URL = import.meta.env.VITE_CRM_API_URL || 'http://localhost:3001';
 
-const DetailItem: React.FC<{ label: string, value: any, isImage?: boolean }> = ({ label, value, isImage = false }) => (
+const DetailItem: React.FC<{ label: string, value: any, isImage?: boolean, onView?: (url: string) => void, onDelete?: (val: string) => void, canDelete?: boolean }> = ({ label, value, isImage = false, onView, onDelete, canDelete = false }) => (
     <div>
         <dt className="text-sm font-medium text-gray-500 dark:text-text-muted">{label}</dt>
-        <dd className="mt-1 text-sm text-gray-900 dark:text-text-light">
+        <dd className="mt-1 text-sm text-gray-900 dark:text-text-light flex items-center gap-2">
             {isImage && value ? (
-                <a
-                    href={value.startsWith('http') ? value : `${API_BASE_URL}/files/${value}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-accent-blue hover:underline font-medium"
-                >
-                    View Document
-                </a>
+                <>
+                    <button
+                        onClick={() => onView?.(value.startsWith('http') ? value : `${API_BASE_URL}/files/${value}`)}
+                        className="text-accent-blue hover:underline font-medium focus:outline-none"
+                        type="button"
+                    >
+                        View Document
+                    </button>
+                    {canDelete && onDelete && (
+                        <button
+                            onClick={() => onDelete(value)}
+                            className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                            title="Delete Document"
+                            type="button"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </button>
+                    )}
+                </>
             ) : (
                 String(value || 'N/A')
             )}
@@ -51,6 +64,15 @@ const LeadDetailPage: React.FC = () => {
 
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    // Preview Modal State
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+    const openPreview = (url: string) => {
+        setPreviewUrl(url);
+        setIsPreviewOpen(true);
+    };
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -134,6 +156,20 @@ const LeadDetailPage: React.FC = () => {
             if (fileInputRef.current) {
                 fileInputRef.current.value = "";
             }
+        }
+    };
+
+
+
+    const handleDeleteDocument = async (docId: string) => {
+        if (!leadId || !confirm("Are you sure you want to delete this document?")) return;
+        try {
+            await deleteDocument(leadId, docId);
+            fetchLeadDetails();
+            alert('Document deleted successfully.');
+        } catch (err) {
+            console.error(err);
+            alert('Failed to delete document.');
         }
     };
 
@@ -235,7 +271,10 @@ const LeadDetailPage: React.FC = () => {
                                     key={key}
                                     label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                                     value={value}
-                                    isImage={formSchema.get(key) === 'image'}
+                                    isImage={formSchema.get(key) === 'image' || String(value).startsWith('http') || key === 'basicProfile'}
+                                    onView={openPreview}
+                                    onDelete={handleDeleteDocument}
+                                    canDelete={user?.role === 'Master'} // Only Master can delete? Or check permissions.
                                 />
                             ))}
                         </dl>
@@ -304,10 +343,23 @@ const LeadDetailPage: React.FC = () => {
                                         href={doc.filename.startsWith('http') ? doc.filename : `${API_BASE_URL}/files/${doc.filename}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-xs text-accent-blue hover:underline"
+                                        className="text-xs text-accent-blue hover:underline hidden" // Hide default link
                                     >
                                         View
                                     </a>
+                                    <button
+                                        onClick={() => openPreview(doc.filename.startsWith('http') ? doc.filename : `${API_BASE_URL}/files/${doc.id}`)}
+                                        className="text-xs text-accent-blue hover:underline font-medium mr-2"
+                                    >
+                                        View
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeleteDocument(doc.id)}
+                                        className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                        title="Delete Document"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
                                 </div>
                             ))}
                             {lead.documents.length === 0 && <p className="text-sm text-gray-500 dark:text-text-muted">No documents uploaded.</p>}
@@ -327,6 +379,12 @@ const LeadDetailPage: React.FC = () => {
                     onConfirm={handleDeleteConfirm}
                 />
             )}
+
+            <DocumentPreviewModal
+                isOpen={isPreviewOpen}
+                onClose={() => setIsPreviewOpen(false)}
+                fileUrl={previewUrl || ''}
+            />
         </div>
     );
 };

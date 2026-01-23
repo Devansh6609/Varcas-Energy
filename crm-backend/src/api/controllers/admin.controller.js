@@ -1,5 +1,6 @@
 const prisma = require('../../config/prisma');
 const bcrypt = require('bcrypt');
+const { v2: cloudinary } = require('cloudinary');
 const fs = require('fs');
 const path = require('path');
 const { GoogleGenAI } = require('@google/genai');
@@ -961,6 +962,74 @@ const createManualLead = async (req, res) => {
     }
 };
 
+
+const deleteLeadDocument = async (req, res) => {
+    try {
+        const { id: leadId, docId } = req.params;
+
+        // 1. Find the document
+        const document = await prisma.document.findUnique({
+            where: { id: docId }
+        });
+
+        if (!document) {
+            return res.status(404).json({ message: 'Document not found.' });
+        }
+
+        // 2. Delete from Storage (Cloudinary)
+        // If it's a Cloudinary URL, extract public_id and delete
+        // URL format: https://res.cloudinary.com/<cloud_name>/image/upload/v<version>/<folder>/<id>.<ext>
+        // We stored the FULL URL in filename if it was Cloudinary.
+        if (document.filename.startsWith('http')) {
+             try {
+                 // Regex to extract public_id: everything after '/upload/' (and optional version) up to extension
+                 const regex = /\/upload\/(?:v\d+\/)?(.+)\.[a-zA-Z0-9]+$/;
+                 const match = document.filename.match(regex);
+                 if (match && match[1]) {
+                     const publicId = match[1];
+                     await cloudinary.uploader.destroy(publicId);
+                 }
+             } catch (cloudError) {
+                 console.error("Failed to delete from Cloudinary:", cloudError);
+                 // Continue to delete from DB even if cloud fails
+             }
+        }
+
+        // 3. Delete from DB
+        await prisma.document.delete({
+            where: { id: docId }
+        });
+
+        // 4. Update Custom Fields (Remove reference)
+        // We need to find which key in customFields holds this docId (URL or ID)
+        const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+        if (lead && lead.customFields) {
+            const updatedCustomFields = { ...lead.customFields };
+            let fieldUpdated = false;
+            
+            for (const [key, value] of Object.entries(updatedCustomFields)) {
+                if (value === document.filename || value === docId) {
+                    delete updatedCustomFields[key];
+                    fieldUpdated = true;
+                }
+            }
+
+            if (fieldUpdated) {
+                await prisma.lead.update({
+                    where: { id: leadId },
+                    data: { customFields: updatedCustomFields }
+                });
+            }
+        }
+
+        res.json({ message: 'Document deleted successfully.' });
+
+    } catch (error) {
+        console.error("Delete document error:", error);
+        res.status(500).json({ message: 'Error deleting document.' });
+    }
+};
+
 module.exports = {
     getRealtimeEvents, getDashboardStats, getChartData, getLeads, getLeadDetails,
     updateLead, addLeadNote, uploadLeadDocument, exportLeads, getVendors, createVendor,
@@ -974,4 +1043,5 @@ module.exports = {
     requestUserDeletionOtp,
     deleteUserWithOtp,
     createManualLead,
+    deleteLeadDocument,
 };

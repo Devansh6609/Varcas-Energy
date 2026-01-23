@@ -56,6 +56,7 @@ export enum LeadScoreStatus {
 }
 
 export interface LeadDocument {
+  id: string;
   filename: string;
   uploadedAt: string;
 }

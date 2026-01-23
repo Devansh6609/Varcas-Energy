@@ -1,4 +1,20 @@
+const path = require('path');
 const prisma = require('../../config/prisma');
+
+
+const getMimeType = (filename) => {
+    const ext = path.extname(filename).toLowerCase();
+    switch (ext) {
+        case '.jpg':
+        case '.jpeg': return 'image/jpeg';
+        case '.png': return 'image/png';
+        case '.gif': return 'image/gif';
+        case '.pdf': return 'application/pdf';
+        case '.doc': return 'application/msword';
+        case '.docx': return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+        default: return 'application/octet-stream';
+    }
+};
 
 const getFile = async (req, res, next) => {
     const { id } = req.params;
@@ -13,7 +29,13 @@ const getFile = async (req, res, next) => {
         }
 
         if (document.data) {
-            res.setHeader('Content-Type', document.mimeType || 'application/octet-stream');
+            let contentType = document.mimeType;
+            // Fallback inference if missing or generic
+            if (!contentType || contentType === 'application/octet-stream') {
+                contentType = getMimeType(document.filename);
+            }
+
+            res.setHeader('Content-Type', contentType);
             res.setHeader('Content-Length', document.data.length);
             res.send(document.data);
         } else {

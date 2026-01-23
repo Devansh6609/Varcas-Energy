@@ -149,6 +149,17 @@ async function uploadDocument(leadId: string, file: File) {
   return handleResponse(response);
 }
 
+async function deleteDocument(leadId: string, docId: string) {
+  const response = await fetch(
+    `${API_BASE_URL}/api/admin/leads/${leadId}/documents/${docId}`,
+    {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+    },
+  );
+  return handleResponse(response);
+}
+
 async function performBulkLeadAction(
   action: "changeStage" | "assignVendor",
   value: string,
@@ -340,6 +351,7 @@ export {
   addLeadNote,
   generateLeadSummary,
   uploadDocument,
+  deleteDocument,
   performBulkLeadAction,
   importLeads,
   createManualLead,
