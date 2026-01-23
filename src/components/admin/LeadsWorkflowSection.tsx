@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     CheckCircle, XCircle, ChevronRight, Lock, LayoutDashboard, CreditCard,
-    Cpu, ClipboardCheck, Building2, FileText, Settings, Truck, Flag, Clock
+    Cpu, ClipboardCheck, Building2, FileText, Settings, Truck, Flag, Clock, ArrowLeft
 } from 'lucide-react';
 import { Lead } from '../../types';
 import { updateLead } from '../../service/adminService';
@@ -84,6 +84,8 @@ export const LeadsWorkflowSection: React.FC<LeadsWorkflowSectionProps> = ({ lead
 
             const updated = await updateLead(lead.id, formData);
             onUpdate(updated);
+
+            // Auto-advance logic could go here, but for now just refresh
             addToast('Workflow updated successfully', 'success');
         } catch (error: any) {
             console.error("Update failed:", error);
@@ -191,20 +193,20 @@ export const LeadsWorkflowSection: React.FC<LeadsWorkflowSectionProps> = ({ lead
                 return (
                     <div className="space-y-6 animate-fade-in">
                         <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 p-6 rounded-xl border border-blue-100 dark:border-blue-900">
-                             <h4 className="font-bold text-lg mb-4 text-gray-800 dark:text-gray-200">Work Order (NTP) Status</h4>
-                             <div className="flex gap-4">
+                            <h4 className="font-bold text-lg mb-4 text-gray-800 dark:text-gray-200">Work Order (NTP) Status</h4>
+                            <div className="flex gap-4">
                                 <button disabled={loading} onClick={() => handleUpdate('ntpStatus', 'Received')} className={`flex-1 py-4 rounded-xl border-2 font-bold transition-all ${lead.ntpStatus === 'Received' ? 'border-green-500 bg-green-500 text-white shadow-lg' : 'border-gray-300 dark:border-gray-600 hover:border-green-400'}`}>
                                     Received
                                 </button>
                                 <button disabled={loading} onClick={() => handleUpdate('ntpStatus', 'Not_Received')} className={`flex-1 py-4 rounded-xl border-2 font-bold transition-all ${lead.ntpStatus === 'Not_Received' ? 'border-red-500 bg-red-500 text-white shadow-lg' : 'border-gray-300 dark:border-gray-600 hover:border-red-400'}`}>
                                     Not Received
                                 </button>
-                             </div>
+                            </div>
                         </div>
                     </div>
                 );
             case 7: // AIF
-                 return (
+                return (
                     <div className="space-y-6 animate-fade-in">
                         <div className="grid grid-cols-2 gap-4">
                             <button disabled={loading} onClick={() => handleUpdate('aifStatus', 'Done')} className={`p-6 rounded-xl border-2 transition-all ${lead.aifStatus === 'Done' ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' : 'border-gray-200 dark:border-gray-700 hover:border-green-200'}`}>
@@ -244,7 +246,7 @@ export const LeadsWorkflowSection: React.FC<LeadsWorkflowSectionProps> = ({ lead
                             </div>
                         </div>
                         <div className="p-6 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50/50 dark:bg-gray-800/50">
-                             <label className="block text-center cursor-pointer">
+                            <label className="block text-center cursor-pointer">
                                 <span className="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Upload Structure Photo</span>
                                 <input type="file" aria-label="Upload Structure Photo" disabled={loading} onChange={(e) => {
                                     if (e.target.files?.[0]) handleUpdate('workStatus', 'Material_Dispatched', 'structurePic', e.target.files[0]);
@@ -261,7 +263,7 @@ export const LeadsWorkflowSection: React.FC<LeadsWorkflowSectionProps> = ({ lead
                             <Flag className="w-16 h-16 text-green-500 mx-auto mb-4" />
                             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Final Work Completion</h3>
                             <p className="text-gray-500 dark:text-gray-400 mb-6">Upload the final photo with customer to complete the project.</p>
-                            
+
                             <div className="mb-6 max-w-md mx-auto">
                                 <input type="file" aria-label="Upload Customer Project Photo" disabled={loading} onChange={(e) => {
                                     if (e.target.files?.[0]) handleUpdate('workStatus', 'Work_Complete', 'customerPic', e.target.files[0]);
@@ -279,80 +281,70 @@ export const LeadsWorkflowSection: React.FC<LeadsWorkflowSectionProps> = ({ lead
     };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full">
-            {/* Left Sidebar: Stepper */}
-            <div className="lg:col-span-4 space-y-3">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 px-2">Workflow Steps</h3>
-                <div className="bg-white dark:bg-secondary-background rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden">
-                    {STEPS.map((step) => {
-                        const status = getStepState(step.id);
-                        const isActive = openStep === step.id;
-                        const StepIcon = step.icon;
+        <div className="max-w-4xl mx-auto space-y-4">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 px-1">Workflow Steps</h3>
 
-                        return (
-                            <div
-                                key={step.id}
-                                onClick={() => status !== 'locked' && setOpenStep(step.id)}
-                                className={`
-                                    relative flex items-center p-4 cursor-pointer transition-all duration-200 border-b border-gray-50 dark:border-gray-800 last:border-0
-                                    ${isActive ? 'bg-blue-50 dark:bg-blue-900/20' : 'hover:bg-gray-50 dark:hover:bg-gray-800'}
-                                    ${status === 'locked' ? 'opacity-50 cursor-not-allowed' : ''}
-                                `}
-                            >
-                                {isActive && <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-r-full" />}
-                                
-                                <div className={`
-                                    w-10 h-10 rounded-full flex items-center justify-center mr-4 shadow-sm
-                                    ${status === 'completed' ? 'bg-green-100 text-green-600' : ''}
-                                    ${status === 'active' ? 'bg-blue-100 text-blue-600' : ''}
-                                    ${status === 'locked' ? 'bg-gray-100 text-gray-400' : ''}
-                                `}>
-                                    {status === 'completed' ? <CheckCircle className="w-5 h-5" /> : <StepIcon className="w-5 h-5" />}
-                                </div>
+            {STEPS.map((step) => {
+                const status = getStepState(step.id);
+                const isActive = openStep === step.id;
+                const StepIcon = step.icon;
+                const isLocked = status === 'locked';
+                const isCompleted = status === 'completed';
 
-                                <div className="flex-1">
-                                    <h4 className={`text-sm font-semibold ${isActive ? 'text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300'}`}>{step.title}</h4>
-                                    <p className="text-xs text-gray-400 capitalize">{status}</p>
-                                </div>
-
-                                {status === 'locked' && <Lock className="w-4 h-4 text-gray-300" />}
-                                {status !== 'locked' && <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform ${isActive ? 'rotate-90' : ''}`} />}
+                return (
+                    <div
+                        key={step.id}
+                        className={`
+                            rounded-xl border transition-all duration-300 overflow-hidden
+                            ${isActive
+                                ? 'bg-white dark:bg-secondary-background border-blue-200 dark:border-blue-900 shadow-lg ring-1 ring-blue-500/20'
+                                : 'bg-white dark:bg-secondary-background border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10'
+                            }
+                            ${isLocked ? 'opacity-60 bg-gray-50 dark:bg-black/20' : ''}
+                        `}
+                    >
+                        {/* Header */}
+                        <div
+                            onClick={() => !isLocked && setOpenStep(isActive ? null : step.id)}
+                            className={`
+                                flex items-center p-4 cursor-pointer select-none
+                                ${isActive ? 'pb-4 border-b border-dashed border-gray-100 dark:border-white/5' : ''}
+                            `}
+                        >
+                            <div className={`
+                                w-12 h-12 rounded-xl flex items-center justify-center mr-4 shadow-sm transition-colors
+                                ${isCompleted ? 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400' : ''}
+                                ${isActive ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' : ''}
+                                ${!isActive && !isCompleted ? 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' : ''}
+                            `}>
+                                {isCompleted ? <CheckCircle className="w-6 h-6" /> : <StepIcon className="w-6 h-6" />}
                             </div>
-                        );
-                    })}
-                </div>
-            </div>
 
-            {/* Right Panel: Content Form */}
-            <div className="lg:col-span-8">
-                <div className="bg-white dark:bg-secondary-background rounded-2xl shadow-lg border border-gray-100 dark:border-white/5 p-6 h-full relative overflow-hidden">
-                     {/* Header for Active Step */}
-                     <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-100 dark:border-gray-800">
-                        <div>
-                            <span className="text-xs font-bold text-blue-500 uppercase tracking-wider">Step {openStep} of 10</span>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-                                {STEPS.find(s => s.id === openStep)?.title}
-                            </h2>
+                            <div className="flex-1">
+                                <div className="flex items-center justify-between">
+                                    <h4 className={`text-base font-bold ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-white'}`}>
+                                        {step.title}
+                                    </h4>
+                                    {isLocked && <Lock className="w-4 h-4 text-gray-400" />}
+                                    {!isLocked && (
+                                        <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isActive ? 'rotate-90' : ''}`} />
+                                    )}
+                                </div>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-0.5 uppercase tracking-wide">
+                                    {status === 'active' ? 'In Progress' : status}
+                                </p>
+                            </div>
                         </div>
-                        <div className="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600">
-                             {(() => {
-                                 const Icon = STEPS.find(s => s.id === openStep)?.icon || LayoutDashboard;
-                                 return <Icon className="w-6 h-6" />;
-                             })()}
-                        </div>
-                     </div>
 
-                     {/* Content */}
-                     <div className="min-h-[400px]">
-                        {openStep ? renderStepContent(openStep) : (
-                            <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                                <LayoutDashboard className="w-16 h-16 mb-4 opacity-20" />
-                                <p>Select a step to view details</p>
+                        {/* Body - Only rendered if active */}
+                        {isActive && (
+                            <div className="p-4 md:p-6 bg-gray-50/50 dark:bg-black/20 animate-fade-in">
+                                {renderStepContent(step.id)}
                             </div>
                         )}
-                     </div>
-                </div>
-            </div>
+                    </div>
+                );
+            })}
         </div>
     );
 };

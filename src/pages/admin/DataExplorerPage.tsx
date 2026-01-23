@@ -163,16 +163,16 @@ const DataExplorerPage: React.FC = () => {
     const inputBaseClass = "px-3 py-2 border rounded-lg bg-white dark:bg-primary-background border-gray-300 dark:border-border-color focus:ring-accent-blue focus:border-accent-blue";
 
     return (
-        <div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-text-light mb-6">Data Explorer</h2>
+        <div className="px-3 md:px-6 py-4">
+            <h2 className="text-xl md:text-3xl font-bold text-gray-900 dark:text-text-light mb-4 md:mb-6">Data Explorer</h2>
             <Card className="mb-6">
                 <div className="flex flex-wrap items-center gap-4">
                     <input
                         type="text"
-                        placeholder="Search by name, email, phone..."
+                        placeholder="Search..."
                         value={searchTerm}
                         onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-                        className={`flex-grow min-w-[200px] ${inputBaseClass}`}
+                        className={`flex-grow w-full sm:w-auto min-w-[200px] text-sm ${inputBaseClass}`}
                     />
                     <select name="productType" value={filters.productType} onChange={handleFilterChange} className={`flex-grow min-w-[150px] ${inputBaseClass}`}>
                         <option value="all">All Products</option>

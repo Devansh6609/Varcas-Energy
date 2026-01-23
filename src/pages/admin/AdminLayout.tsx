@@ -139,29 +139,29 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 />
 
                 <div className="flex-1 flex flex-col min-w-0">
-                    <header className="relative z-20 flex justify-between items-center px-4 sm:px-6 h-20 bg-white/80 dark:bg-glass-surface/50 backdrop-blur-lg border-b border-gray-200 dark:border-glass-border flex-shrink-0">
+                    <header className="relative z-20 flex justify-between items-center px-4 md:px-6 h-16 md:h-20 bg-white/80 dark:bg-glass-surface/50 backdrop-blur-lg border-b border-gray-200 dark:border-glass-border flex-shrink-0">
                         <div className="flex items-center">
                             <button
                                 onClick={() => setIsMobileSidebarOpen(true)}
-                                className="p-2 rounded-md text-gray-500 dark:text-text-secondary md:hidden mr-2"
+                                className="p-2 rounded-md text-gray-500 dark:text-text-secondary md:hidden mr-2 active:bg-gray-100 dark:active:bg-white/10"
                                 aria-label="Open sidebar"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
                             </button>
-                            {/* Search Bar */}
+                            {/* Search Bar - Hidden on small mobile, visible on sm+ */}
                             <div className="relative hidden sm:block">
-                                <input type="text" placeholder="Search..." className="bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-glass-border rounded-lg py-2 pl-10 pr-4 text-sm focus:ring-neon-cyan focus:border-neon-cyan w-full max-w-xs transition-all" />
-                                <svg className="w-5 h-5 text-gray-500 dark:text-text-secondary absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                <input type="text" placeholder="Search..." className="bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-glass-border rounded-lg py-1.5 md:py-2 pl-9 md:pl-10 pr-4 text-xs md:text-sm focus:ring-neon-cyan focus:border-neon-cyan w-full max-w-[150px] md:max-w-xs transition-all" />
+                                <svg className="w-4 h-4 md:w-5 md:h-5 text-gray-500 dark:text-text-secondary absolute left-2.5 md:left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                             </div>
                         </div>
-                        <div className="flex items-center space-x-2 sm:space-x-4">
+                        <div className="flex items-center space-x-2 md:space-x-4">
                             {/* ThemeToggle removed to enforce dark mode themes */}
                             <NotificationBell />
                             <UserDropdown />
                         </div>
                     </header>
 
-                    <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6">
+                    <main className="flex-1 overflow-y-auto overflow-x-hidden p-3 md:p-6">
                         <div key={location.pathname} className="animate-fade-in">
                             {children}
                         </div>

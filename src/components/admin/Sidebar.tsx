@@ -13,7 +13,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setCollapsed, isMobileOpen, onMobileClose }) => {
     const { user, logout } = useAuth();
 
-    const linkClass = "flex items-center px-4 py-2.5 text-gray-600 dark:text-text-secondary hover:text-gray-900 dark:hover:text-text-primary hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors duration-200 group relative";
+    const linkClass = "flex items-center px-4 py-2 md:py-2.5 text-sm md:text-base text-gray-600 dark:text-text-secondary hover:text-gray-900 dark:hover:text-text-primary hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors duration-200 group relative";
     const activeLinkClass = "font-semibold border-l-4 bg-primary-green/10 text-primary-green border-primary-green dark:bg-gradient-to-r dark:from-electric-blue/20 dark:to-transparent dark:text-text-accent dark:border-electric-blue dark:shadow-lg dark:shadow-electric-blue/20 dark:animate-pulse-glow dark:[--tw-shadow-color:theme(colors.electric-blue/50)]";
 
     const visibleLinks = ADMIN_NAV_LINKS.filter(link => user && link.roles.includes(user.role));
@@ -55,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setCollapsed, isMobileOp
                     className={`${linkClass} w-full`}
                     title="Logout"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 md:h-6 md:w-6"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                     <span className={`ml-4 whitespace-nowrap transition-opacity duration-200 md:hidden ${isCollapsed ? 'lg:hidden' : 'lg:inline-block'}`}>Logout</span>
                 </button>
             </div>

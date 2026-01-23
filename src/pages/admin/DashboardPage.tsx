@@ -104,14 +104,14 @@ const DashboardPage: React.FC = () => {
     }, [filters, groupBy, lastUpdate]);
 
     return (
-        <div className="p-6 space-y-8">
+        <div className="p-3 md:p-6 space-y-6 md:space-y-8">
             <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6">
                 <div className="relative">
                     <div className="absolute -top-10 -left-10 w-32 h-32 bg-accent-blue/20 rounded-full blur-3xl pointer-events-none"></div>
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 drop-shadow-sm tracking-tight relative z-10">
+                    <h1 className="text-2xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 drop-shadow-sm tracking-tight relative z-10">
                         Dashboard
                     </h1>
-                    <p className="text-gray-500 dark:text-text-secondary mt-2 text-lg font-light">
+                    <p className="text-gray-500 dark:text-text-secondary mt-1 md:mt-2 text-sm md:text-lg font-light">
                         Overview of your performance and metrics
                     </p>
                 </div>
@@ -173,7 +173,7 @@ const DashboardPage: React.FC = () => {
             ) : (
                 <>
                     {stats && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
                             <StatCard title="Total Leads" value={stats.totalLeads} {...kpiIcons.totalLeads} />
                             <StatCard title="Verified Leads" value={stats.verifiedLeads} {...kpiIcons.verifiedLeads} />
                             <StatCard title="Projects Won" value={stats.projectsWon} {...kpiIcons.projectsWon} />

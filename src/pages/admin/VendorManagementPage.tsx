@@ -83,11 +83,11 @@ const VendorManagementPage: React.FC = () => {
 
     return (
         <div>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                <h2 className="text-3xl font-bold text-gray-900 dark:text-text-light">Vendor Management</h2>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 md:mb-6 px-3 md:px-0">
+                <h2 className="text-xl md:text-3xl font-bold text-gray-900 dark:text-text-light">Vendor Management</h2>
                 <button
                     onClick={() => setIsCreateModalOpen(true)}
-                    className="bg-accent-blue text-white font-bold py-2 px-4 rounded-lg hover:bg-accent-blue-hover transition-colors w-full sm:w-auto"
+                    className="bg-accent-blue text-white font-bold py-2 px-4 rounded-lg hover:bg-accent-blue-hover transition-colors w-full sm:w-auto text-sm md:text-base"
                 >
                     + Add Vendor
                 </button>

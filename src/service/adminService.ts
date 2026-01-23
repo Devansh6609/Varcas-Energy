@@ -24,11 +24,26 @@ const handleResponse = async (response: Response) => {
     window.location.href = "/#/login"; // Use hash for HashRouter
     throw new Error("Session expired. Please log in again.");
   }
+
   if (!response.ok) {
-    const errorData = await response
-      .json()
-      .catch(() => ({ message: "An unknown API error occurred." }));
-    throw new Error(errorData.message || "API request failed.");
+    let errorMessage = "An unknown API error occurred.";
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.message || errorMessage;
+    } catch (e) {
+      // Fallback for non-JSON errors (like 403 from middleware with no body)
+      if (response.status === 403) {
+        errorMessage =
+          "Access Denied: You do not have permission to perform this action.";
+      } else if (response.status === 404) {
+        errorMessage = "Resource not found.";
+      } else if (response.status === 500) {
+        errorMessage = "Internal Server Error. Please try again later.";
+      } else {
+        errorMessage = `API Error (${response.status}): ${response.statusText}`;
+      }
+    }
+    throw new Error(errorMessage);
   }
   return response.json();
 };

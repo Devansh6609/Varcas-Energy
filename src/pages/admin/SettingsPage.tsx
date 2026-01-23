@@ -38,14 +38,14 @@ const SettingsPage: React.FC = () => {
     ];
 
     return (
-        <div className="p-6 space-y-8">
-            <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold text-text-primary">Settings</h1>
-                <p className="text-text-secondary">Customize your CRM experience.</p>
+        <div className="p-3 md:p-6 space-y-6 md:space-y-8">
+            <div className="flex flex-col gap-1 md:gap-2">
+                <h1 className="text-xl md:text-3xl font-bold text-text-primary">Settings</h1>
+                <p className="text-sm md:text-base text-text-secondary">Customize your CRM experience.</p>
             </div>
 
-            <div className="glass-panel p-6 rounded-2xl border border-glass-border">
-                <h2 className="text-xl font-semibold text-text-primary mb-6">Appearance</h2>
+            <div className="glass-panel p-4 md:p-6 rounded-2xl border border-glass-border">
+                <h2 className="text-lg md:text-xl font-semibold text-text-primary mb-4 md:mb-6">Appearance</h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {themes.map((t) => (

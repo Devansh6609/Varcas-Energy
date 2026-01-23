@@ -102,13 +102,13 @@ const ManualLeadEntryPage: React.FC = () => {
     };
 
     return (
-        <div className="p-6 max-w-4xl mx-auto space-y-6">
+        <div className="p-3 md:p-6 max-w-4xl mx-auto space-y-4 md:space-y-6">
             <header>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Offline Entry</h1>
-                <p className="text-gray-600 dark:text-gray-400">Manually add offline NTP cases to the system.</p>
+                <h1 className="text-xl md:text-3xl font-bold text-gray-900 dark:text-white mb-1 md:mb-2">Offline Entry</h1>
+                <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">Manually add offline NTP cases.</p>
             </header>
 
-            <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 space-y-8 border border-gray-100 dark:border-gray-700">
+            <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 md:p-6 space-y-6 md:space-y-8 border border-gray-100 dark:border-gray-700">
 
                 {/* Section 1: Basic Info */}
                 <section className="space-y-4">
@@ -118,7 +118,7 @@ const ManualLeadEntryPage: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Name */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Customer Name *</label>
+                            <label className="block text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Customer Name *</label>
                             <input
                                 type="text"
                                 name="name"

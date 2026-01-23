@@ -267,13 +267,13 @@ const LeadsListPage: React.FC = () => {
                 <DragDropContext onDragEnd={onDragEnd}>
                     {viewMode === 'list' ? (
                         <>
-                            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4 mb-6">
+                            <div className="flex overflow-x-auto pb-4 gap-3 sm:grid sm:grid-cols-4 lg:grid-cols-8 mb-6 snap-x snap-mandatory hide-scrollbar">
                                 {PIPELINE_STAGES.map(stage => (
                                     <div
                                         key={stage}
                                         onClick={() => { setSelectedStage(stage); setSelectedLeads([]) }}
-                                        className={`p-3 rounded-lg cursor-pointer border-2 transition-all duration-300
-                                                        ${selectedStage === stage ? 'border-primary-green dark:border-neon-cyan bg-primary-green/10 dark:bg-neon-cyan/20 scale-105 shadow-md' : 'border-gray-200 dark:border-glass-border bg-gray-50 dark:bg-glass-surface hover:bg-gray-100 dark:hover:bg-white/5'}`}
+                                        className={`min-w-[140px] sm:min-w-0 flex-shrink-0 snap-start p-3 rounded-lg cursor-pointer border transition-all duration-300
+                                                        ${selectedStage === stage ? 'border-primary-green dark:border-neon-cyan bg-primary-green/10 dark:bg-neon-cyan/20 shadow-md transform scale-100 sm:scale-105' : 'border-gray-200 dark:border-glass-border bg-gray-50 dark:bg-glass-surface hover:bg-gray-100 dark:hover:bg-white/5 text-gray-500'}`}
                                     >
                                         <p className={`text-xs font-semibold truncate ${selectedStage === stage ? 'text-primary-green dark:text-neon-cyan' : 'text-gray-500 dark:text-text-secondary'}`}>{stage}</p>
                                         <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-text-primary mt-1">{leadsByStage[stage]?.length || 0}</p>
@@ -339,29 +339,58 @@ const LeadsListPage: React.FC = () => {
                                     </table>
                                 </div>
 
-                                <div className="md:hidden">
+                                <div className="space-y-4 md:hidden">
                                     {sortedLeads.length > 0 ? sortedLeads.map((lead) => (
-                                        <div key={lead.id} className={`border-b border-gray-200 dark:border-border-color ${selectedLeads.includes(lead.id) ? 'bg-electric-blue/10' : ''}`}>
-                                            <div className="flex items-start gap-3 p-4">
-                                                <div className="pt-1"><input type="checkbox" checked={selectedLeads.includes(lead.id)} onChange={(e) => handleSelectOne(e, lead.id)} className="rounded border-gray-300 dark:border-gray-600 text-electric-blue focus:ring-electric-blue dark:bg-gray-700" aria-label={`Select lead ${lead.name}`} title={`Select lead ${lead.name}`} /></div>
-                                                <div className="flex-grow" onClick={() => navigate(`/admin/leads/${lead.id}`)}>
-                                                    <div className="flex justify-between items-start">
-                                                        <div>
-                                                            <p className="font-bold text-gray-900 dark:text-text-primary">{lead.name}</p>
-                                                            <p className="text-xs text-gray-500 dark:text-text-secondary">{lead.email}</p>
-                                                        </div>
-                                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(lead.scoreStatus)}`}>{lead.scoreStatus} ({lead.score})</span>
+                                        <div key={lead.id} className={`bg-white dark:bg-secondary-background rounded-lg border border-gray-200 dark:border-border-color shadow-sm active:scale-[0.99] transition-transform ${selectedLeads.includes(lead.id) ? 'ring-2 ring-primary-green dark:ring-neon-cyan bg-primary-green/5' : ''}`}>
+                                            <div className="p-4" onClick={() => navigate(`/admin/leads/${lead.id}`)}>
+                                                <div className="flex justify-between items-start mb-3">
+                                                    <div>
+                                                        <h3 className="text-base font-bold text-gray-900 dark:text-text-primary line-clamp-1">{lead.name}</h3>
+                                                        <p className="text-xs text-gray-500 dark:text-text-secondary mt-0.5">{lead.email}</p>
                                                     </div>
-                                                    <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
-                                                        <div><p className="text-gray-500 dark:text-text-muted">Product</p><p className="font-medium text-gray-800 dark:text-text-light">{lead.productType}</p></div>
-                                                        <div><p className="text-gray-500 dark:text-text-muted">Phone</p><p className="font-medium text-gray-800 dark:text-text-light">{lead.phone}</p></div>
-                                                        <div><p className="text-gray-500 dark:text-text-muted">Date</p><p className="font-medium text-gray-800 dark:text-text-light">{new Date(lead.createdAt).toLocaleDateString()}</p></div>
-                                                        {user?.role === 'Master' && (<div><p className="text-gray-500 dark:text-text-muted">Assigned</p><p className="font-medium text-gray-800 dark:text-text-light truncate">{lead.assignedVendorName || 'Unassigned'}</p></div>)}
+                                                    <span className={`px-2 py-1 text-[10px] font-bold uppercase tracking-wide rounded-full ${getStatusColor(lead.scoreStatus)}`}>
+                                                        {lead.scoreStatus}
+                                                    </span>
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-xs mb-3">
+                                                    <div>
+                                                        <p className="text-gray-400 dark:text-text-muted mb-0.5">Product</p>
+                                                        <p className="font-medium text-gray-700 dark:text-text-light">{lead.productType}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-gray-400 dark:text-text-muted mb-0.5">Phone</p>
+                                                        <p className="font-medium text-gray-700 dark:text-text-light">{lead.phone}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-gray-400 dark:text-text-muted mb-0.5">Date</p>
+                                                        <p className="font-medium text-gray-700 dark:text-text-light">{new Date(lead.createdAt).toLocaleDateString()}</p>
+                                                    </div>
+                                                    {user?.role === 'Master' && (
+                                                        <div>
+                                                            <p className="text-gray-400 dark:text-text-muted mb-0.5">Assigned</p>
+                                                            <p className="font-medium text-gray-700 dark:text-text-light truncate">{lead.assignedVendorName || 'Unassigned'}</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-white/5">
+                                                    <span className={`px-2 py-0.5 rounded text-[10px] font-medium border ${lead.source === 'Manual_Offline' ? 'bg-purple-50 text-purple-700 border-purple-100 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800' : 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800'}`}>
+                                                        {lead.source === 'Manual_Offline' ? 'Offline' : 'Online'}
+                                                    </span>
+                                                    <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedLeads.includes(lead.id)}
+                                                            onChange={(e) => handleSelectOne(e, lead.id)}
+                                                            className="w-5 h-5 rounded border-gray-300 text-primary-green focus:ring-primary-green dark:bg-gray-700 dark:border-gray-600"
+                                                            aria-label="Select"
+                                                        />
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    )) : (<div className="text-center py-8 text-sm text-gray-500 dark:text-text-secondary">No leads in this stage.</div>)}
+                                    )) : (<div className="text-center py-10 text-sm text-gray-500 dark:text-text-secondary italic">No leads in this stage.</div>)}
                                 </div>
                             </Card>
                         </>

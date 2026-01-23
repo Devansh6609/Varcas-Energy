@@ -39,8 +39,8 @@ const UserProfilePage: React.FC = () => {
     );
 
     return (
-        <div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-text-light mb-6">User Profile</h2>
+        <div className="px-3 md:px-0">
+            <h2 className="text-xl md:text-3xl font-bold text-gray-900 dark:text-text-light mb-4 md:mb-6">User Profile</h2>
             <Card className="max-w-3xl mx-auto">
                 <div className="flex flex-col sm:flex-row items-center text-center sm:text-left">
                     {user.profileImage ? (
@@ -53,9 +53,9 @@ const UserProfilePage: React.FC = () => {
                         <DefaultAvatar />
                     )}
                     <div className="mt-4 sm:mt-0 sm:ml-6">
-                        <h3 className="text-3xl font-bold text-gray-900 dark:text-text-light">{user.name}</h3>
-                        <p className="mt-1 text-md text-gray-500 dark:text-text-muted">{user.email}</p>
-                        <span className="mt-2 inline-block bg-secondary-cyan/20 text-secondary-cyan text-xs font-semibold px-3 py-1 rounded-full">
+                        <h3 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-text-light">{user.name}</h3>
+                        <p className="mt-1 text-sm sm:text-md text-gray-500 dark:text-text-muted">{user.email}</p>
+                        <span className="mt-2 inline-block bg-secondary-cyan/20 text-secondary-cyan text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1 rounded-full">
                             {user.role}
                         </span>
                     </div>
