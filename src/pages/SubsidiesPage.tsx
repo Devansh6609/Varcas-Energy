@@ -1,6 +1,10 @@
 import React from 'react';
 import AnimatedSection from '../components/AnimatedSection';
 import TimelineSection from '../components/TimelineSection';
+import ImageSlideshow from '../components/ImageSlideshow';
+import subsidyResidential from '../assets/subsidies/subsidy-residential.png';
+import subsidyAgricultural from '../assets/subsidies/subsidy-agricultural.png';
+import subsidyFinance from '../assets/subsidies/subsidy-finance.png';
 
 const pmSuryaGharProcess = [
     { id: 1, title: 'Register on Portal', description: 'Begin by registering on the National Portal for Rooftop Solar. You will need your latest electricity bill and other basic household details to start the process.', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg> },
@@ -18,6 +22,42 @@ const pmKusumBreakdown = [
 
 
 const SubsidiesPage: React.FC = () => {
+    const slides = [
+        {
+            image: subsidyResidential,
+            title: "PM Surya Ghar Yojana",
+            subtitle: "Subsidy up to ₹78,000 directly to your account",
+            features: [
+                "Free Electricity for Households",
+                "Selling Surplus Power",
+                "Government Guarantee"
+            ],
+            cta: "Apply Now"
+        },
+        {
+            image: subsidyAgricultural,
+            title: "PM-KUSUM Scheme",
+            subtitle: "90% Subsidy for Solar Pumps",
+            features: [
+                "Water Security for Farmers",
+                "Day-time Irrigation",
+                "Additional Income Source"
+            ],
+            cta: "Check Eligibility"
+        },
+        {
+            image: subsidyFinance,
+            title: "Smart Solar Financing",
+            subtitle: "Easy Loans & EMI Options",
+            features: [
+                "Low Interest Rates",
+                "Quick Approvals",
+                "Flexible Repayment"
+            ],
+            cta: "Get Financed"
+        }
+    ];
+
     return (
         <div className="bg-transparent text-text-primary">
             <div className="max-w-7xl mx-auto py-8 md:py-16 px-4 sm:px-6 lg:px-8">
@@ -29,6 +69,15 @@ const SubsidiesPage: React.FC = () => {
                         <p className="mt-4 max-w-2xl mx-auto text-xl text-text-secondary">
                             Making solar affordable for every Indian.
                         </p>
+                    </div>
+                </AnimatedSection>
+
+                <AnimatedSection delay="delay-100">
+                    <div className="mb-10 md:mb-16">
+                        <ImageSlideshow
+                            slides={slides}
+                            className="h-[400px] md:h-[500px] rounded-lg shadow-xl overflow-hidden"
+                        />
                     </div>
                 </AnimatedSection>
 

@@ -24,6 +24,7 @@ const SubsidiesPage = lazy(() => import('./pages/SubsidiesPage'));
 const AboutUsPage = lazy(() => import('./pages/AboutUsPage'));
 const CareerPage = lazy(() => import('./pages/CareerPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
@@ -56,7 +57,10 @@ const AppRoutes: React.FC = () => {
                     <Route path="subsidies" element={<SubsidiesPage />} />
                     <Route path="about" element={<AboutUsPage />} />
                     <Route path="career" element={<CareerPage />} />
+                    <Route path="about" element={<AboutUsPage />} />
+                    <Route path="career" element={<CareerPage />} />
                     <Route path="contact" element={<ContactPage />} />
+                    <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
                 </Route>
 
                 {/* Auth Routes */}

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-export type Theme = 'light-sky' | 'professional-light' | 'deep-space' | 'midnight' | 'aurora';
+export type Theme = 'professional-dark' | 'professional-light' | 'deep-space' | 'midnight' | 'aurora';
 
 interface ThemeContextType {
     theme: Theme;
@@ -17,15 +17,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     useEffect(() => {
         localStorage.setItem('admin-theme', theme);
-        document.documentElement.setAttribute('data-theme', theme);
-
-        if (theme === 'light-sky' || theme === 'professional-light') {
-            document.documentElement.classList.remove('dark');
-        } else {
-            if (!document.documentElement.classList.contains('dark')) {
-                document.documentElement.classList.add('dark');
-            }
-        }
+        // DOM manipulation removed to isolate theme to AdminLayout
     }, [theme]);
 
     return (

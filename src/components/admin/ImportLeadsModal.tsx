@@ -33,12 +33,13 @@ const ImportLeadsModal: React.FC<ImportLeadsModalProps> = ({ onClose, onImportCo
     };
 
     const handleDownloadTemplate = () => {
-        const headers = "name,email,phone,productType,pipelineStage,source,bill,energyCost,pumpHP,waterSource,propertyStatus,roofType,state,district,pincode";
-        const blob = new Blob([headers], { type: 'text/csv;charset=utf-8;' });
+        const headers = "Name,Email,Phone,Product,Vendor,Stage,Amount";
+        const sampleRow = "John Doe,john@example.com,9876543210,rooftop,Unassigned,New Lead,5000";
+        const blob = new Blob([`${headers}\n${sampleRow}`], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         const url = URL.createObjectURL(blob);
         link.setAttribute("href", url);
-        link.setAttribute("download", "leads_template.csv");
+        link.setAttribute("download", "leads_import_template.csv");
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
@@ -54,10 +55,70 @@ const ImportLeadsModal: React.FC<ImportLeadsModalProps> = ({ onClose, onImportCo
         setError(null);
         setImportResult(null);
 
-        const formData = new FormData();
-        formData.append('leadsCsv', file);
-
         try {
+            // Frontend Adapter: Parse and Transform CSV
+            const text = await file.text();
+            const rows = text.split('\n').map(row => row.trim()).filter(row => row);
+
+            if (rows.length < 2) throw new Error("CSV file is empty or missing data.");
+
+            // Backend expects: name,email,phone,productType,pipelineStage,source,bill,energyCost,...
+            // We map: 
+            // Name -> name
+            // Email -> email
+            // Phone -> phone
+            // Product -> productType
+            // Stage -> pipelineStage
+            // Amount -> bill (if rooftop) OR energyCost (if pump)
+            // Vendor -> (Ignored for now as bulk assign is separate, or we could try to map if backend supports it)
+
+            const backendHeaders = "name,email,phone,productType,pipelineStage,bill,energyCost";
+            const transformedRows = [backendHeaders];
+
+            // Skip header row (index 0)
+            for (let i = 1; i < rows.length; i++) {
+                // Simple CSV parse (handling quotes basic)
+                // Note: This is a basic parser. For robust parsing, a library is better, but keeping it simple for now.
+                // Assuming no commas IN fields for this simple implementation or standard "split" if user follows template.
+                // Removing quotes if present.
+                const cols = rows[i].split(',').map(c => c.replace(/^"|"$/g, '').trim());
+
+                // Map columns based on the simple template: Name(0), Email(1), Phone(2), Product(3), Vendor(4), Stage(5), Amount(6)
+                if (cols.length < 7) continue; // Skip invalid rows
+
+                const [name, email, phone, product, vendor, stage, amount] = cols;
+                const productType = product.toLowerCase();
+
+                let bill = '';
+                let energyCost = '';
+
+                if (productType === 'rooftop') {
+                    bill = amount;
+                } else if (productType === 'pump') {
+                    energyCost = amount;
+                }
+
+                // Construct backend row matching backendHeaders order
+                const newRow = [
+                    `"${name}"`,
+                    `"${email}"`,
+                    `"${phone}"`,
+                    `"${productType}"`,
+                    `"${stage}"`, // pipelineStage
+                    `"${bill}"`,
+                    `"${energyCost}"`
+                ].join(',');
+
+                transformedRows.push(newRow);
+            }
+
+            const transformedCsvContent = transformedRows.join('\n');
+            const transformedBlob = new Blob([transformedCsvContent], { type: 'text/csv' });
+            const transformedFile = new File([transformedBlob], "transformed_leads.csv", { type: "text/csv" });
+
+            const formData = new FormData();
+            formData.append('leadsCsv', transformedFile);
+
             const result = await importLeads(formData);
             setImportResult(result);
         } catch (err: any) {
@@ -72,7 +133,7 @@ const ImportLeadsModal: React.FC<ImportLeadsModalProps> = ({ onClose, onImportCo
 
     return createPortal(
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-            <div className="bg-white dark:bg-glass-surface border border-gray-200 dark:border-glass-border p-8 rounded-xl shadow-2xl w-full max-w-lg">
+            <div className="bg-white dark:bg-glass-surface border border-gray-300 dark:border-glass-border p-8 rounded-xl shadow-2xl w-full max-w-lg">
                 <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-text-primary">Import Leads from CSV</h3>
 
                 {importResult ? (

@@ -22,28 +22,48 @@ const MonthlyLeadsChart: React.FC<MonthlyLeadsChartProps> = ({ data }) => {
 
     return (
         <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
+            <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                     <linearGradient id="colorLeadsBar" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#06b6d4" stopOpacity={0.8} />
-                        <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.4} />
+                        <stop offset="0%" stopColor="#22d3ee" stopOpacity={1} />
+                        <stop offset="100%" stopColor="#06b6d4" stopOpacity={0.6} />
                     </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? "rgba(107, 114, 128, 0.2)" : "rgba(229, 231, 235, 0.5)"} />
-                <XAxis dataKey="name" stroke={axisColor} fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke={axisColor} fontSize={12} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"} />
+                <XAxis
+                    dataKey="name"
+                    stroke={axisColor}
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: axisColor }}
+                    dy={10}
+                />
+                <YAxis
+                    stroke={axisColor}
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: axisColor }}
+                />
                 <Tooltip
-                    cursor={{ fill: 'rgba(6, 182, 212, 0.1)' }}
-                    contentStyle={tooltipStyles}
-                    labelStyle={labelStyle}
-                    itemStyle={itemStyle}
+                    cursor={{ fill: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)' }}
+                    contentStyle={{
+                        backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
+                        borderColor: isDarkMode ? '#334155' : '#e2e8f0',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                        padding: '8px 12px'
+                    }}
+                    labelStyle={{ color: isDarkMode ? '#94a3b8' : '#64748b', marginBottom: '4px', fontSize: '12px' }}
+                    itemStyle={{ color: isDarkMode ? '#fff' : '#0f172a', fontWeight: 600, fontSize: '14px', padding: 0 }}
                 />
                 <Bar
                     dataKey="leads"
                     fill="url(#colorLeadsBar)"
-                    radius={[4, 4, 0, 0]}
-                    isAnimationActive={true}
-                    animationDuration={800}
+                    radius={[6, 6, 0, 0]}
+                    barSize={32}
+                    animationDuration={1000}
                 />
             </BarChart>
         </ResponsiveContainer>

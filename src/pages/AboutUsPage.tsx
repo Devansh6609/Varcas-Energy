@@ -1,6 +1,11 @@
 import React from 'react';
 import AnimatedSection from '../components/AnimatedSection';
-import missionImage from '../assets/solar-farm-wind-turbines.jpeg';
+import aboutOverview from '../assets/about-us/about-overview.png';
+import aboutMission from '../assets/about-us/about-mission.png';
+import aboutVision from '../assets/about-us/about-vision.png';
+import aboutSustainability from '../assets/about-us/about-sustainability.png';
+import aboutQuality from '../assets/about-us/about-quality.png';
+import ImageSlideshow from '../components/ImageSlideshow';
 
 const TeamMemberCard: React.FC<{ name: string; title: string; description: string; image: string; nameColor: string; }> = ({ name, title, description, image, nameColor }) => (
     <div className="text-center transform hover:scale-105 transition-transform duration-300 min-w-[280px] md:min-w-0 p-4">
@@ -16,6 +21,63 @@ const TeamMemberCard: React.FC<{ name: string; title: string; description: strin
 );
 
 const AboutUsPage: React.FC = () => {
+    const slides = [
+        {
+            image: aboutOverview,
+            title: "Pioneering Sustainable Energy",
+            subtitle: "Illuminating a Brighter Future for India",
+            features: [
+                "Leading the Green Revolution",
+                "Advanced Solar Technology",
+                "Nationwide Impact"
+            ],
+            cta: "Discover Our Journey"
+        },
+        {
+            image: aboutMission,
+            title: "Our Mission",
+            subtitle: "Simple, Affordable, Accessible Solar for Everyone",
+            features: [
+                "Empowering Communities",
+                "Reducing Energy Costs",
+                "Energy Independence"
+            ],
+            cta: "Join Our Mission"
+        },
+        {
+            image: aboutVision,
+            title: "Our Vision",
+            subtitle: "Every Home a Power Plant, Every Farm Energy Independent",
+            features: [
+                "Self-Sufficient India",
+                "Clean Energy for All",
+                "Building a Resilient Future"
+            ],
+            cta: "See the Future"
+        },
+        {
+            image: aboutSustainability,
+            title: "Committed to Stewardship",
+            subtitle: "Reducing Carbon Footprints, One System at a Time",
+            features: [
+                "Environmental Responsibility",
+                "Sustainable Practices",
+                "Preserving Nature"
+            ]
+        },
+        {
+            image: aboutQuality,
+            title: "Uncompromising Quality",
+            subtitle: "Innovation and Customer Satisfaction at Our Core",
+            features: [
+                "Expert Engineering",
+                "Premium Materials",
+                "Trusted by Thousands"
+            ],
+            cta: "Experience Excellence"
+        }
+    ];
+
     return (
         <div className="bg-transparent text-text-primary">
             <div className="max-w-7xl mx-auto py-8 md:py-16 px-4 sm:px-6 lg:px-8">
@@ -43,7 +105,10 @@ const AboutUsPage: React.FC = () => {
                         </div>
                     </AnimatedSection>
                     <AnimatedSection delay="delay-100">
-                        <img src={missionImage} className="rounded-lg shadow-xl" alt="Large solar farm representing the company's vision" />
+                        <ImageSlideshow
+                            slides={slides}
+                            className="h-[500px] md:h-full min-h-[500px] !py-0 !px-0 rounded-lg shadow-xl overflow-hidden"
+                        />
                     </AnimatedSection>
                 </div>
 

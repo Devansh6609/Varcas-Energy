@@ -6,6 +6,12 @@ html {
   scroll-behavior: smooth;
 }
 
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+}
+
 body {
   @apply bg-gray-100 font-sans text-gray-900;
   -webkit-font-smoothing: antialiased;
@@ -15,68 +21,23 @@ body {
 /* Apply electric gradient background ONLY for the dark theme (CRM) */
 /* --- Theme Variables --- */
 /* --- Theme Variables (RGB Channels) --- */
-[data-theme='light-sky'] {
-  /* Theme: Daylight Sky (Light Mode) */
-  --bg-primary: 248 250 252; /* #f8fafc Slate-50 */
-  --bg-secondary: 255 255 255; /* #ffffff */
-  --bg-glass: 255 255 255; /* #ffffff */
-  --border-glass: 226 232 240; /* #e2e8f0 Slate-200 */
-  
-  --accent-primary: 14 165 233; /* #0ea5e9 Sky-500 */
-  --accent-primary-hover: 2 132 199; /* #0284c7 Sky-600 */
-  --accent-secondary: 59 130 246; /* #3b82f6 Blue-500 */
-  --accent-tertiary: 99 102 241; /* #6366f1 Indigo-500 */
-  --accent-glow: 14 165 233;
-  
-  --text-primary: 15 23 42; /* #0f172a Slate-900 */
-  --text-secondary: 71 85 105; /* #475569 Slate-600 */
-  --text-accent: 14 165 233; /* #0ea5e9 */
-  
-  --glass-opacity: 0.7;
-  --glass-border-opacity: 1;
-  
-  --gradient-stops: rgb(var(--bg-primary)), rgb(var(--bg-secondary));
-}
-
-[data-theme='professional-light'] {
-  /* Theme: Professional Light (Clean Corporate) */
-  --bg-primary: 241 245 249; /* #f1f5f9 Slate-100 */
-  --bg-secondary: 226 232 240; /* #e2e8f0 Slate-200 */
-  --bg-glass: 255 255 255; /* #ffffff */
-  --border-glass: 203 213 225; /* #cbd5e1 Slate-300 */
-  
-  --accent-primary: 37 99 235; /* #2563eb Blue-600 */
-  --accent-primary-hover: 29 78 216; /* #1d4ed8 Blue-700 */
-  --accent-secondary: 71 85 105; /* #475569 Slate-600 */
-  --accent-tertiary: 100 116 139; /* #64748b Slate-500 */
-  --accent-glow: 255 255 255; /* White (invisible) */
-  
-  --text-primary: 15 23 42; /* #0f172a Slate-900 */
-  --text-secondary: 71 85 105; /* #475569 Slate-600 */
-  --text-accent: 37 99 235; /* #2563eb Blue-600 */
-  
-  --glass-opacity: 0.95;
-  --glass-border-opacity: 1;
-  
-  --gradient-stops: 241 245 249, 226 232 240;
-}
-
+/* --- Theme Variables --- */
 :root {
-  /* Default Theme: Deep Space Glass */
-  --bg-primary: 15 23 42; /* #0f172a */
-  --bg-secondary: 30 27 75; /* #1e1b4b */
-  --bg-glass: 15 23 42; /* #0f172a (Opacity handled in utility) */
-  --border-glass: 255 255 255; /* White (Opacity handled in utility) */
+  /* Default Theme: Deep Space Glass - Kept at root for fallback if needed, or move to .admin-root default */
+  --bg-primary: 15 23 42; 
+  --bg-secondary: 30 27 75; 
+  --bg-glass: 15 23 42; 
+  --border-glass: 255 255 255; 
   
-  --accent-primary: 59 130 246; /* #3b82f6 Electric Blue */
-  --accent-primary-hover: 96 165 250; /* #60a5fa */
-  --accent-secondary: 6 182 212; /* #06b6d4 Neon Cyan */
-  --accent-tertiary: 167 139 250; /* #a78bfa */
-  --accent-glow: 56 189 248; /* #38bdf8 */
+  --accent-primary: 59 130 246; 
+  --accent-primary-hover: 96 165 250; 
+  --accent-secondary: 6 182 212; 
+  --accent-tertiary: 167 139 250; 
+  --accent-glow: 56 189 248; 
   
-  --text-primary: 248 250 252; /* #f8fafc */
-  --text-secondary: 148 163 184; /* #94a3b8 */
-  --text-accent: 103 232 249; /* #67e8f9 */
+  --text-primary: 248 250 252; 
+  --text-secondary: 148 163 184; 
+  --text-accent: 103 232 249; 
   
   --glass-opacity: 0.4;
   --glass-border-opacity: 0.1;
@@ -84,22 +45,68 @@ body {
   --gradient-stops: rgb(var(--bg-primary)), rgb(var(--bg-secondary));
 }
 
-[data-theme='midnight'] {
-  /* Theme: Midnight Obsidian */
-  --bg-primary: 2 6 23; /* #020617 */
-  --bg-secondary: 30 41 59; /* #1e293b */
-  --bg-glass: 30 41 59; /* #1e293b */
-  --border-glass: 255 255 255;
+.admin-root[data-theme='professional-dark'] {
+  /* Theme: Professional Dark (Pitch Black) */
+  --bg-primary: 0 0 0; 
+  --bg-secondary: 23 23 23; 
+  --bg-glass: 0 0 0; 
+  --border-glass: 38 38 38; 
   
-  --accent-primary: 245 158 11; /* #f59e0b Solar Gold */
-  --accent-primary-hover: 251 191 36; /* #fbbf24 */
-  --accent-secondary: 249 115 22; /* #f97316 Copper */
-  --accent-tertiary: 217 119 6; /* #d97706 */
-  --accent-glow: 245 158 11;
+  --accent-primary: 16 185 129; 
+  --accent-primary-hover: 5 150 105; 
+  --accent-secondary: 82 82 82; 
+  --accent-tertiary: 115 115 115; 
+  --accent-glow: 16 185 129; 
+  
+  --text-primary: 255 255 255; 
+  --text-secondary: 163 163 163; 
+  --text-accent: 52 211 153; 
+  
+  --glass-opacity: 0.95;
+  --glass-border-opacity: 1;
+  
+  --gradient-stops: rgb(var(--bg-primary)), rgb(var(--bg-secondary));
+}
+
+.admin-root[data-theme='professional-light'] {
+  /* Theme: Professional Light (Clean Corporate) */
+  --bg-primary: 241 245 249; 
+  --bg-secondary: 226 232 240; 
+  --bg-glass: 255 255 255; 
+  --border-glass: 203 213 225; 
+  
+  --accent-primary: 37 99 235; 
+  --accent-primary-hover: 29 78 216; 
+  --accent-secondary: 71 85 105; 
+  --accent-tertiary: 100 116 139; 
+  --accent-glow: 255 255 255; 
+  
+  --text-primary: 15 23 42; 
+  --text-secondary: 71 85 105; 
+  --text-accent: 37 99 235; 
+  
+  --glass-opacity: 0.95;
+  --glass-border-opacity: 1;
+  
+  --gradient-stops: 241 245 249, 226 232 240;
+}
+
+.admin-root[data-theme='midnight'] {
+  /* Theme: Midnight Obsidian */
+  --bg-primary: 2 6 23; 
+  --bg-secondary: 30 41 59; 
+  --bg-glass: 30 41 59; 
+  --border-glass: 255 255 255; 
+  
+  --accent-primary: 245 158 11; 
+  --accent-primary-hover: 251 191 36; 
+  --accent-secondary: 249 115 22; 
+  --accent-tertiary: 217 119 6; 
+  --accent-glow: 245 158 11; 
   
   --text-primary: 255 255 255;
-  --text-secondary: 203 213 225; /* #cbd5e1 */
-  --text-accent: 252 211 77; /* #fcd34d */
+  --text-secondary: 203 213 225; 
+  --text-accent: 252 211 77; 
   
   --glass-opacity: 0.9;
   --glass-border-opacity: 0.1;
@@ -107,22 +114,22 @@ body {
   --gradient-stops: rgb(var(--bg-primary)), rgb(var(--bg-secondary));
 }
 
-[data-theme='aurora'] {
+.admin-root[data-theme='aurora'] {
   /* Theme: Aurora Borealis */
-  --bg-primary: 2 6 23; /* #020617 (Darker base) */
-  --bg-secondary: 15 23 42; /* #0f172a */
-  --bg-glass: 15 23 42; /* #0f172a (Dark glass for contrast) */
-  --border-glass: 255 255 255;
+  --bg-primary: 2 6 23; 
+  --bg-secondary: 15 23 42; 
+  --bg-glass: 15 23 42; 
+  --border-glass: 255 255 255; 
   
-  --accent-primary: 52 211 153; /* #34d399 Emerald */
-  --accent-primary-hover: 16 185 129; /* #10b981 */
-  --accent-secondary: 167 139 250; /* #a78bfa Soft Violet */
-  --accent-tertiary: 244 114 182; /* #f472b6 Pink */
-  --accent-glow: 52 211 153;
+  --accent-primary: 52 211 153; 
+  --accent-primary-hover: 16 185 129; 
+  --accent-secondary: 167 139 250; 
+  --accent-tertiary: 244 114 182; 
+  --accent-glow: 52 211 153; 
   
-  --text-primary: 241 245 249; /* #f1f5f9 */
-  --text-secondary: 148 163 184; /* #94a3b8 */
-  --text-accent: 110 231 183; /* #6ee7b7 */
+  --text-primary: 241 245 249; 
+  --text-secondary: 148 163 184; 
+  --text-accent: 110 231 183; 
   
   --glass-opacity: 0.3;
   --glass-border-opacity: 0.1;
@@ -130,17 +137,15 @@ body {
   --gradient-stops: rgb(var(--bg-primary)), rgb(var(--bg-secondary));
 }
 
-/* Apply electric gradient background ONLY for the dark theme (CRM) */
-.dark body,
-body:has(.dark) {
+/* Apply electric gradient background ONLY for the scoped admin container */
+.admin-root.dark {
   background: linear-gradient(135deg, var(--gradient-stops));
   background-attachment: fixed;
   color: rgb(var(--text-primary));
 }
 
 /* Aurora Animation Background */
-[data-theme='aurora'] body {
-    /* Deep space base with shifting aurora curtains */
+.admin-root[data-theme='aurora'] {
     background: linear-gradient(125deg, #020617 0%, #0f172a 30%, #1e1b4b 50%, #0f172a 70%, #115e59 85%, #020617 100%);
     background-size: 300% 300%;
     animation: auroraGradient 25s ease infinite;
@@ -153,20 +158,20 @@ body:has(.dark) {
 }
 
 /* Custom Scrollbar for the new electric theme */
-.dark ::-webkit-scrollbar {
+.admin-root ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
-.dark ::-webkit-scrollbar-track {
+.admin-root ::-webkit-scrollbar-track {
   background: transparent;
 }
-.dark ::-webkit-scrollbar-thumb {
-  background: rgba(6, 182, 212, 0.3); /* neon-cyan with transparency */
+.admin-root ::-webkit-scrollbar-thumb {
+  background: rgba(var(--accent-primary), 0.3);
   border-radius: 4px;
-  border: 1px solid rgba(6, 182, 212, 0.5);
+  border: 1px solid rgba(var(--accent-primary), 0.5);
 }
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(6, 182, 212, 0.5);
+.admin-root ::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--accent-primary), 0.5);
 }
 
 @layer base {

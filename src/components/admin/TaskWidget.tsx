@@ -1,8 +1,8 @@
 import React from 'react';
-import Card from './Card.tsx';
+import Card from './Card';
 
 const TaskItem: React.FC<{ title: string; count: number; color: string }> = ({ title, count, color }) => (
-    <div className="flex justify-between items-center py-3 border-b border-gray-200 dark:border-border-color last:border-b-0">
+    <div className="flex justify-between items-center py-3 border-b border-gray-300 dark:border-border-color last:border-b-0">
         <div className="flex items-center">
             <span className={`w-2 h-2 rounded-full mr-3 ${color}`}></span>
             <span className="text-sm text-gray-800 dark:text-text-light">{title}</span>

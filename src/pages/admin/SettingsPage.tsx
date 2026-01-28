@@ -6,10 +6,10 @@ const SettingsPage: React.FC = () => {
 
     const themes: { id: Theme; name: string; description: string; colors: string[] }[] = [
         {
-            id: 'light-sky',
-            name: 'Daylight Sky',
-            description: 'Clean, bright interface with crisp white surfaces and sky blue accents.',
-            colors: ['#f8fafc', '#0ea5e9', '#3b82f6']
+            id: 'professional-dark',
+            name: 'Professional Dark',
+            description: 'A pitch black, high-contrast theme for focus.',
+            colors: ['#000000', '#262626', '#10b981']
         },
         {
             id: 'professional-light',

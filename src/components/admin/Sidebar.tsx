@@ -26,7 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setCollapsed, isMobileOp
     };
 
     const sidebarContent = (
-        <div className={`flex flex-col h-full bg-white dark:bg-glass-surface/60 dark:backdrop-blur-xl border-r border-gray-200 dark:border-glass-border relative`}>
+        <div className={`flex flex-col h-full bg-white dark:bg-glass-surface/60 dark:backdrop-blur-xl border-r border-gray-300 dark:border-glass-border relative`}>
             <div className={`flex items-center h-20 flex-shrink-0 px-4 ${isCollapsed && 'lg:px-0 lg:justify-center'}`}>
                 <div className={`${isCollapsed ? 'lg:hidden' : ''} md:hidden lg:block text-gray-800 dark:text-text-primary`}>
                     <Logo />
@@ -62,7 +62,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setCollapsed, isMobileOp
             {/* Collapse button for desktop */}
             <button
                 onClick={() => setCollapsed(!isCollapsed)}
-                className="absolute top-6 p-2 rounded-full text-gray-500 dark:text-text-secondary hover:text-gray-900 dark:hover:text-text-primary bg-white dark:bg-glass-surface border border-gray-200 dark:border-glass-border hidden lg:block transition-all duration-300 z-50"
+                className="absolute top-6 p-2 rounded-full text-gray-500 dark:text-text-secondary hover:text-gray-900 dark:hover:text-text-primary bg-white dark:bg-glass-surface border border-gray-300 dark:border-glass-border hidden lg:block transition-all duration-300 z-50"
                 style={{ right: '-16px' }}
                 title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
             >

@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getAllLeadsData } from '../../service/adminService';
 import { Lead, CalculatorType, PipelineStage } from '../../types';
 import Pagination from '../../components/admin/Pagination';
 import { PIPELINE_STAGES } from '../../constants';
 import { useAuth } from '../../contexts/AuthContext';
-import Card from '../../components/admin/Card.tsx';
-import ImportLeadsModal from '../../components/admin/ImportLeadsModal.tsx';
-import { useCrmUpdates } from '../../contexts/CrmUpdatesContext.tsx';
+import Card from '../../components/admin/Card';
+import ImportLeadsModal from '../../components/admin/ImportLeadsModal';
+import { useCrmUpdates } from '../../contexts/CrmUpdatesContext';
 
 
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = import.meta.env.VITE_CRM_API_URL || 'http://localhost:3001';
 
 const getStatusColor = (status: string) => {
     switch (status) {
@@ -57,6 +58,7 @@ const SkeletonLoader: React.FC = () => (
 
 const DataExplorerPage: React.FC = () => {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const { lastUpdate, triggerUpdate } = useCrmUpdates();
     const [leads, setLeads] = useState<Lead[]>([]);
     const [loading, setLoading] = useState(true);
@@ -100,6 +102,11 @@ const DataExplorerPage: React.FC = () => {
             filtered.sort((a, b) => {
                 const aValue = a[sortConfig.key];
                 const bValue = b[sortConfig.key];
+
+                if (aValue === bValue) return 0;
+                if (aValue === null || aValue === undefined) return 1;
+                if (bValue === null || bValue === undefined) return -1;
+
                 if (aValue < bValue) {
                     return sortConfig.direction === 'ascending' ? -1 : 1;
                 }
@@ -138,20 +145,28 @@ const DataExplorerPage: React.FC = () => {
     }
 
     const handleExport = () => {
-        const headers = ['ID', 'Name', 'Email', 'Phone', 'Product', 'Stage', 'Score', 'Created At'];
-        if (user?.role === 'Master') headers.push('Assigned Vendor');
+        const headers = ['Name', 'Email', 'Phone', 'Product', 'Vendor', 'Stage', 'Amount'];
 
         const rows = filteredAndSortedLeads.map(lead => {
-            const row = [lead.id, lead.name, lead.email, lead.phone, lead.productType, lead.pipelineStage, lead.score, new Date(lead.createdAt).toLocaleString()];
-            if (user?.role === 'Master') row.push(lead.assignedVendorName || 'Unassigned');
-            return row.join(',');
+            const amount = lead.customFields?.bill || lead.customFields?.energyCost || '-';
+            const vendor = lead.assignedVendorName || 'Unassigned';
+
+            return [
+                `"${lead.name}"`,
+                `"${lead.email}"`,
+                `"${lead.phone}"`,
+                `"${lead.productType}"`,
+                `"${vendor}"`,
+                `"${lead.pipelineStage}"`,
+                `"${amount}"`
+            ].join(',');
         });
 
         const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "leads_export.csv");
+        link.setAttribute("download", `leads_export_${new Date().toISOString().split('T')[0]}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -160,87 +175,106 @@ const DataExplorerPage: React.FC = () => {
     if (loading) return <SkeletonLoader />;
     if (error) return <div className="text-center p-8 text-error-red">{error}</div>;
 
-    const inputBaseClass = "px-3 py-2 border rounded-lg bg-white dark:bg-primary-background border-gray-300 dark:border-border-color focus:ring-accent-blue focus:border-accent-blue";
+    const inputClasses = "w-full px-3 py-2 sm:py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs sm:text-sm focus:ring-2 focus:ring-accent-blue outline-none transition-all placeholder:text-gray-400";
+    const btnBase = "flex items-center justify-center font-bold py-2 sm:py-2.5 px-4 rounded-lg shadow-md transition-all transform active:scale-95 text-xs sm:text-sm";
+    const btnExport = `${btnBase} bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white shadow-cyan-500/20`;
+    const btnImport = `${btnBase} bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-blue-500/20`;
 
     return (
-        <div className="px-3 md:px-6 py-4">
-            <h2 className="text-xl md:text-3xl font-bold text-gray-900 dark:text-text-light mb-4 md:mb-6">Data Explorer</h2>
-            <Card className="mb-6">
-                <div className="flex flex-wrap items-center gap-4">
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        value={searchTerm}
-                        onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-                        className={`flex-grow w-full sm:w-auto min-w-[200px] text-sm ${inputBaseClass}`}
-                    />
-                    <select name="productType" value={filters.productType} onChange={handleFilterChange} className={`flex-grow min-w-[150px] ${inputBaseClass}`}>
+        <div className="p-2 sm:p-6 lg:p-8">
+            <h2 className="text-lg sm:text-3xl font-bold text-gray-900 dark:text-text-light mb-3 sm:mb-6 px-1">Data Explorer</h2>
+
+            <Card className="mb-4 sm:mb-6 !p-3 sm:!p-6">
+                <div className="grid grid-cols-2 lg:flex items-center gap-2 sm:gap-4">
+                    <div className="col-span-2 lg:col-span-1 lg:flex-grow lg:w-auto min-w-[200px]">
+                        <input
+                            type="text"
+                            placeholder="Search leads..."
+                            value={searchTerm}
+                            onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+                            className={inputClasses}
+                        />
+                    </div>
+                    <select name="productType" value={filters.productType} onChange={handleFilterChange} className={inputClasses}>
                         <option value="all">All Products</option>
                         <option value={CalculatorType.Rooftop}>Rooftop Solar</option>
                         <option value={CalculatorType.Pump}>Solar Pump</option>
                         <option value="Contact Inquiry">Contact Inquiry</option>
                     </select>
-                    <select name="pipelineStage" value={filters.pipelineStage} onChange={handleFilterChange} className={`flex-grow min-w-[150px] ${inputBaseClass}`}>
+                    <select name="pipelineStage" value={filters.pipelineStage} onChange={handleFilterChange} className={inputClasses}>
                         <option value="all">All Stages</option>
                         {PIPELINE_STAGES.map(stage => <option key={stage} value={stage}>{stage}</option>)}
                     </select>
-                    <button onClick={handleExport} className="bg-secondary-cyan/80 text-white font-bold py-2 px-4 rounded-lg hover:bg-secondary-cyan transition-colors">
+                    <button onClick={handleExport} className={btnExport}>
                         Export CSV
                     </button>
                     {user?.role === 'Master' && (
-                        <button onClick={() => setIsImportModalOpen(true)} className="bg-accent-blue text-white font-bold py-2 px-4 rounded-lg hover:bg-accent-blue-hover transition-colors">
-                            Import from CSV
+                        <button onClick={() => setIsImportModalOpen(true)} className={btnImport}>
+                            Import CSV
                         </button>
                     )}
                 </div>
             </Card>
 
-            <Card className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-border-color">
-                    <thead className="bg-gray-50 dark:bg-secondary-background/50">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-text-muted uppercase tracking-wider cursor-pointer" onClick={() => handleSort('name')}>
-                                Name <SortIcon direction={sortConfig.key === 'name' ? sortConfig.direction : undefined} />
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-text-muted uppercase tracking-wider">Product</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-text-muted uppercase tracking-wider">Stage</th>
-                            {user?.role === 'Master' && (
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-text-muted uppercase tracking-wider">Assigned Vendor</th>
-                            )}
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-text-muted uppercase tracking-wider cursor-pointer" onClick={() => handleSort('score')}>
-                                Score <SortIcon direction={sortConfig.key === 'score' ? sortConfig.direction : undefined} />
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-text-muted uppercase tracking-wider cursor-pointer" onClick={() => handleSort('createdAt')}>
-                                Date <SortIcon direction={sortConfig.key === 'createdAt' ? sortConfig.direction : undefined} />
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white dark:bg-secondary-background divide-y divide-gray-200 dark:divide-border-color">
-                        {paginatedLeads.map(lead => (
-                            <tr key={lead.id} className="hover:bg-gray-50 dark:hover:bg-primary-background">
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm font-medium text-gray-900 dark:text-text-light">{lead.name}</div>
-                                    <div className="text-sm text-gray-500 dark:text-text-muted">{lead.email}</div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-text-muted">{lead.productType}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStageColor(lead.pipelineStage)}`}>
-                                        {lead.pipelineStage}
-                                    </span>
-                                </td>
+            <Card className="overflow-hidden !p-0">
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead className="bg-gray-50 dark:bg-gray-800">
+                            <tr>
+                                <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" onClick={() => handleSort('name')}>
+                                    Name <SortIcon direction={sortConfig.key === 'name' ? sortConfig.direction : undefined} />
+                                </th>
+                                <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
+                                <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stage</th>
                                 {user?.role === 'Master' && (
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-text-muted">{lead.assignedVendorName}</td>
+                                    <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Vendor</th>
                                 )}
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(lead.scoreStatus)}`}>
-                                        {lead.scoreStatus} ({lead.score})
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-text-muted">{new Date(lead.createdAt).toLocaleDateString()}</td>
+                                <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" onClick={() => handleSort('score')}>
+                                    Score <SortIcon direction={sortConfig.key === 'score' ? sortConfig.direction : undefined} />
+                                </th>
+                                <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" onClick={() => handleSort('createdAt')}>
+                                    Date <SortIcon direction={sortConfig.key === 'createdAt' ? sortConfig.direction : undefined} />
+                                </th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+                            {paginatedLeads.map(lead => (
+                                <tr key={lead.id} onClick={() => navigate(`/admin/leads/${lead.id}`)} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer transition-colors group">
+                                    <td className="px-4 py-3 whitespace-nowrap">
+                                        <div className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white group-hover:text-primary-green transition-colors">{lead.name}</div>
+                                        <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">{lead.email}</div>
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-600 dark:text-gray-300 capitalize">{lead.productType}</td>
+                                    <td className="px-4 py-3 whitespace-nowrap">
+                                        <span className={`px-2 py-0.5 inline-flex text-[10px] sm:text-xs font-bold rounded-full border ${getStageColor(lead.pipelineStage).replace('text-', 'border-').replace('/20', '/30')}`}>
+                                            {lead.pipelineStage}
+                                        </span>
+                                    </td>
+                                    {user?.role === 'Master' && (
+                                        <td className="px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                                            {lead.assignedVendorName ? (
+                                                <span className="flex items-center gap-1.5">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                                    {lead.assignedVendorName}
+                                                </span>
+                                            ) : (
+                                                <span className="text-gray-400 italic">Unassigned</span>
+                                            )}
+                                        </td>
+                                    )}
+                                    <td className="px-4 py-3 whitespace-nowrap">
+                                        <span className={`px-2 py-0.5 inline-flex text-[10px] sm:text-xs font-bold rounded-full ${getStatusColor(lead.scoreStatus)}`}>
+                                            {lead.scoreStatus} ({lead.score})
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-mono">
+                                        {new Date(lead.createdAt).toLocaleDateString()}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </Card>
 
             <Pagination

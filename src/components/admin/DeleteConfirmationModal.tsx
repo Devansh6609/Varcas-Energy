@@ -33,7 +33,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({ itemN
 
     return createPortal(
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-            <div className="bg-white dark:bg-glass-surface border border-gray-200 dark:border-glass-border p-8 rounded-xl shadow-2xl w-full max-w-md">
+            <div className="bg-white dark:bg-glass-surface border border-gray-300 dark:border-glass-border p-8 rounded-xl shadow-2xl w-full max-w-md">
                 <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-text-primary">Confirm Deletion</h3>
                 <p className="text-sm text-gray-600 dark:text-text-secondary mb-4">
                     This action is irreversible. To proceed, please type <strong className="text-error-red">Confirm</strong> in the box below.

@@ -303,8 +303,36 @@ const updateLead = async (req, res) => {
         if (cifStatus !== undefined) dataToUpdate.cifStatus = (String(cifStatus).toLowerCase() === 'true');
         if (bankAccountOpen !== undefined) dataToUpdate.bankAccountOpen = (String(bankAccountOpen).toLowerCase() === 'true');
 
-        // File Uploads (Multipart Patch)
+        // --- Custom Fields Handling (JSON & Multipart) ---
         let customFieldsUpdate = lead.customFields ? { ...lead.customFields } : {};
+
+        // 1. Explicit customFields object (JSON updates)
+        if (req.body.customFields) {
+            const bodyCustomFields = typeof req.body.customFields === 'string' 
+                ? JSON.parse(req.body.customFields) 
+                : req.body.customFields;
+            customFieldsUpdate = { ...customFieldsUpdate, ...bodyCustomFields };
+        }
+
+        // 2. "Extra" fields in body (Multipart/FormData often sends flat fields)
+        // We capture any field that is NOT a standard column and NOT already handled
+        const standardKeys = [
+            'id', 'createdAt', 'updatedAt', 'pipelineStage', 'assignedVendorId', 
+            'fatherName', 'district', 'tehsil', 'village', 'hp', 'connectionType',
+            'approvalStatus', 'paymentStatus', 'allotmentStatus', 'surveyStatus', 'ntpStatus',
+            'aifStatus', 'cifStatus', 'workStatus', 'bankAccountOpen', 'meterSerialNo', 'panelSerialNo',
+            'customFields', 'activityLog', 'assignedTo', 'documents'
+        ];
+        
+        Object.keys(req.body).forEach(key => {
+            if (!standardKeys.includes(key) && req.body[key] !== undefined) {
+                // Determine if we should treat it as a custom field
+                // Simple heuristic: if it's not standard, it's custom.
+                customFieldsUpdate[key] = req.body[key];
+            }
+        });
+
+        // 3. File Uploads (Multipart Patch)
         if (req.files && req.files.length > 0) {
             for (const file of req.files) {
                  let docId;
@@ -333,8 +361,9 @@ const updateLead = async (req, res) => {
                  customFieldsUpdate[file.fieldname] = docId;
                  activityLogs.push({ action: `File '${file.fieldname}' uploaded`, user: req.user.name });
             }
-            dataToUpdate.customFields = customFieldsUpdate;
         }
+        
+        dataToUpdate.customFields = customFieldsUpdate;
 
         if (activityLogs.length > 0) {
             dataToUpdate.activityLog = { create: activityLogs };

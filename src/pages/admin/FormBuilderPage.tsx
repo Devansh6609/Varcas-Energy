@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { getFormSchema, updateFormSchema } from '../../service/adminService';
 import { FormSchema, FormField, CalculatorType } from '../../types';
 import FormFieldEditor from '../../components/admin/FormFieldEditor';
-import LoadingSpinner from '../../components/LoadingSpinner.tsx';
-import Card from '../../components/admin/Card.tsx';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import Card from '../../components/admin/Card';
 
 const FormSection: React.FC<{
     title: string;
@@ -63,7 +63,7 @@ const FormSection: React.FC<{
 
     return (
         <Card>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-text-light mb-4 border-b border-gray-200 dark:border-border-color pb-2">{title} Form Fields</h3>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-text-light mb-4 border-b border-gray-300 dark:border-border-color pb-2">{title} Form Fields</h3>
             {loading && (
                 <div className="flex justify-center p-8">
                     <LoadingSpinner />

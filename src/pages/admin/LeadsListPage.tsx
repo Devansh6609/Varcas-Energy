@@ -210,32 +210,32 @@ const LeadsListPage: React.FC = () => {
         }
     };
 
-    const formElementClasses = "block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-glass-border focus:outline-none focus:ring-primary-green focus:border-primary-green sm:text-sm rounded-md dark:bg-glass-surface dark:text-text-primary transition-all duration-300";
+    const formElementClasses = "block w-full pl-1.5 sm:pl-3 pr-6 sm:pr-10 py-1 sm:py-2 text-[10px] sm:text-sm border-gray-300 dark:border-glass-border focus:outline-none focus:ring-primary-green focus:border-primary-green rounded-md dark:bg-glass-surface dark:text-text-primary transition-all duration-300";
 
     return (
-        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto animate-fade-in-up">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        <div className="p-2 sm:p-6 lg:p-8 max-w-7xl mx-auto animate-fade-in-up">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 sm:mb-8 gap-3 sm:gap-4">
                 <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-text-primary tracking-tight">Leads Management</h1>
-                    <p className="text-sm text-gray-500 dark:text-text-secondary mt-1">Track and manage your sales pipeline.</p>
+                    <h1 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-text-primary tracking-tight">Leads Management</h1>
+                    <p className="text-[10px] sm:text-sm text-gray-500 dark:text-text-secondary mt-0.5 sm:mt-1">Track and manage your sales pipeline.</p>
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className="bg-gray-100 dark:bg-glass-surface p-1 rounded-lg flex border border-gray-200 dark:border-white/10">
-                        <button onClick={() => setViewMode('list')} className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-white dark:bg-white/10 shadow text-primary-green dark:text-neon-cyan' : 'text-gray-500 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-white/5'}`} title="List View" aria-label="List View">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <div className="bg-gray-100 dark:bg-glass-surface p-0.5 sm:p-1 rounded-lg flex border border-gray-300 dark:border-white/10 ml-auto sm:ml-0">
+                        <button onClick={() => setViewMode('list')} className={`p-1.5 sm:p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-white dark:bg-white/10 shadow text-primary-green dark:text-neon-cyan' : 'text-gray-500 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-white/5'}`} title="List View" aria-label="List View">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
                         </button>
-                        <button onClick={() => setViewMode('board')} className={`p-2 rounded-md transition-all ${viewMode === 'board' ? 'bg-white dark:bg-white/10 shadow text-primary-green dark:text-neon-cyan' : 'text-gray-500 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-white/5'}`} title="Board View" aria-label="Board View">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" /></svg>
+                        <button onClick={() => setViewMode('board')} className={`p-1.5 sm:p-2 rounded-md transition-all ${viewMode === 'board' ? 'bg-white dark:bg-white/10 shadow text-primary-green dark:text-neon-cyan' : 'text-gray-500 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-white/5'}`} title="Board View" aria-label="Board View">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" /></svg>
                         </button>
                     </div>
-                    <a href="http://localhost:5000/api/admin/leads/export" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-primary-green text-white rounded-lg hover:bg-primary-green-hover transition-colors shadow-lg shadow-primary-green/30">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                        <span className="hidden sm:inline">Export CSV</span>
+                    <a href="http://localhost:5000/api/admin/leads/export" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-primary-green text-white rounded-lg hover:bg-primary-green-hover transition-colors shadow-lg shadow-primary-green/30 text-xs sm:text-base">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                        <span className="inline">Export</span>
                     </a>
                 </div>
             </div>
 
-            <div className="glass-panel p-4 mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="glass-panel p-1.5 sm:p-4 mb-3 sm:mb-6 grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
                 {user?.role === 'Master' && (
                     <select name="assignedVendorId" value={filters.assignedVendorId} onChange={handleFilterChange} className={formElementClasses} aria-label="Filter by Vendor" title="Filter by Vendor">
                         <option value="all">All Vendors</option>
@@ -244,8 +244,8 @@ const LeadsListPage: React.FC = () => {
                 )}
                 <select name="source" value={filters.source} onChange={handleFilterChange} className={formElementClasses} aria-label="Filter by Source" title="Filter by Source">
                     <option value="all">All Sources</option>
-                    <option value="Online">Online Leads</option>
-                    <option value="Offline">Offline Leads</option>
+                    <option value="Online">Online</option>
+                    <option value="Offline">Offline</option>
                 </select>
                 <select name="state" value={filters.state} onChange={handleFilterChange} className={formElementClasses} aria-label="Filter by State" title="Filter by State">
                     <option value="all">All States</option>
@@ -267,13 +267,13 @@ const LeadsListPage: React.FC = () => {
                 <DragDropContext onDragEnd={onDragEnd}>
                     {viewMode === 'list' ? (
                         <>
-                            <div className="flex overflow-x-auto pb-4 gap-3 sm:grid sm:grid-cols-4 lg:grid-cols-8 mb-6 snap-x snap-mandatory hide-scrollbar">
+                            <div className="flex overflow-x-auto p-1 pb-4 gap-3 sm:grid sm:grid-cols-4 lg:grid-cols-8 mb-6 snap-x snap-mandatory hide-scrollbar">
                                 {PIPELINE_STAGES.map(stage => (
                                     <div
                                         key={stage}
                                         onClick={() => { setSelectedStage(stage); setSelectedLeads([]) }}
                                         className={`min-w-[140px] sm:min-w-0 flex-shrink-0 snap-start p-3 rounded-lg cursor-pointer border transition-all duration-300
-                                                        ${selectedStage === stage ? 'border-primary-green dark:border-neon-cyan bg-primary-green/10 dark:bg-neon-cyan/20 shadow-md transform scale-100 sm:scale-105' : 'border-gray-200 dark:border-glass-border bg-gray-50 dark:bg-glass-surface hover:bg-gray-100 dark:hover:bg-white/5 text-gray-500'}`}
+                                                        ${selectedStage === stage ? 'border-primary-green dark:border-neon-cyan bg-primary-green/10 dark:bg-neon-cyan/20 shadow-md transform scale-100 sm:scale-105' : 'border-gray-300 dark:border-glass-border bg-gray-50 dark:bg-glass-surface hover:bg-gray-100 dark:hover:bg-white/5 text-gray-500'}`}
                                     >
                                         <p className={`text-xs font-semibold truncate ${selectedStage === stage ? 'text-primary-green dark:text-neon-cyan' : 'text-gray-500 dark:text-text-secondary'}`}>{stage}</p>
                                         <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-text-primary mt-1">{leadsByStage[stage]?.length || 0}</p>
@@ -402,9 +402,9 @@ const LeadsListPage: React.FC = () => {
                                         <div
                                             ref={provided.innerRef}
                                             {...provided.droppableProps}
-                                            className={`min-w-[280px] w-[280px] flex flex-col rounded-xl transition-colors ${snapshot.isDraggingOver ? 'bg-gray-100 dark:bg-white/10' : 'bg-gray-50 dark:bg-glass-surface border border-gray-200 dark:border-glass-border'}`}
+                                            className={`min-w-[280px] w-[280px] flex flex-col rounded-xl transition-colors ${snapshot.isDraggingOver ? 'bg-gray-100 dark:bg-white/10' : 'bg-gray-50 dark:bg-glass-surface border border-gray-300 dark:border-glass-border'}`}
                                         >
-                                            <div className="p-3 border-b border-gray-200 dark:border-white/10 flex justify-between items-center sticky top-0 bg-inherit rounded-t-xl z-10">
+                                            <div className="p-3 border-b border-gray-300 dark:border-white/10 flex justify-between items-center sticky top-0 bg-inherit rounded-t-xl z-10">
                                                 <h3 className="font-semibold text-gray-700 dark:text-text-primary text-sm uppercase tracking-wide">{stage}</h3>
                                                 <span className="bg-gray-200 dark:bg-white/20 text-gray-700 dark:text-white text-xs font-bold px-2 py-0.5 rounded-full">{leadsByStage[stage]?.length || 0}</span>
                                             </div>
@@ -418,7 +418,7 @@ const LeadsListPage: React.FC = () => {
                                                                 {...provided.draggableProps}
                                                                 {...provided.dragHandleProps}
                                                                 onClick={() => navigate(`/admin/leads/${lead.id}`)}
-                                                                className={`bg-white dark:bg-secondary-background p-3 rounded-lg shadow-sm border border-gray-100 dark:border-white/5 hover:shadow-md transition-all cursor-grab active:cursor-grabbing ${snapshot.isDragging ? 'shadow-xl ring-2 ring-neon-cyan rotate-2' : ''}`}
+                                                                className={`bg-white dark:bg-secondary-background p-3 rounded-lg shadow-sm border border-gray-300 dark:border-white/5 hover:shadow-md transition-all cursor-grab active:cursor-grabbing ${snapshot.isDragging ? 'shadow-xl ring-2 ring-neon-cyan rotate-2' : ''}`}
                                                             >
                                                                 <div className="flex justify-between items-start mb-2">
                                                                     <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${getStatusColor(lead.scoreStatus)}`}>{lead.scoreStatus}</span>

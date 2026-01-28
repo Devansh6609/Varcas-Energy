@@ -3,9 +3,10 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Lead, LeadActivity, LeadDocument, PipelineStage, FormField, User } from '../../types';
 import { getLeadDetails, getFormSchema, getVendors, updateLead, addLeadNote, uploadDocument, deleteLead, deleteDocument } from '../../service/adminService';
 import { PIPELINE_STAGES } from '../../constants';
-import { Trash2, ClipboardCheck, Edit2, Save, X } from 'lucide-react';
+import { Trash2, ClipboardCheck, Edit2, Save, X, ArrowLeft } from 'lucide-react';
 import PipelineTracker from '../../components/admin/PipelineTracker';
 import { LeadsWorkflowSection } from '../../components/admin/LeadsWorkflowSection';
+import { RooftopWorkflowSection } from '../../components/admin/RooftopWorkflowSection';
 import { useAuth } from '../../contexts/AuthContext';
 import Card from '../../components/admin/Card';
 import LoadingSpinner from '../../components/LoadingSpinner';
@@ -329,16 +330,18 @@ const LeadDetailPage: React.FC = () => {
     if (!lead) return <div className="text-center p-8">Lead not found.</div>;
 
     return (
-        <div>
-            <div className="mb-6">
-                <Link to="/admin/leads" className="text-accent-blue hover:underline">&larr; Back to Pipeline</Link>
+        <div className="p-2 sm:p-6 lg:p-8 max-w-7xl mx-auto animate-fade-in-up">
+            <div className="mb-3 sm:mb-6">
+                <Link to="/admin/leads" className="text-accent-blue hover:underline flex items-center gap-1 text-sm sm:text-base">
+                    <ArrowLeft className="w-4 h-4" /> Back to Pipeline
+                </Link>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6">
                 {/* Left Column */}
-                <div className="lg:col-span-2 space-y-6">
+                <div className="lg:col-span-2 space-y-3 sm:space-y-6">
                     <Card>
-                        <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                        <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
                             <div>
                                 <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-text-light">{lead.name}</h2>
                                 <p className="text-sm text-gray-500 dark:text-text-muted">{lead.email} | {lead.phone}</p>
@@ -372,7 +375,20 @@ const LeadDetailPage: React.FC = () => {
                     </Card>
 
                     {/* Manual Workflow Section */}
-                    {lead.source === 'Manual_Offline' && (
+                    {lead.productType === 'rooftop' && (
+                        <Card>
+                            <RooftopWorkflowSection lead={lead} onUpdate={setLead} />
+                        </Card>
+                    )}
+
+                    {lead.productType === 'pump' && (
+                        <Card>
+                            <LeadsWorkflowSection lead={lead} onUpdate={setLead} />
+                        </Card>
+                    )}
+
+                    {/* Fallback Legacy Check */}
+                    {lead.source === 'Manual_Offline' && lead.productType !== 'rooftop' && lead.productType !== 'pump' && (
                         <Card>
                             <LeadsWorkflowSection lead={lead} onUpdate={setLead} />
                         </Card>

@@ -101,49 +101,52 @@ const ManualLeadEntryPage: React.FC = () => {
         }
     };
 
+    const inputClasses = "w-full p-2 sm:p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs sm:text-sm focus:ring-2 focus:ring-primary-green focus:border-transparent outline-none transition-all placeholder:text-gray-400";
+    const labelClasses = "block text-[10px] sm:text-sm font-bold text-gray-700 dark:text-gray-300 mb-1 uppercase tracking-wide";
+
     return (
-        <div className="p-3 md:p-6 max-w-4xl mx-auto space-y-4 md:space-y-6">
-            <header>
-                <h1 className="text-xl md:text-3xl font-bold text-gray-900 dark:text-white mb-1 md:mb-2">Offline Entry</h1>
-                <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">Manually add offline NTP cases.</p>
+        <div className="p-2 sm:p-6 lg:p-8 max-w-4xl mx-auto space-y-3 sm:space-y-6">
+            <header className="mb-2 sm:mb-4 px-1">
+                <h1 className="text-lg sm:text-3xl font-bold text-gray-900 dark:text-white mb-1">Offline Entry</h1>
+                <p className="text-xs sm:text-base text-gray-600 dark:text-gray-400">Manually add offline NTP cases.</p>
             </header>
 
-            <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 md:p-6 space-y-6 md:space-y-8 border border-gray-100 dark:border-gray-700">
+            <form onSubmit={handleSubmit} className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-xl shadow-lg border border-white/20 dark:border-gray-700 p-3 sm:p-6 space-y-4 sm:space-y-6">
 
                 {/* Section 1: Basic Info */}
-                <section className="space-y-4">
-                    <h2 className="text-xl font-semibold text-primary-green border-b border-gray-200 dark:border-gray-700 pb-2">
-                        1. Core Customer Details
+                <section className="space-y-3 sm:space-y-4">
+                    <h2 className="text-sm sm:text-xl font-bold text-primary-green border-b border-gray-200 dark:border-gray-700 pb-2 flex items-center gap-2">
+                        <span className="bg-primary-green/10 p-1 rounded-lg">👤</span> Core Customer Details
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
                         {/* Name */}
                         <div>
-                            <label className="block text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Customer Name *</label>
+                            <label className={labelClasses}>Customer Name *</label>
                             <input
                                 type="text"
                                 name="name"
                                 required
                                 value={formData.name}
                                 onChange={handleChange}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-green focus:border-transparent outline-none transition-all"
+                                className={inputClasses}
                                 placeholder="Enter full name"
                             />
                         </div>
                         {/* Father Name */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Father's Name</label>
+                            <label className={labelClasses}>Father's Name</label>
                             <input
                                 type="text"
                                 name="fatherName"
                                 value={formData.fatherName}
                                 onChange={handleChange}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-green focus:border-transparent outline-none transition-all"
+                                className={inputClasses}
                                 placeholder="Father's name"
                             />
                         </div>
                         {/* Mobile */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mobile Number *</label>
+                            <label className={labelClasses}>Mobile Number *</label>
                             <input
                                 type="tel"
                                 name="phone"
@@ -152,58 +155,58 @@ const ManualLeadEntryPage: React.FC = () => {
                                 title="10 digit mobile number"
                                 value={formData.phone}
                                 onChange={handleChange}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-green focus:border-transparent outline-none transition-all"
+                                className={inputClasses}
                                 placeholder="10-digit number"
                             />
                         </div>
                         {/* HP */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Horsepower (HP)</label>
+                            <label className={labelClasses}>Horsepower (HP)</label>
                             <input
                                 type="text"
                                 name="hp"
                                 value={formData.hp}
                                 onChange={handleChange}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-green focus:border-transparent outline-none transition-all"
+                                className={inputClasses}
                                 placeholder="e.g. 5HP, 7.5HP"
                             />
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6">
                         {/* District */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">District</label>
+                            <label className={labelClasses}>District</label>
                             <input
                                 type="text"
                                 name="district"
                                 value={formData.district}
                                 onChange={handleChange}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-green focus:border-transparent outline-none transition-all"
+                                className={inputClasses}
                                 placeholder="District"
                             />
                         </div>
                         {/* Tehsil */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tehsil</label>
+                            <label className={labelClasses}>Tehsil</label>
                             <input
                                 type="text"
                                 name="tehsil"
                                 value={formData.tehsil}
                                 onChange={handleChange}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-green focus:border-transparent outline-none transition-all"
+                                className={inputClasses}
                                 placeholder="Tehsil"
                             />
                         </div>
                         {/* Village */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Village</label>
+                        <div className="col-span-2 sm:col-span-1">
+                            <label className={labelClasses}>Village</label>
                             <input
                                 type="text"
                                 name="village"
                                 value={formData.village}
                                 onChange={handleChange}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-green focus:border-transparent outline-none transition-all"
+                                className={inputClasses}
                                 placeholder="Village"
                             />
                         </div>
@@ -211,20 +214,20 @@ const ManualLeadEntryPage: React.FC = () => {
                 </section>
 
                 {/* Section 2: Technical & Assignment */}
-                <section className="space-y-4">
-                    <h2 className="text-xl font-semibold text-primary-green border-b border-gray-200 dark:border-gray-700 pb-2">
-                        2. Technical & Assignment
+                <section className="space-y-3 sm:space-y-4">
+                    <h2 className="text-sm sm:text-xl font-bold text-primary-green border-b border-gray-200 dark:border-gray-700 pb-2 flex items-center gap-2">
+                        <span className="bg-primary-green/10 p-1 rounded-lg">⚡</span> Technical & Assignment
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
                         {/* Connection Type */}
                         <div>
-                            <label htmlFor="connectionType" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Electric Connection Type</label>
+                            <label htmlFor="connectionType" className={labelClasses}>Electric Connection Type</label>
                             <select
                                 id="connectionType"
                                 name="connectionType"
                                 value={formData.connectionType}
                                 onChange={handleChange}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-green focus:border-transparent outline-none transition-all"
+                                className={inputClasses}
                             >
                                 <option value="">Select Connection Type</option>
                                 <option value="Single Phase">Single Phase</option>
@@ -240,13 +243,13 @@ const ManualLeadEntryPage: React.FC = () => {
                         {/* Master Admin: Vendor Assignment */}
                         {user && user.role === 'Master' && (
                             <div className="col-span-1">
-                                <label htmlFor="assignedVendorId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Assign Vendor</label>
+                                <label htmlFor="assignedVendorId" className={labelClasses}>Assign Vendor</label>
                                 <select
                                     id="assignedVendorId"
                                     name="assignedVendorId"
                                     value={formData.assignedVendorId}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-green focus:border-transparent outline-none transition-all"
+                                    className={inputClasses}
                                 >
                                     <option value="">Select Vendor (Optional)</option>
                                     {vendors.map(v => (
@@ -259,42 +262,50 @@ const ManualLeadEntryPage: React.FC = () => {
                 </section>
 
                 {/* Section 3: Document Upload */}
-                <section className="space-y-4">
-                    <h2 className="text-xl font-semibold text-primary-green border-b border-gray-200 dark:border-gray-700 pb-2">
-                        3. Documents
+                <section className="space-y-3 sm:space-y-4">
+                    <h2 className="text-sm sm:text-xl font-bold text-primary-green border-b border-gray-200 dark:border-gray-700 pb-2 flex items-center gap-2">
+                        <span className="bg-primary-green/10 p-1 rounded-lg">📄</span> Documents
                     </h2>
-                    <div className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-white/5">
-                        <label htmlFor="basicProfile" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Basic Profile PDF *
+                    <div className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-black/20 hover:border-primary-green transition-colors">
+                        <label htmlFor="basicProfile" className="block text-center cursor-pointer">
+                            <div className="mb-2">
+                                <span className="bg-primary-green/10 p-2 rounded-full inline-block">
+                                    {/* Icon placeholder if needed, or just text */}
+                                    📂
+                                </span>
+                            </div>
+                            <span className="block text-xs sm:text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                Upload Basic Profile PDF *
+                            </span>
+                            <span className="block text-[10px] text-gray-400 mb-3">Scanned NTP/Application Form</span>
+                            <input
+                                id="basicProfile"
+                                type="file"
+                                accept=".pdf,image/*"
+                                onChange={handleFileChange}
+                                className="block w-full text-xs text-gray-500
+                                    file:mr-4 file:py-1.5 file:px-3 sm:file:py-2 sm:file:px-4
+                                    file:rounded-full file:border-0
+                                    file:text-xs file:font-semibold
+                                    file:bg-primary-green file:text-white
+                                    hover:file:bg-green-600 cursor-pointer mx-auto max-w-xs"
+                            />
                         </label>
-                        <input
-                            id="basicProfile"
-                            type="file"
-                            accept=".pdf,image/*"
-                            onChange={handleFileChange}
-                            className="block w-full text-sm text-gray-500
-                                file:mr-4 file:py-2 file:px-4
-                                file:rounded-full file:border-0
-                                file:text-sm file:font-semibold
-                                file:bg-primary-green/10 file:text-primary-green
-                                hover:file:bg-primary-green/20"
-                        />
-                        <p className="mt-1 text-xs text-gray-500">Upload the scanned NTP/Application form.</p>
                     </div>
                 </section>
 
-                <div className="flex justify-end pt-4">
+                <div className="flex gap-3 pt-2 sm:pt-4">
                     <button
                         type="button"
                         onClick={() => navigate('/admin/leads')}
-                        className="px-6 py-2 mr-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        className="flex-1 py-2.5 sm:py-3 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-xs sm:text-sm font-bold"
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className={`px-8 py-2 rounded-lg bg-primary-green text-white font-medium shadow-md hover:bg-green-600 transition-all transform active:scale-95 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                        className={`flex-[2] py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold shadow-lg shadow-green-500/20 transition-all transform hover:scale-[1.02] active:scale-[0.98] text-xs sm:text-sm ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                     >
                         {isLoading ? 'Creating Case...' : 'Create Offline Case'}
                     </button>

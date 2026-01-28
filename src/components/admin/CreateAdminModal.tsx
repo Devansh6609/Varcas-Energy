@@ -1,6 +1,6 @@
 import React, { useState, FormEvent } from 'react';
 import { createPortal } from 'react-dom';
-import { createMasterAdmin } from '../../service/adminService.ts';
+import { createMasterAdmin } from '../../service/adminService';
 import LoadingSpinner from '../LoadingSpinner';
 
 interface CreateAdminModalProps {
@@ -39,7 +39,7 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onClose, onAdminCre
 
     return createPortal(
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center z-50 p-4 pt-24 pb-12 overflow-y-auto animate-fade-in">
-            <div className="bg-white dark:bg-glass-surface border border-gray-200 dark:border-glass-border p-8 rounded-xl shadow-2xl w-full max-w-lg">
+            <div className="bg-white dark:bg-glass-surface border border-gray-300 dark:border-glass-border p-8 rounded-xl shadow-2xl w-full max-w-lg">
                 <h3 className="text-xl font-bold mb-6 text-gray-900 dark:text-text-primary">Create New Master Admin</h3>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
@@ -55,7 +55,7 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({ onClose, onAdminCre
                         <input type="password" name="password" placeholder="Create a strong password" value={formData.password} onChange={handleInputChange} required className={modalInputClass} />
                     </div>
 
-                    <div className="!mt-8 border-t border-gray-200 dark:border-glass-border pt-4">
+                    <div className="!mt-8 border-t border-gray-300 dark:border-glass-border pt-4">
                         <label className="block text-sm font-medium text-gray-700 dark:text-text-secondary mb-1">Your Password (for confirmation)</label>
                         <input type="password" name="confirmationPassword" placeholder="Enter your current password to confirm" value={formData.confirmationPassword} onChange={handleInputChange} required className={modalInputClass} />
                         <p className="text-xs text-gray-500 dark:text-text-muted mt-1">For security, please confirm your identity by entering your password.</p>

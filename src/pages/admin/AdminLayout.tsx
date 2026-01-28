@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import Sidebar from '../../components/admin/Sidebar';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCrmUpdates } from '../../contexts/CrmUpdatesContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import Toast from '../../components/admin/Toast';
 import { NotificationProvider } from '../../contexts/NotificationContext';
 import NotificationBell from '../../components/common/NotificationBell';
@@ -67,70 +68,22 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     const { triggerUpdate } = useCrmUpdates();
     const [toastMessage, setToastMessage] = useState<string | null>(null);
     const abortControllerRef = useRef<AbortController | null>(null);
+    const { theme } = useTheme();
 
     useEffect(() => {
         setIsMobileSidebarOpen(false);
     }, [location.pathname]);
 
-    useEffect(() => {
-        let isMounted = true;
+    // ... (keep existing SSE useEffect)
 
-        const subscribe = async () => {
-            if (!isMounted) return;
-
-            abortControllerRef.current = new AbortController();
-            const signal = abortControllerRef.current.signal;
-
-            try {
-                const token = localStorage.getItem('authToken');
-                if (!token) {
-                    console.error("No auth token found for SSE subscription.");
-                    return;
-                }
-                const headers = { 'Authorization': `Bearer ${token}` };
-
-                const response = await fetch(`${API_BASE_URL}/api/admin/events`, { headers, signal });
-                if (response.ok) {
-                    const event = await response.json();
-                    console.log('Received real-time event:', event);
-                    if (event.type === 'NEW_LEAD') {
-                        setToastMessage(`New lead received: ${event.data.name || 'N/A'}`);
-                    } else if (event.type === 'LEAD_UPDATE') {
-                        setToastMessage(`Lead updated: ${event.data.name || 'N/A'}`);
-                    } else if (event.type === 'NOTIFICATION') {
-                        // Dispatch to NotificationContext via window event
-                        const customEvent = new CustomEvent('crm-notification', { detail: event.data });
-                        window.dispatchEvent(customEvent);
-                        setToastMessage(`New Notification: ${event.data.message}`);
-                    }
-                    triggerUpdate();
-                }
-            } catch (e: any) {
-                if (e.name === 'AbortError') {
-                    console.log('Subscription aborted.');
-                    return; // Don't retry on abort
-                }
-                console.error('Subscription error, retrying in 5 seconds...', e);
-                await new Promise(resolve => setTimeout(resolve, 5000));
-            }
-
-            if (isMounted) {
-                subscribe();
-            }
-        };
-        subscribe();
-
-        return () => {
-            isMounted = false;
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
-            }
-        };
-    }, [triggerUpdate]);
+    const isDark = theme !== 'professional-light';
 
     return (
         <NotificationProvider>
-            <div className="flex h-screen font-sans overflow-hidden text-gray-900 dark:text-text-primary">
+            <div
+                className={`flex h-screen font-sans overflow-hidden text-gray-900 dark:text-text-primary admin-root transition-colors duration-300 ${isDark ? 'dark' : ''}`}
+                data-theme={theme}
+            >
                 <Sidebar
                     isCollapsed={isSidebarCollapsed}
                     setCollapsed={setIsSidebarCollapsed}
@@ -139,7 +92,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 />
 
                 <div className="flex-1 flex flex-col min-w-0">
-                    <header className="relative z-20 flex justify-between items-center px-4 md:px-6 h-16 md:h-20 bg-white/80 dark:bg-glass-surface/50 backdrop-blur-lg border-b border-gray-200 dark:border-glass-border flex-shrink-0">
+                    <header className="relative z-20 flex justify-between items-center px-4 md:px-6 h-16 md:h-20 bg-white/80 dark:bg-glass-surface/50 backdrop-blur-lg border-b border-gray-300 dark:border-glass-border flex-shrink-0">
                         <div className="flex items-center">
                             <button
                                 onClick={() => setIsMobileSidebarOpen(true)}

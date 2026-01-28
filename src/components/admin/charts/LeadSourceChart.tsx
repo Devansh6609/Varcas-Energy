@@ -6,22 +6,23 @@ interface LeadSourceChartProps {
     data: { name: string; value: number }[];
 }
 
-const COLORS = ['#3b82f6', '#06b6d4', '#a78bfa', '#22c55e'];
+const COLORS = ['#22d3ee', '#818cf8', '#34d399', '#f472b6'];
 
 const LeadSourceChart: React.FC<LeadSourceChartProps> = ({ data }) => {
     const isDarkMode = useTheme();
 
     const tooltipStyles = {
-        background: isDarkMode ? 'rgba(15, 23, 42, 0.7)' : 'rgba(255, 255, 255, 0.9)',
-        backdropFilter: 'blur(5px)',
-        border: isDarkMode ? '1px solid rgba(107, 114, 128, 0.2)' : '1px solid #e5e7eb',
-        borderRadius: '12px',
-        color: isDarkMode ? '#f8fafc' : '#111827',
+        background: isDarkMode ? '#1e293b' : '#ffffff',
+        border: isDarkMode ? '1px solid #334155' : '1px solid #e2e8f0',
+        borderRadius: '8px',
+        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+        padding: '8px 12px'
     };
 
     const legendStyle = {
-        color: isDarkMode ? '#94a3b8' : '#6b7280',
-        fontSize: '12px'
+        color: isDarkMode ? '#cbd5e1' : '#475569',
+        fontSize: '12px',
+        fontWeight: 500
     };
 
     return (
@@ -32,23 +33,32 @@ const LeadSourceChart: React.FC<LeadSourceChartProps> = ({ data }) => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    outerRadius={90}
-                    innerRadius={60} // This creates the donut shape
-                    fill="#8884d8"
+                    outerRadius={85}
+                    innerRadius={60}
                     dataKey="value"
                     nameKey="name"
-                    paddingAngle={5}
-                    cornerRadius={8}
+                    paddingAngle={4}
+                    cornerRadius={6}
+                    stroke="none"
                 >
                     {data.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke={COLORS[index % COLORS.length]} />
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                 </Pie>
                 <Tooltip
                     contentStyle={tooltipStyles}
-                    itemStyle={{ fontWeight: 'bold' }}
+                    itemStyle={{ color: isDarkMode ? '#fff' : '#0f172a', fontWeight: 600, fontSize: '13px', padding: 0 }}
+                    cursor={{ fill: 'transparent' }}
                 />
-                <Legend iconSize={10} layout="vertical" verticalAlign="middle" align="right" wrapperStyle={legendStyle} />
+                <Legend
+                    iconSize={10}
+                    iconType="circle"
+                    layout="vertical"
+                    verticalAlign="middle"
+                    align="right"
+                    wrapperStyle={legendStyle}
+                    formatter={(value) => <span style={{ color: isDarkMode ? '#cbd5e1' : '#475569', marginLeft: '5px' }}>{value}</span>}
+                />
             </PieChart>
         </ResponsiveContainer>
     );

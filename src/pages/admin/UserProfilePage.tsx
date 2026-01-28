@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext.tsx';
-import Card from '../../components/admin/Card.tsx';
-import EditProfileModal from '../../components/admin/EditProfileModal.tsx';
+import { useAuth } from '../../contexts/AuthContext';
+import Card from '../../components/admin/Card';
+import EditProfileModal from '../../components/admin/EditProfileModal';
 import { updateProfile } from '../../service/adminService';
 
 const API_BASE_URL = import.meta.env.VITE_CRM_API_URL || 'http://localhost:3001';
@@ -61,7 +61,7 @@ const UserProfilePage: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="mt-8 border-t border-gray-200 dark:border-border-color pt-6">
+                <div className="mt-8 border-t border-gray-300 dark:border-border-color pt-6">
                     <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-8">
                         <div>
                             <dt className="text-sm font-medium text-gray-500 dark:text-text-muted">Full Name</dt>

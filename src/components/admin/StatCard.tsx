@@ -12,12 +12,16 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, colorClass }) =
     const isNumeric = typeof value === 'number';
     const numericValue = isNumeric ? value : parseFloat(value.replace(/[^0-9.]/g, ''));
 
+    // Extract color base from colorClass string (simple heuristic for demo, or hardcode mapping if needed)
+    // For now, adhering to the prop passed but wrapping in better styling.
+
     return (
-        <div className="bg-white dark:bg-glass-surface dark:backdrop-blur-lg p-3 md:p-4 rounded-xl shadow-lg dark:shadow-black/20 transition-all duration-300 hover:shadow-xl dark:hover:shadow-glow-sm dark:hover:shadow-black/30 hover:-translate-y-1 border border-gray-200 dark:border-glass-border dark:hover:border-glow-cyan/50 h-full flex flex-col justify-center">
-            <div className="flex items-center justify-between gap-2">
-                <div className="min-w-0">
-                    <h4 className="text-[10px] md:text-xs font-medium text-gray-500 dark:text-text-secondary uppercase tracking-wider truncate">{title}</h4>
-                    <div className="mt-0.5 md:mt-1 text-xl md:text-3xl font-bold text-gray-900 dark:text-text-primary font-mono truncate">
+        <div className="relative overflow-hidden bg-white dark:bg-gray-800/80 backdrop-blur-xl border border-gray-100 dark:border-white/10 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 group">
+
+            <div className="flex items-start justify-between relative z-10">
+                <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-gray-400 dark:text-gray-400 uppercase tracking-widest mb-1">{title}</p>
+                    <div className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
                         {isNumeric ? (
                             <AnimatedCounter target={numericValue} />
                         ) : (
@@ -25,13 +29,15 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, colorClass }) =
                         )}
                     </div>
                 </div>
-                <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center shadow-lg shadow-black/30 flex-shrink-0 ${colorClass}`}>
-                    {/* Scale icon down slightly on mobile */}
-                    <div className="scale-75 md:scale-100 transform origin-center">
+
+                <div className={`hidden sm:flex items-center justify-center w-12 h-12 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors duration-300`}>
+                    {/* Icon wrapper to ensure contrast and size */}
+                    <div className="w-6 h-6">
                         {icon}
                     </div>
                 </div>
             </div>
+            {/* Optional: Add a sparkline or trend indicator here in future */}
         </div>
     );
 };

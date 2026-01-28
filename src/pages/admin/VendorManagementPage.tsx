@@ -2,9 +2,9 @@ import React, { useState, useEffect, FormEvent, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { getVendors, getStates, getDistricts, createVendor } from '../../service/adminService';
 import { User } from '../../types';
-import Card from '../../components/admin/Card.tsx';
-import LoadingSpinner from '../../components/LoadingSpinner.tsx';
-import DeleteUserConfirmationModal from '../../components/admin/DeleteUserConfirmationModal.tsx';
+import Card from '../../components/admin/Card';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import DeleteUserConfirmationModal from '../../components/admin/DeleteUserConfirmationModal';
 
 const VendorManagementPage: React.FC = () => {
     const [vendors, setVendors] = useState<User[]>([]);
@@ -139,7 +139,7 @@ const VendorManagementPage: React.FC = () => {
 
             {isCreateModalOpen && modalRoot && createPortal(
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center z-50 p-4 pt-24 pb-12 overflow-y-auto animate-fade-in">
-                    <div className="bg-white dark:bg-glass-surface border border-gray-200 dark:border-glass-border p-8 rounded-xl shadow-2xl w-full max-w-lg">
+                    <div className="bg-white dark:bg-glass-surface border border-gray-300 dark:border-glass-border p-8 rounded-xl shadow-2xl w-full max-w-lg">
                         <h3 className="text-xl font-bold mb-6 text-gray-900 dark:text-text-primary">Create New Vendor</h3>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             {/* Form fields for creating a vendor */}
