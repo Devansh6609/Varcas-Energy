@@ -9,65 +9,59 @@ interface RevenueChartProps {
 const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
     const isDarkMode = useTheme();
 
-    const axisColor = isDarkMode ? '#94a3b8' : '#6b7280';
-    const tooltipStyles = {
-        background: isDarkMode ? 'rgba(15, 23, 42, 0.7)' : 'rgba(255, 255, 255, 0.9)',
-        backdropFilter: 'blur(5px)',
-        border: isDarkMode ? '1px solid rgba(107, 114, 128, 0.2)' : '1px solid #e5e7eb',
-        borderRadius: '12px',
-        boxShadow: isDarkMode ? '0 0 10px rgba(34, 197, 94, 0.2)' : '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-    };
-    const labelStyle = { color: isDarkMode ? '#f8fafc' : '#111827' };
+    const axisColor = isDarkMode ? 'rgba(148, 163, 184, 0.5)' : '#6b7280';
 
     return (
         <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                 <defs>
                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.6} />
                         <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                     </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.05)"} />
                 <XAxis
                     dataKey="name"
                     stroke={axisColor}
-                    fontSize={11}
+                    fontSize={10}
                     tickLine={false}
                     axisLine={false}
-                    tick={{ fill: axisColor }}
+                    tick={{ fill: axisColor, fontWeight: 700 }}
                     dy={10}
                 />
                 <YAxis
                     stroke={axisColor}
-                    fontSize={11}
+                    fontSize={10}
                     tickLine={false}
                     axisLine={false}
-                    tick={{ fill: axisColor }}
+                    tick={{ fill: axisColor, fontWeight: 700 }}
                     tickFormatter={(value) => `₹${Number(value) / 1000}k`}
                 />
                 <Tooltip
-                    cursor={{ stroke: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)', strokeWidth: 1, strokeDasharray: '4 4' }}
+                    cursor={{ stroke: 'rgba(16, 185, 129, 0.3)', strokeWidth: 2 }}
                     contentStyle={{
-                        backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
-                        borderColor: isDarkMode ? '#334155' : '#e2e8f0',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                        padding: '8px 12px'
+                        backgroundColor: 'rgba(15, 23, 42, 0.8)',
+                        backdropFilter: 'blur(12px)',
+                        borderColor: 'rgba(16, 185, 129, 0.3)',
+                        borderRadius: '16px',
+                        boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+                        padding: '12px',
+                        border: '1px solid rgba(255, 255, 255, 0.1)'
                     }}
-                    labelStyle={{ color: isDarkMode ? '#94a3b8' : '#64748b', marginBottom: '4px', fontSize: '12px' }}
-                    itemStyle={{ color: isDarkMode ? '#fff' : '#0f172a', fontWeight: 600, fontSize: '14px', padding: 0 }}
+                    labelStyle={{ color: 'rgba(148, 163, 184, 0.8)', marginBottom: '4px', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em' }}
+                    itemStyle={{ color: '#fff', fontWeight: 900, fontSize: '16px', padding: 0 }}
                     formatter={(value: number) => [`₹${value.toLocaleString('en-IN')}`, 'Revenue']}
                 />
                 <Area
                     type="monotone"
                     dataKey="revenue"
                     stroke="#10b981"
-                    strokeWidth={3}
+                    strokeWidth={4}
                     fillOpacity={1}
                     fill="url(#colorRevenue)"
-                    activeDot={{ r: 6, strokeWidth: 0, fill: '#10b981' }}
-                    animationDuration={1500}
+                    activeDot={{ r: 8, strokeWidth: 0, fill: '#10b981', filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.8))' }}
+                    animationDuration={2000}
                 />
             </AreaChart>
         </ResponsiveContainer>

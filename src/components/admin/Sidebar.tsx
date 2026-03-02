@@ -13,8 +13,8 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setCollapsed, isMobileOpen, onMobileClose }) => {
     const { user, logout } = useAuth();
 
-    const linkClass = "flex items-center px-4 py-2 md:py-2.5 text-sm md:text-base text-gray-600 dark:text-text-secondary hover:text-gray-900 dark:hover:text-text-primary hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors duration-200 group relative";
-    const activeLinkClass = "font-semibold border-l-4 bg-primary-green/10 text-primary-green border-primary-green dark:bg-gradient-to-r dark:from-electric-blue/20 dark:to-transparent dark:text-text-accent dark:border-electric-blue dark:shadow-lg dark:shadow-electric-blue/20 dark:animate-pulse-glow dark:[--tw-shadow-color:theme(colors.electric-blue/50)]";
+    const linkClass = "flex items-center px-4 py-3 text-sm font-medium text-text-secondary hover:text-white hover:bg-white/[0.02] rounded-xl transition-all duration-300 group relative mx-2";
+    const activeLinkClass = "font-black bg-gradient-to-r from-neon-cyan/20 to-transparent text-neon-cyan before:absolute before:left-0 before:top-1/4 before:bottom-1/4 before:w-1 before:bg-neon-cyan before:rounded-r-full before:shadow-[0_0_10px_theme(colors.neon-cyan)] shadow-[inset_1px_0_10px_theme(colors.neon-cyan/10)]";
 
     const visibleLinks = ADMIN_NAV_LINKS.filter(link => user && link.roles.includes(user.role));
 
@@ -26,13 +26,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setCollapsed, isMobileOp
     };
 
     const sidebarContent = (
-        <div className={`flex flex-col h-full bg-white dark:bg-glass-surface/60 dark:backdrop-blur-xl border-r border-gray-300 dark:border-glass-border relative`}>
+        <div className={`flex flex-col h-full bg-glass-surface/40 backdrop-blur-3xl border-r border-glass-border/20 relative`}>
             <div className={`flex items-center h-20 flex-shrink-0 px-4 ${isCollapsed && 'lg:px-0 lg:justify-center'}`}>
                 <div className={`${isCollapsed ? 'lg:hidden' : ''} md:hidden lg:block text-gray-800 dark:text-text-primary`}>
                     <Logo />
                 </div>
-                <div className={`hidden ${isCollapsed ? 'lg:block' : ''} md:block lg:hidden text-gray-800 dark:text-text-primary`}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8 text-neon-cyan"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <div className={`hidden ${isCollapsed ? 'lg:block' : ''} md:block lg:hidden text-text-primary`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8 text-neon-cyan drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                 </div>
             </div>
             <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
@@ -49,10 +49,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setCollapsed, isMobileOp
                     </NavLink>
                 ))}
             </nav>
-            <div className="px-4 py-4">
+            <div className="px-2 py-4 border-t border-glass-border/10">
                 <button
                     onClick={handleLogout}
-                    className={`${linkClass} w-full`}
+                    className={`${linkClass} w-full text-error-red hover:text-error-red hover:bg-error-red/10`}
                     title="Logout"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 md:h-6 md:w-6"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
@@ -62,8 +62,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setCollapsed, isMobileOp
             {/* Collapse button for desktop */}
             <button
                 onClick={() => setCollapsed(!isCollapsed)}
-                className="absolute top-6 p-2 rounded-full text-gray-500 dark:text-text-secondary hover:text-gray-900 dark:hover:text-text-primary bg-white dark:bg-glass-surface border border-gray-300 dark:border-glass-border hidden lg:block transition-all duration-300 z-50"
-                style={{ right: '-16px' }}
+                className="absolute top-6 p-2 rounded-full text-text-secondary hover:text-neon-cyan bg-glass-surface/80 border border-glass-border/30 hidden lg:flex items-center justify-center transition-all duration-300 z-50 hover:shadow-glow-sm hover:shadow-neon-cyan/20 backdrop-blur-md"
+                style={{ right: '-16px', width: '32px', height: '32px' }}
                 title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`h-4 w-4 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}><polyline points="15 18 9 12 15 6"></polyline></svg>

@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import * as authService from '../service/authService';
 import { Logo } from '../constants';
 import LoadingSpinner from '../components/LoadingSpinner';
-import CardParticles from '../components/CardParticles.tsx';
+import CardParticles from '../components/CardParticles';
+import { Mail, ArrowLeft, Send, ShieldCheck, Info, LogIn } from 'lucide-react';
 
 const ForgotPasswordPage: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -33,77 +34,113 @@ const ForgotPasswordPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col justify-center items-center p-4">
-            <div className="relative w-full max-w-4xl rounded-2xl shadow-2xl p-[1px] overflow-hidden">
-                <div className="absolute inset-[-1000%] animate-border-spin bg-[conic-gradient(from_90deg_at_50%_50%,#a78bfa_0%,#06b6d4_50%,#3b82f6_100%)]" />
-                <div className="relative z-10 w-full h-full bg-night-sky rounded-[19px] overflow-hidden">
+        <div className="min-h-screen flex flex-col justify-center items-center p-4 relative overflow-hidden bg-night-sky">
+            <div className="relative w-full max-w-5xl group transition-transform duration-700">
+                <div className="relative z-10 w-full bg-night-sky/80 backdrop-blur-3xl rounded-3xl border border-glass-border/20 overflow-hidden shadow-2xl flex flex-col md:grid md:grid-cols-12 min-h-[600px]">
                     <CardParticles />
-                    <div className="relative z-10 w-full h-full md:grid md:grid-cols-2">
-                        {/* Left Side: Form */}
-                        <div className="p-8 md:p-12 flex flex-col justify-center bg-night-sky">
-                            <div className="w-full">
-                                <div className="mb-8">
-                                    <Logo />
+
+                    {/* Left Side: Branding (Col 5) */}
+                    <div className="hidden md:flex md:col-span-5 flex-col justify-between p-12 bg-gradient-to-b from-deep-violet/20 to-transparent border-r border-glass-border/20 relative">
+                        <div className="relative z-10">
+                            <div className="mb-12 transform hover:scale-105 transition-transform duration-500 w-fit text-white">
+                                <Logo />
+                            </div>
+                            <div className="space-y-6">
+                                <h3 className="text-4xl lg:text-5xl font-black text-white leading-tight tracking-tight">
+                                    Account <br /><span className="text-neon-cyan">Security.</span>
+                                </h3>
+                                <p className="text-text-secondary font-bold text-sm leading-relaxed max-w-xs">
+                                    Forgot your password? No worries. Follow our secure process to regain access to your dashboard and data.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="relative z-10 pt-10 border-t border-glass-border/10">
+                            <p className="text-xs font-black uppercase tracking-[0.2em] text-text-secondary/40">Secure Recovery Protocol</p>
+                        </div>
+                    </div>
+
+                    {/* Right Side: Form (Col 7) */}
+                    <div className="md:col-span-7 p-8 md:p-14 flex flex-col justify-center bg-white/[0.02]">
+                        <div className="w-full max-w-md mx-auto">
+                            <div className="mb-10">
+                                <div className="p-3 w-fit rounded-2xl bg-neon-cyan/10 text-neon-cyan mb-6 shadow-glow-sm shadow-neon-cyan/20">
+                                    <ShieldCheck size={28} />
                                 </div>
-                                <h2 className="text-3xl font-bold text-text-primary mb-6">Reset Password</h2>
-                                {message ? (
-                                    <div className="text-center space-y-6">
-                                        <p className="text-text-primary">{message}</p>
-                                        <Link to="/login" className="inline-block w-full text-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-accent-blue hover:bg-accent-blue-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue">
-                                            Back to Login
-                                        </Link>
+                                <h2 className="text-3xl font-black text-text-primary mb-2">Reset Password</h2>
+                                <p className="text-text-secondary/60 text-sm font-bold">Enter your registered email to receive recovery instructions.</p>
+                            </div>
+
+                            {message ? (
+                                <div className="animate-fade-in-up text-center space-y-8 py-8 px-6 bg-success-green/5 border border-success-green/20 rounded-3xl">
+                                    <div className="w-20 h-20 bg-success-green/10 rounded-full flex items-center justify-center mx-auto text-success-green shadow-glow-sm shadow-success-green/20">
+                                        <Mail size={36} />
                                     </div>
-                                ) : (
-                                    <form onSubmit={handleSubmit} className="space-y-6">
-                                        <p className="text-sm text-center text-text-secondary">
-                                            Enter your email address and we'll send you instructions to reset your password.
-                                        </p>
-                                        <div>
-                                            <label htmlFor="email" className="block text-sm font-medium text-text-secondary">Email Address</label>
+                                    <div className="space-y-2">
+                                        <p className="font-bold text-text-primary text-lg">Check your inbox</p>
+                                        <p className="text-text-secondary/60 text-sm font-bold">{message}</p>
+                                    </div>
+                                    <Link to="/login" className="flex items-center justify-center gap-2 w-full py-4 bg-white/5 hover:bg-white/10 text-white font-black rounded-2xl border border-white/10 transition-all tracking-wide">
+                                        <ArrowLeft size={18} /> BACK TO LOGIN
+                                    </Link>
+                                </div>
+                            ) : (
+                                <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in-up">
+                                    <div className="space-y-2">
+                                        <label htmlFor="email" className="block text-[10px] font-black uppercase tracking-widest text-text-secondary/70 ml-1">Email Address</label>
+                                        <div className="relative group/input">
+                                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary/40 group-focus-within/input:text-neon-cyan transition-colors" size={18} />
                                             <input
                                                 type="email"
                                                 id="email"
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
                                                 required
-                                                className="mt-1 block w-full px-3 py-2 bg-night-sky/80 border border-glass-border rounded-md shadow-sm placeholder-gray-400 text-white focus:outline-none focus:ring-neon-cyan focus:border-neon-cyan"
+                                                placeholder="name@company.com"
+                                                className="w-full pl-12 pr-4 py-3.5 bg-black/40 border border-glass-border/30 rounded-2xl text-text-primary text-sm focus:ring-2 focus:ring-neon-cyan/50 focus:border-neon-cyan outline-none transition-all placeholder:text-text-secondary/30"
                                             />
                                         </div>
+                                    </div>
 
-                                        {error && <p className="text-sm text-error-red bg-error-red/10 p-3 rounded-md">{error}</p>}
+                                    {error && (
+                                        <div className="p-3.5 bg-error-red/10 border border-error-red/20 rounded-xl flex items-center gap-3 animate-shake">
+                                            <Info size={16} className="text-error-red" />
+                                            <p className="text-xs font-bold text-error-red">{error}</p>
+                                        </div>
+                                    )}
 
-                                        <div>
-                                            <button
-                                                type="submit"
-                                                disabled={isLoading}
-                                                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-accent-blue hover:bg-accent-blue-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue disabled:bg-gray-500 disabled:cursor-not-allowed transition-colors"
-                                            >
-                                                {isLoading ? (
-                                                    <>
-                                                        <LoadingSpinner size="sm" className="mr-2 !text-white" />
-                                                        Sending...
-                                                    </>
-                                                ) : 'Send Reset Link'}
-                                            </button>
-                                        </div>
-                                        <div className="text-center">
-                                            <Link to="/login" className="text-sm font-medium text-accent-blue hover:text-accent-blue-hover">
-                                                Back to Login
-                                            </Link>
-                                        </div>
-                                    </form>
-                                )}
-                            </div>
-                        </div>
-                        {/* Right Side: Message */}
-                        <div className="hidden md:flex flex-col justify-center items-center text-center p-12 bg-transparent">
-                            <div className="bg-deep-violet/40 backdrop-blur-sm p-8 rounded-xl">
-                                <h3 className="text-3xl font-bold text-white text-glow">Secure Your Account</h3>
-                                <p className="mt-2 text-text-secondary">Follow the steps to regain access and continue your work.</p>
-                            </div>
+                                    <button
+                                        type="submit"
+                                        disabled={isLoading}
+                                        className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-neon-cyan to-electric-blue text-night-sky font-black rounded-2xl shadow-glow-sm shadow-neon-cyan/30 hover:scale-[1.01] active:scale-[0.98] transition-all tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isLoading ? (
+                                            <LoadingSpinner size="sm" className="text-night-sky" />
+                                        ) : (
+                                            <>
+                                                SEND RECOVERY LINK <Send size={18} className="ml-1" />
+                                            </>
+                                        )}
+                                    </button>
+
+                                    <div className="text-center pt-2">
+                                        <Link to="/login" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-text-secondary/40 hover:text-neon-cyan transition-colors group">
+                                            <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+                                            Return to Login
+                                        </Link>
+                                    </div>
+                                </form>
+                            )}
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Footer Attribution */}
+            <div className="mt-12 text-center relative z-20">
+                <p className="text-xs text-text-secondary/30 font-bold uppercase tracking-[0.3em] flex items-center gap-2">
+                    <LogIn size={12} />
+                    Secure Infrastructure
+                </p>
             </div>
         </div>
     );

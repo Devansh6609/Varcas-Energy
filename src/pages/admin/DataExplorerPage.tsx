@@ -5,9 +5,10 @@ import { Lead, CalculatorType, PipelineStage } from '../../types';
 import Pagination from '../../components/admin/Pagination';
 import { PIPELINE_STAGES } from '../../constants';
 import { useAuth } from '../../contexts/AuthContext';
-import Card from '../../components/admin/Card';
 import ImportLeadsModal from '../../components/admin/ImportLeadsModal';
 import { useCrmUpdates } from '../../contexts/CrmUpdatesContext';
+import { Database, Search, Download, Upload, ChevronUp, ChevronDown } from 'lucide-react';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 
 const API_BASE_URL = import.meta.env.VITE_CRM_API_URL || 'http://localhost:3001';
@@ -29,29 +30,28 @@ const getStageColor = (stage: string) => {
 };
 
 const SortIcon: React.FC<{ direction?: 'ascending' | 'descending' }> = ({ direction }) => {
-    if (!direction) return <span className="text-gray-500">↕</span>;
-    return direction === 'ascending' ? <span className="text-gray-800 dark:text-text-light">↑</span> : <span className="text-gray-800 dark:text-text-light">↓</span>;
+    if (!direction) return <span className="opacity-0 group-hover:opacity-50 transition-opacity ml-1">↕</span>;
+    return direction === 'ascending' ? <ChevronUp size={14} className="ml-1 inline-block text-neon-cyan" /> : <ChevronDown size={14} className="ml-1 inline-block text-neon-cyan" />;
 };
 
-// FIX: Updated SkeletonLoader to correctly use Card component with children.
 const SkeletonLoader: React.FC = () => (
-    <div className="animate-pulse">
-        <div className="h-8 bg-gray-200 dark:bg-secondary-background rounded w-1/4 mb-6"></div>
-        <Card className="mb-6">
+    <div className="animate-pulse space-y-6">
+        <div className="h-10 bg-glass-surface/40 border border-glass-border/30 rounded-xl w-1/4 mb-6"></div>
+        <div className="bg-glass-surface/40 border border-glass-border/30 rounded-3xl p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="h-10 bg-gray-100 dark:bg-primary-background rounded-lg" />
-                <div className="h-10 bg-gray-100 dark:bg-primary-background rounded-lg" />
-                <div className="h-10 bg-gray-100 dark:bg-primary-background rounded-lg" />
-                <div className="h-10 bg-gray-100 dark:bg-primary-background rounded-lg" />
+                <div className="h-12 bg-white/5 rounded-xl border border-white/5" />
+                <div className="h-12 bg-white/5 rounded-xl border border-white/5" />
+                <div className="h-12 bg-white/5 rounded-xl border border-white/5" />
+                <div className="h-12 bg-white/5 rounded-xl border border-white/5" />
             </div>
-        </Card>
-        <Card>
-            <div className="space-y-2">
+        </div>
+        <div className="bg-glass-surface/40 border border-glass-border/30 rounded-3xl p-6">
+            <div className="space-y-4">
                 {[...Array(10)].map((_, i) => (
-                    <div key={i} className="h-10 bg-gray-100 dark:bg-primary-background rounded"></div>
+                    <div key={i} className="h-16 bg-white/5 rounded-xl border border-white/5"></div>
                 ))}
             </div>
-        </Card>
+        </div>
     </div>
 );
 
@@ -175,113 +175,168 @@ const DataExplorerPage: React.FC = () => {
     if (loading) return <SkeletonLoader />;
     if (error) return <div className="text-center p-8 text-error-red">{error}</div>;
 
-    const inputClasses = "w-full px-3 py-2 sm:py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs sm:text-sm focus:ring-2 focus:ring-accent-blue outline-none transition-all placeholder:text-gray-400";
-    const btnBase = "flex items-center justify-center font-bold py-2 sm:py-2.5 px-4 rounded-lg shadow-md transition-all transform active:scale-95 text-xs sm:text-sm";
-    const btnExport = `${btnBase} bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white shadow-cyan-500/20`;
-    const btnImport = `${btnBase} bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-blue-500/20`;
+    const inputClasses = "w-full pl-10 pr-4 py-3 bg-night-sky/50 border border-glass-border/30 rounded-xl text-sm text-text-primary focus:ring-2 focus:ring-neon-cyan/50 focus:border-neon-cyan outline-none transition-all placeholder:text-text-secondary/40 appearance-none";
+    const selectClasses = "w-full px-4 py-3 bg-night-sky/50 border border-glass-border/30 rounded-xl text-sm text-text-primary focus:ring-2 focus:ring-neon-cyan/50 focus:border-neon-cyan outline-none transition-all appearance-none cursor-pointer";
+    const btnBase = "flex items-center justify-center gap-2 font-black py-3 px-6 rounded-xl transition-all shadow-glow-sm hover:scale-[1.02] active:scale-[0.98] text-sm tracking-wide";
+    const btnExport = `${btnBase} bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-white/20`;
+    const btnImport = `${btnBase} bg-gradient-to-r from-neon-cyan to-electric-blue text-night-sky shadow-neon-cyan/30`;
 
     return (
-        <div className="p-2 sm:p-6 lg:p-8">
-            <h2 className="text-lg sm:text-3xl font-bold text-gray-900 dark:text-text-light mb-3 sm:mb-6 px-1">Data Explorer</h2>
+        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-8 animate-fade-in pb-24">
+            {/* Header Section */}
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                        <div className="px-3 py-1 rounded-full bg-neon-cyan/10 border border-neon-cyan/20 text-neon-cyan text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                            <Database size={12} className="text-neon-cyan" />
+                            Data Center
+                        </div>
+                    </div>
+                    <h1 className="text-4xl lg:text-5xl font-black text-text-primary tracking-tight">
+                        Data <span className="text-neon-cyan">Explorer</span>
+                    </h1>
+                    <p className="text-text-secondary/60 text-sm font-bold">
+                        Browse, filter, and export system-wide lead data.
+                    </p>
+                </div>
+            </div>
 
-            <Card className="mb-4 sm:mb-6 !p-3 sm:!p-6">
-                <div className="grid grid-cols-2 lg:flex items-center gap-2 sm:gap-4">
-                    <div className="col-span-2 lg:col-span-1 lg:flex-grow lg:w-auto min-w-[200px]">
+            {/* Filter Controls */}
+            <div className="bg-glass-surface/40 backdrop-blur-3xl rounded-3xl border border-glass-border/30 p-4 sm:p-6 shadow-glow-sm shadow-neon-cyan/5">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:flex items-center gap-4">
+                    <div className="relative flex-grow min-w-[250px]">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary/50" size={18} />
                         <input
                             type="text"
-                            placeholder="Search leads..."
+                            placeholder="Search leads by name, email, or phone..."
                             value={searchTerm}
                             onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
                             className={inputClasses}
                         />
                     </div>
-                    <select name="productType" value={filters.productType} onChange={handleFilterChange} className={inputClasses}>
-                        <option value="all">All Products</option>
-                        <option value={CalculatorType.Rooftop}>Rooftop Solar</option>
-                        <option value={CalculatorType.Pump}>Solar Pump</option>
-                        <option value="Contact Inquiry">Contact Inquiry</option>
-                    </select>
-                    <select name="pipelineStage" value={filters.pipelineStage} onChange={handleFilterChange} className={inputClasses}>
-                        <option value="all">All Stages</option>
-                        {PIPELINE_STAGES.map(stage => <option key={stage} value={stage}>{stage}</option>)}
-                    </select>
-                    <button onClick={handleExport} className={btnExport}>
-                        Export CSV
-                    </button>
-                    {user?.role === 'Master' && (
-                        <button onClick={() => setIsImportModalOpen(true)} className={btnImport}>
-                            Import CSV
-                        </button>
-                    )}
-                </div>
-            </Card>
 
-            <Card className="overflow-hidden !p-0">
+                    <div className="relative min-w-[150px]">
+                        <select name="productType" value={filters.productType} onChange={handleFilterChange} className={selectClasses}>
+                            <option value="all">All Products</option>
+                            <option value={CalculatorType.Rooftop}>Rooftop Solar</option>
+                            <option value={CalculatorType.Pump}>Solar Pump</option>
+                            <option value="Contact Inquiry">Contact Inquiry</option>
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none" size={16} />
+                    </div>
+
+                    <div className="relative min-w-[150px]">
+                        <select name="pipelineStage" value={filters.pipelineStage} onChange={handleFilterChange} className={selectClasses}>
+                            <option value="all">All Stages</option>
+                            {PIPELINE_STAGES.map(stage => <option key={stage} value={stage}>{stage}</option>)}
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none" size={16} />
+                    </div>
+
+                    <div className="flex gap-4 md:col-span-2 lg:col-span-1">
+                        <button onClick={handleExport} className={`${btnExport} flex-1 lg:flex-none`}>
+                            <Download size={18} />
+                            EXPORT
+                        </button>
+                        {user?.role === 'Master' && (
+                            <button onClick={() => setIsImportModalOpen(true)} className={`${btnImport} flex-1 lg:flex-none`}>
+                                <Upload size={18} />
+                                IMPORT
+                            </button>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Data Table */}
+            <div className="bg-glass-surface/40 backdrop-blur-3xl rounded-3xl border border-glass-border/30 shadow-glow-sm shadow-neon-cyan/5 overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead className="bg-gray-50 dark:bg-gray-800">
-                            <tr>
-                                <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" onClick={() => handleSort('name')}>
-                                    Name <SortIcon direction={sortConfig.key === 'name' ? sortConfig.direction : undefined} />
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="border-b border-glass-border/20 bg-white/[0.02]">
+                                <th className="px-6 py-4 text-[10px] font-black text-text-secondary/70 uppercase tracking-widest cursor-pointer hover:text-white transition-colors group" onClick={() => handleSort('name')}>
+                                    <div className="flex items-center">Name <SortIcon direction={sortConfig.key === 'name' ? sortConfig.direction : undefined} /></div>
                                 </th>
-                                <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
-                                <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stage</th>
+                                <th className="px-6 py-4 text-[10px] font-black text-text-secondary/70 uppercase tracking-widest">Product</th>
+                                <th className="px-6 py-4 text-[10px] font-black text-text-secondary/70 uppercase tracking-widest">Stage</th>
                                 {user?.role === 'Master' && (
-                                    <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Vendor</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-text-secondary/70 uppercase tracking-widest">Vendor</th>
                                 )}
-                                <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" onClick={() => handleSort('score')}>
-                                    Score <SortIcon direction={sortConfig.key === 'score' ? sortConfig.direction : undefined} />
+                                <th className="px-6 py-4 text-[10px] font-black text-text-secondary/70 uppercase tracking-widest cursor-pointer hover:text-white transition-colors group" onClick={() => handleSort('score')}>
+                                    <div className="flex items-center">Score <SortIcon direction={sortConfig.key === 'score' ? sortConfig.direction : undefined} /></div>
                                 </th>
-                                <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" onClick={() => handleSort('createdAt')}>
-                                    Date <SortIcon direction={sortConfig.key === 'createdAt' ? sortConfig.direction : undefined} />
+                                <th className="px-6 py-4 text-[10px] font-black text-text-secondary/70 uppercase tracking-widest cursor-pointer hover:text-white transition-colors group" onClick={() => handleSort('createdAt')}>
+                                    <div className="flex items-center">Date <SortIcon direction={sortConfig.key === 'createdAt' ? sortConfig.direction : undefined} /></div>
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+                        <tbody className="divide-y divide-glass-border/10">
                             {paginatedLeads.map(lead => (
-                                <tr key={lead.id} onClick={() => navigate(`/admin/leads/${lead.id}`)} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer transition-colors group">
-                                    <td className="px-4 py-3 whitespace-nowrap">
-                                        <div className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white group-hover:text-primary-green transition-colors">{lead.name}</div>
-                                        <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">{lead.email}</div>
+                                <tr key={lead.id} onClick={() => navigate(`/admin/leads/${lead.id}`)} className="hover:bg-white/[0.02] cursor-pointer transition-colors group">
+                                    <td className="px-6 py-4">
+                                        <div className="flex flex-col">
+                                            <div className="font-bold text-text-primary group-hover:text-neon-cyan transition-colors">{lead.name}</div>
+                                            <div className="text-xs text-text-secondary/60 font-mono mt-0.5">{lead.email}</div>
+                                        </div>
                                     </td>
-                                    <td className="px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-600 dark:text-gray-300 capitalize">{lead.productType}</td>
-                                    <td className="px-4 py-3 whitespace-nowrap">
-                                        <span className={`px-2 py-0.5 inline-flex text-[10px] sm:text-xs font-bold rounded-full border ${getStageColor(lead.pipelineStage).replace('text-', 'border-').replace('/20', '/30')}`}>
+                                    <td className="px-6 py-4 text-sm text-text-secondary capitalize font-bold">
+                                        {lead.productType}
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className={`px-2 py-1 inline-flex text-[10px] font-black uppercase tracking-widest rounded-md border ${getStageColor(lead.pipelineStage).replace('text-', 'border-').replace('/20', '/30')}`}>
                                             {lead.pipelineStage}
                                         </span>
                                     </td>
                                     {user?.role === 'Master' && (
-                                        <td className="px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                                        <td className="px-6 py-4 text-sm text-text-secondary">
                                             {lead.assignedVendorName ? (
-                                                <span className="flex items-center gap-1.5">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                                <span className="flex items-center gap-2 font-bold">
+                                                    <span className="w-2 h-2 rounded-full bg-success-green shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
                                                     {lead.assignedVendorName}
                                                 </span>
                                             ) : (
-                                                <span className="text-gray-400 italic">Unassigned</span>
+                                                <span className="text-text-secondary/40 italic text-xs">Unassigned</span>
                                             )}
                                         </td>
                                     )}
-                                    <td className="px-4 py-3 whitespace-nowrap">
-                                        <span className={`px-2 py-0.5 inline-flex text-[10px] sm:text-xs font-bold rounded-full ${getStatusColor(lead.scoreStatus)}`}>
+                                    <td className="px-6 py-4">
+                                        <span className={`px-2 py-1 inline-flex text-[10px] font-black uppercase tracking-widest rounded-md ${getStatusColor(lead.scoreStatus)}`}>
                                             {lead.scoreStatus} ({lead.score})
                                         </span>
                                     </td>
-                                    <td className="px-4 py-3 whitespace-nowrap text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-mono">
-                                        {new Date(lead.createdAt).toLocaleDateString()}
+                                    <td className="px-6 py-4 text-xs text-text-secondary/60 font-mono">
+                                        {new Date(lead.createdAt).toLocaleDateString(undefined, {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric'
+                                        })}
                                     </td>
                                 </tr>
                             ))}
+                            {paginatedLeads.length === 0 && (
+                                <tr>
+                                    <td colSpan={user?.role === 'Master' ? 6 : 5} className="px-6 py-12 text-center text-text-secondary">
+                                        <div className="flex flex-col items-center justify-center gap-3">
+                                            <Database size={48} className="text-text-secondary/20" />
+                                            <p className="font-bold">No leads found matching your criteria.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
-            </Card>
+            </div>
 
-            <Pagination
-                currentPage={currentPage}
-                totalPages={Math.ceil(filteredAndSortedLeads.length / ITEMS_PER_PAGE)}
-                onPageChange={setCurrentPage}
-            />
+            {filteredAndSortedLeads.length > ITEMS_PER_PAGE && (
+                <div className="bg-glass-surface/40 backdrop-blur-3xl rounded-3xl border border-glass-border/30 p-2 shadow-glow-sm shadow-neon-cyan/5 flex justify-center">
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={Math.ceil(filteredAndSortedLeads.length / ITEMS_PER_PAGE)}
+                        onPageChange={setCurrentPage}
+                    />
+                </div>
+            )}
 
             {isImportModalOpen && (
                 <ImportLeadsModal

@@ -8,12 +8,11 @@ interface CardProps {
 const Card: React.FC<CardProps> = ({ children, className = '' }) => {
     return (
         <div className={`
-            bg-white dark:bg-glass-surface dark:backdrop-blur-lg 
-            border border-gray-300 dark:border-glass-border 
-            rounded-xl shadow-lg dark:shadow-black/20 
-            p-4 md:p-6 transition-all duration-300
-            hover:-translate-y-1 hover:shadow-xl
-            dark:hover:border-glow-cyan/50 dark:hover:shadow-glow-sm dark:hover:shadow-glow-cyan/20
+            bg-glass-surface/20 backdrop-blur-3xl 
+            border border-glass-border/30 
+            rounded-[2.5rem] shadow-2xl
+            p-6 md:p-8 transition-all duration-500
+            hover:border-white/20 hover:shadow-glow-cyan/10
             ${className}
         `}>
             {children}

@@ -3,7 +3,12 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Lead, LeadActivity, LeadDocument, PipelineStage, FormField, User } from '../../types';
 import { getLeadDetails, getFormSchema, getVendors, updateLead, addLeadNote, uploadDocument, deleteLead, deleteDocument } from '../../service/adminService';
 import { PIPELINE_STAGES } from '../../constants';
-import { Trash2, ClipboardCheck, Edit2, Save, X, ArrowLeft } from 'lucide-react';
+import {
+    Trash2, ClipboardCheck, Edit2, Save, X, ArrowLeft,
+    User as UserIcon, Phone, Mail, MapPin, Calendar,
+    Clock, Zap, FileText, Activity, ShieldCheck,
+    MoreHorizontal, Download, Trash, Plus, ChevronRight
+} from 'lucide-react';
 import PipelineTracker from '../../components/admin/PipelineTracker';
 import { LeadsWorkflowSection } from '../../components/admin/LeadsWorkflowSection';
 import { RooftopWorkflowSection } from '../../components/admin/RooftopWorkflowSection';
@@ -26,50 +31,53 @@ const DetailItem: React.FC<{
     canDelete?: boolean,
     onUpload?: (file: File) => void
 }> = ({ label, value, isImage = false, onView, onDelete, canDelete = false, onUpload }) => (
-    <div>
-        <dt className="text-sm font-medium text-gray-500 dark:text-text-muted">{label}</dt>
-        <dd className="mt-1 text-sm text-gray-900 dark:text-text-light flex items-center gap-2 flex-wrap">
-            {isImage ? (
-                value ? (
-                    <>
-                        <button
-                            onClick={() => onView?.(value.startsWith('http') ? value : `${API_BASE_URL}/files/${value}`)}
-                            className="bg-accent-blue/10 text-accent-blue px-3 py-1 rounded-full text-xs hover:bg-accent-blue/20 flex items-center gap-1 transition-colors"
-                            type="button"
-                        >
-                            <ClipboardCheck className="w-3 h-3" /> View Document
-                        </button>
-                        {canDelete && onDelete && (
+    <div className="group relative bg-white/5 border border-glass-border/30 rounded-2xl p-4 transition-all duration-500 hover:border-neon-cyan/50 hover:bg-white/[0.08] hover:shadow-glow-sm hover:shadow-neon-cyan/5">
+        <dl>
+            <dt className="text-[10px] font-black uppercase tracking-widest text-text-secondary/60 mb-1">{label}</dt>
+            <dd className="text-sm font-bold text-text-primary flex items-center justify-between gap-2 flex-wrap">
+                {isImage ? (
+                    value ? (
+                        <div className="flex items-center gap-2">
                             <button
-                                onClick={() => onDelete(value)}
-                                className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                                title="Delete Document"
+                                onClick={() => onView?.(value.startsWith('http') ? value : `${API_BASE_URL}/files/${value}`)}
+                                className="bg-neon-cyan/20 text-neon-cyan px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-neon-cyan hover:text-white transition-all flex items-center gap-2"
                                 type="button"
+                                title={`View ${label}`}
                             >
-                                <Trash2 className="w-4 h-4" />
+                                <ClipboardCheck size={14} /> View
                             </button>
-                        )}
-                    </>
+                            {canDelete && onDelete && (
+                                <button
+                                    onClick={() => onDelete(value)}
+                                    className="text-error-red/60 hover:text-error-red p-2 rounded-xl hover:bg-error-red/10 transition-all"
+                                    title={`Delete ${label}`}
+                                    type="button"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                            )}
+                        </div>
+                    ) : (
+                        onUpload && (
+                            <label className="cursor-pointer bg-white/5 hover:bg-neon-cyan/10 text-neon-cyan/70 hover:text-neon-cyan px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all border border-dashed border-neon-cyan/30">
+                                <span>+ Upload</span>
+                                <input
+                                    type="file"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                        if (e.target.files?.[0]) {
+                                            onUpload(e.target.files[0]);
+                                        }
+                                    }}
+                                />
+                            </label>
+                        ) || <span className="text-text-secondary/30 italic font-medium">No File</span>
+                    )
                 ) : (
-                    onUpload && (
-                        <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 px-3 py-1 rounded-full text-xs flex items-center gap-1 transition-colors">
-                            <span className="text-xs">+ Upload</span>
-                            <input
-                                type="file"
-                                className="hidden"
-                                onChange={(e) => {
-                                    if (e.target.files?.[0]) {
-                                        onUpload(e.target.files[0]);
-                                    }
-                                }}
-                            />
-                        </label>
-                    ) || <span className="text-gray-400 italic">Not Uploaded</span>
-                )
-            ) : (
-                String(value || 'N/A')
-            )}
-        </dd>
+                    <span className="truncate max-w-full">{String(value || 'N/A')}</span>
+                )}
+            </dd>
+        </dl>
     </div>
 );
 
@@ -330,38 +338,86 @@ const LeadDetailPage: React.FC = () => {
     if (!lead) return <div className="text-center p-8">Lead not found.</div>;
 
     return (
-        <div className="p-2 sm:p-6 lg:p-8 max-w-7xl mx-auto animate-fade-in-up">
-            <div className="mb-3 sm:mb-6">
-                <Link to="/admin/leads" className="text-accent-blue hover:underline flex items-center gap-1 text-sm sm:text-base">
-                    <ArrowLeft className="w-4 h-4" /> Back to Pipeline
+        <div className="p-4 sm:p-8 lg:p-12 max-w-[1600px] mx-auto animate-fade-in-up space-y-8">
+            {/* Navigation Header */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+                <Link
+                    to="/admin/leads"
+                    className="group flex items-center gap-3 text-text-secondary hover:text-neon-cyan transition-all duration-300 font-bold uppercase tracking-widest text-xs"
+                >
+                    <div className="p-2 rounded-xl bg-white/5 border border-glass-border/30 group-hover:border-neon-cyan group-hover:bg-neon-cyan/10 transition-all">
+                        <ArrowLeft size={16} />
+                    </div>
+                    Back to Pipeline
                 </Link>
+
+                <div className="flex items-center gap-3">
+                    <button
+                        title="Download Lead Data"
+                        className="p-3 rounded-2xl bg-white/5 border border-glass-border/30 text-text-secondary hover:text-neon-cyan hover:border-neon-cyan/50 transition-all"
+                    >
+                        <Download size={20} />
+                    </button>
+                    <button className="px-6 py-3 rounded-2xl bg-neon-cyan text-white font-black uppercase tracking-widest text-xs shadow-glow-sm shadow-neon-cyan/20 hover:scale-105 transition-all">
+                        Convert to Project
+                    </button>
+                </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6">
-                {/* Left Column */}
-                <div className="lg:col-span-2 space-y-3 sm:space-y-6">
-                    <Card>
-                        <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
-                            <div>
-                                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-text-light">{lead.name}</h2>
-                                <p className="text-sm text-gray-500 dark:text-text-muted">{lead.email} | {lead.phone}</p>
-                                {user?.role === 'Master' && (
-                                    <p className="text-xs sm:text-sm text-gray-500 dark:text-text-muted mt-2">
-                                        Assigned to: <span className="font-semibold text-gray-800 dark:text-text-light">{lead.assignedVendorName || 'Unassigned'}</span>
-                                    </p>
-                                )}
+            {/* Main Content Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+                {/* Left Column (8/12) */}
+                <div className="lg:col-span-8 space-y-8">
+
+                    {/* Lead Identity Card */}
+                    <Card className="overflow-hidden border-none bg-glass-surface/40 backdrop-blur-3xl">
+                        <div className="absolute inset-0 bg-gradient-to-br from-neon-cyan/5 to-transparent pointer-events-none" />
+                        <div className="relative p-8 flex flex-col md:flex-row justify-between items-start gap-8">
+                            <div className="flex gap-6 items-center">
+                                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[2rem] bg-gradient-to-br from-neon-cyan to-electric-blue flex items-center justify-center text-white shadow-glow-md shadow-neon-cyan/20">
+                                    <UserIcon size={32} />
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-3 mb-2 flex-wrap">
+                                        <h1 className="text-3xl font-black text-text-primary tracking-tight">{lead.name}</h1>
+                                        <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full border ${lead.scoreStatus === 'Hot' ? 'bg-error-red/20 border-error-red/40 text-error-red shadow-glow-sm shadow-error-red/10' :
+                                            lead.scoreStatus === 'Warm' ? 'bg-warning-yellow/20 border-warning-yellow/40 text-warning-yellow shadow-glow-sm shadow-warning-yellow/10' :
+                                                'bg-electric-blue/20 border-electric-blue/40 text-electric-blue shadow-glow-sm shadow-electric-blue/10'
+                                            }`}>
+                                            {lead.scoreStatus} • {lead.score} Points
+                                        </span>
+                                    </div>
+                                    <div className="flex flex-wrap items-center gap-6 text-text-secondary">
+                                        <div className="flex items-center gap-2 text-sm font-bold">
+                                            <Mail size={16} className="text-neon-cyan" />
+                                            {lead.email}
+                                        </div>
+                                        <div className="flex items-center gap-2 text-sm font-bold">
+                                            <Phone size={16} className="text-neon-cyan" />
+                                            {lead.phone}
+                                        </div>
+                                        {lead.assignedVendorName && (
+                                            <div className="flex items-center gap-2 text-sm font-bold px-3 py-1 rounded-lg bg-white/5 border border-glass-border/30">
+                                                <ShieldCheck size={14} className="text-electric-blue" />
+                                                {lead.assignedVendorName}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
-                            <div className="text-left sm:text-right flex-shrink-0 w-full sm:w-auto mt-2 sm:mt-0">
-                                <span className={`inline-block px-3 py-1 text-xs sm:text-sm font-semibold rounded-full ${lead.scoreStatus === 'Hot' ? 'bg-error-red/20 text-error-red' : lead.scoreStatus === 'Warm' ? 'bg-warning-yellow/20 text-warning-yellow' : 'bg-accent-blue/20 text-accent-blue'}`}>
-                                    {lead.scoreStatus} ({lead.score})
-                                </span>
-                                <p className="text-[10px] sm:text-xs text-gray-500 dark:text-text-muted mt-1">Created: {new Date(lead.createdAt).toLocaleDateString()}</p>
+
+                            <div className="flex flex-col items-end gap-3 text-right">
+                                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-secondary">
+                                    <Calendar size={14} />
+                                    Created {new Date(lead.createdAt).toLocaleDateString()}
+                                </div>
                                 {user?.role === 'Master' && (
                                     <button
                                         onClick={() => setIsDeleteModalOpen(true)}
-                                        className="mt-4 text-xs text-error-red hover:underline flex items-center gap-1 sm:justify-end ml-auto sm:ml-0"
+                                        className="group flex items-center gap-2 px-4 py-2 rounded-xl bg-error-red/5 border border-error-red/20 text-error-red font-bold text-xs hover:bg-error-red hover:text-white transition-all duration-300"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clipRule="evenodd" /></svg>
+                                        <Trash2 size={14} className="group-hover:animate-bounce" />
                                         Delete Lead
                                     </button>
                                 )}
@@ -369,70 +425,93 @@ const LeadDetailPage: React.FC = () => {
                         </div>
                     </Card>
 
-                    <Card>
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-text-light mb-4">Sales Pipeline</h3>
+                    {/* Sales Pipeline Section */}
+                    <Card className="bg-glass-surface/20 border-glass-border/30">
+                        <div className="flex items-center justify-between mb-8">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 rounded-2xl bg-electric-blue/10 text-electric-blue">
+                                    <Activity size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black text-text-primary tracking-tight">Sales Pipeline</h3>
+                                    <p className="text-xs font-bold text-text-secondary flex items-center gap-2">
+                                        <Zap size={14} className="text-neon-cyan" />
+                                        Track and advance the lead stage
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="hidden md:flex items-center gap-3 p-1 rounded-xl bg-white/5 border border-glass-border/30">
+                                <Activity size={16} className="text-neon-cyan ml-2" />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-text-secondary mr-4">Live Tracker</span>
+                            </div>
+                        </div>
                         <PipelineTracker currentStage={lead.pipelineStage} allStages={PIPELINE_STAGES} onStageChange={handleStageChange} />
                     </Card>
 
-                    {/* Manual Workflow Section */}
-                    {lead.productType === 'rooftop' && (
-                        <Card>
-                            <RooftopWorkflowSection lead={lead} onUpdate={setLead} />
-                        </Card>
+                    {/* Workflow Sections */}
+                    {(lead.productType === 'rooftop' || lead.productType === 'pump' || lead.source === 'Manual_Offline') && (
+                        <div className="space-y-8">
+                            <h3 className="text-xl font-black text-text-primary tracking-tight ml-2">Technical Workflow</h3>
+                            {lead.productType === 'rooftop' && (
+                                <Card className="bg-glass-surface/10 border-glass-border/20">
+                                    <RooftopWorkflowSection lead={lead} onUpdate={setLead} />
+                                </Card>
+                            )}
+                            {(lead.productType === 'pump' || (lead.source === 'Manual_Offline' && lead.productType !== 'rooftop')) && (
+                                <Card className="bg-glass-surface/10 border-glass-border/20">
+                                    <LeadsWorkflowSection lead={lead} onUpdate={setLead} />
+                                </Card>
+                            )}
+                        </div>
                     )}
 
-                    {lead.productType === 'pump' && (
-                        <Card>
-                            <LeadsWorkflowSection lead={lead} onUpdate={setLead} />
-                        </Card>
-                    )}
+                    {/* Application Details Card */}
+                    <Card className="bg-glass-surface/20 border-glass-border/30">
+                        <div className="flex justify-between items-center mb-8">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 rounded-2xl bg-neon-cyan/10 text-neon-cyan">
+                                    <FileText size={24} />
+                                </div>
+                                <h3 className="text-xl font-black text-text-primary tracking-tight">Application Details</h3>
+                            </div>
 
-                    {/* Fallback Legacy Check */}
-                    {lead.source === 'Manual_Offline' && lead.productType !== 'rooftop' && lead.productType !== 'pump' && (
-                        <Card>
-                            <LeadsWorkflowSection lead={lead} onUpdate={setLead} />
-                        </Card>
-                    )}
-
-                    <Card>
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-text-light">Application Details</h3>
                             {!isEditing ? (
                                 <button
                                     onClick={handleEditClick}
-                                    className="text-gray-500 hover:text-accent-blue transition-colors p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
-                                    title="Edit Details"
+                                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 border border-glass-border/30 text-text-secondary hover:text-neon-cyan hover:border-neon-cyan/50 hover:bg-neon-cyan/5 transition-all font-bold text-xs uppercase tracking-widest"
                                 >
-                                    <Edit2 className="w-5 h-5" />
+                                    <Edit2 size={16} />
+                                    Edit Details
                                 </button>
                             ) : (
-                                <div className="flex gap-2">
+                                <div className="flex gap-3">
                                     <button
                                         onClick={handleSaveEdit}
                                         disabled={isSaving}
-                                        className="text-green-600 hover:text-green-700 p-1 rounded-full hover:bg-green-50 dark:hover:bg-green-900/20"
-                                        title="Save Changes"
+                                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-neon-cyan text-white font-bold text-xs uppercase tracking-widest shadow-glow-sm shadow-neon-cyan/20 hover:scale-105 transition-all disabled:opacity-50"
                                     >
-                                        <Save className="w-5 h-5" />
+                                        <Save size={16} />
+                                        {isSaving ? 'Saving...' : 'Save Changes'}
                                     </button>
                                     <button
                                         onClick={handleCancelEdit}
                                         disabled={isSaving}
-                                        className="text-red-500 hover:text-red-600 p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
-                                        title="Cancel"
+                                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 border border-glass-border/30 text-text-secondary hover:text-error-red hover:border-error-red/50 transition-all font-bold text-xs uppercase tracking-widest"
                                     >
-                                        <X className="w-5 h-5" />
+                                        <X size={16} />
+                                        Cancel
                                     </button>
                                 </div>
                             )}
                         </div>
+
                         {!isEditing ? (
-                            <dl className="grid grid-cols-2 gap-x-3 gap-y-4 md:gap-x-4 md:gap-y-6">
-                                <DetailItem label="Name" value={lead.name} />
-                                <DetailItem label="Email" value={lead.email} />
-                                <DetailItem label="Phone" value={lead.phone} />
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <DetailItem label="Full Name" value={lead.name} />
+                                <DetailItem label="Email Address" value={lead.email} />
+                                <DetailItem label="Phone Number" value={lead.phone} />
                                 <DetailItem label="Product Type" value={lead.productType} />
-                                {/* Manual Workflow Fields Display */}
+
                                 {lead.source === 'Manual_Offline' && (
                                     <>
                                         <DetailItem label="Father Name" value={lead.fatherName} />
@@ -443,31 +522,19 @@ const LeadDetailPage: React.FC = () => {
                                         <DetailItem label="Connection Type" value={lead.connectionType} />
                                     </>
                                 )}
-                                {/* FIX: The 'location' property does not exist on the Lead type. Use customFields.district instead. */}
                                 {lead.source !== 'Manual_Offline' && <DetailItem label="Location (District)" value={lead.customFields?.district} />}
 
                                 {(() => {
                                     const REQUIRED_IMAGE_FIELDS = ['customerPic', 'paymentSlip', 'structurePic', 'paymentProof', 'passbook'];
-
-                                    // Merge existing customFields with required fields (init to null if missing)
                                     const allFields = { ...lead.customFields };
                                     REQUIRED_IMAGE_FIELDS.forEach(field => {
-                                        if (!(field in allFields)) {
-                                            allFields[field] = null;
-                                        }
+                                        if (!(field in allFields)) allFields[field] = null;
                                     });
 
                                     return Object.entries(allFields)
                                         .filter(([key]) => key !== 'district' && key !== 'basicProfile')
-                                        .sort(([keyA], [keyB]) => {
-                                            // Optional: sort required fields to the end or beginning?
-                                            // For now, simple sort or keep as is (Object.entries order is insertion order usually)
-                                            // Let's just keep them mingled.
-                                            return 0;
-                                        })
                                         .map(([key, value]) => {
                                             const isImageField = REQUIRED_IMAGE_FIELDS.includes(key) || formSchema.get(key) === 'image' || String(value).startsWith('http');
-
                                             return (
                                                 <DetailItem
                                                     key={key}
@@ -482,90 +549,55 @@ const LeadDetailPage: React.FC = () => {
                                             );
                                         });
                                 })()}
-                            </dl>
+                            </div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-text-muted mb-1">Name</label>
-                                    <input
-                                        type="text"
-                                        value={editData.name || ''}
-                                        onChange={(e) => handleEditChange('name', e.target.value)}
-                                        className="w-full p-2 border rounded-md bg-white dark:bg-secondary-background border-gray-300 dark:border-border-color text-sm"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-text-muted mb-1">Email</label>
-                                    <input
-                                        type="email"
-                                        value={editData.email || ''}
-                                        onChange={(e) => handleEditChange('email', e.target.value)}
-                                        className="w-full p-2 border rounded-md bg-white dark:bg-secondary-background border-gray-300 dark:border-border-color text-sm"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-text-muted mb-1">Phone</label>
-                                    <input
-                                        type="text"
-                                        value={editData.phone || ''}
-                                        onChange={(e) => handleEditChange('phone', e.target.value)}
-                                        className="w-full p-2 border rounded-md bg-white dark:bg-secondary-background border-gray-300 dark:border-border-color text-sm"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-text-muted mb-1">Product Type</label>
-                                    <input
-                                        type="text"
-                                        value={editData.productType || ''}
-                                        onChange={(e) => handleEditChange('productType', e.target.value)}
-                                        className="w-full p-2 border rounded-md bg-white dark:bg-secondary-background border-gray-300 dark:border-border-color text-sm"
-                                    />
-                                </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {[
+                                    { label: 'Name', key: 'name', type: 'text' },
+                                    { label: 'Email', key: 'email', type: 'email' },
+                                    { label: 'Phone', key: 'phone', type: 'text' },
+                                    { label: 'Product Type', key: 'productType', type: 'text' }
+                                ].map(f => (
+                                    <div key={f.key} className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-neon-cyan/70 ml-1">{f.label}</label>
+                                        <input
+                                            type={f.type}
+                                            value={editData[f.key] || ''}
+                                            onChange={(e) => handleEditChange(f.key, e.target.value)}
+                                            className="w-full bg-white/5 border border-glass-border/30 rounded-xl px-4 py-3 text-sm font-bold text-text-primary focus:ring-2 focus:ring-neon-cyan/50 focus:border-neon-cyan outline-none transition-all"
+                                        />
+                                    </div>
+                                ))}
 
-                                {lead.source === 'Manual_Offline' && (
-                                    <>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-text-muted mb-1">Father Name</label>
-                                            <input type="text" value={editData.fatherName || ''} onChange={(e) => handleEditChange('fatherName', e.target.value)} className="w-full p-2 border rounded-md bg-white dark:bg-secondary-background border-gray-300 dark:border-border-color text-sm" />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-text-muted mb-1">District</label>
-                                            <input type="text" value={editData.district || ''} onChange={(e) => handleEditChange('district', e.target.value)} className="w-full p-2 border rounded-md bg-white dark:bg-secondary-background border-gray-300 dark:border-border-color text-sm" />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-text-muted mb-1">Tehsil</label>
-                                            <input type="text" value={editData.tehsil || ''} onChange={(e) => handleEditChange('tehsil', e.target.value)} className="w-full p-2 border rounded-md bg-white dark:bg-secondary-background border-gray-300 dark:border-border-color text-sm" />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-text-muted mb-1">Village</label>
-                                            <input type="text" value={editData.village || ''} onChange={(e) => handleEditChange('village', e.target.value)} className="w-full p-2 border rounded-md bg-white dark:bg-secondary-background border-gray-300 dark:border-border-color text-sm" />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-text-muted mb-1">HP</label>
-                                            <input type="text" value={editData.hp || ''} onChange={(e) => handleEditChange('hp', e.target.value)} className="w-full p-2 border rounded-md bg-white dark:bg-secondary-background border-gray-300 dark:border-border-color text-sm" />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-text-muted mb-1">Connection Type</label>
-                                            <input type="text" value={editData.connectionType || ''} onChange={(e) => handleEditChange('connectionType', e.target.value)} className="w-full p-2 border rounded-md bg-white dark:bg-secondary-background border-gray-300 dark:border-border-color text-sm" />
-                                        </div>
-                                    </>
-                                )}
+                                {lead.source === 'Manual_Offline' && [
+                                    'fatherName', 'district', 'tehsil', 'village', 'hp', 'connectionType'
+                                ].map(key => (
+                                    <div key={key} className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-neon-cyan/70 ml-1">
+                                            {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={editData[key] || ''}
+                                            onChange={(e) => handleEditChange(key, e.target.value)}
+                                            className="w-full bg-white/5 border border-glass-border/30 rounded-xl px-4 py-3 text-sm font-bold text-text-primary focus:ring-2 focus:ring-neon-cyan/50 focus:border-neon-cyan outline-none transition-all"
+                                        />
+                                    </div>
+                                ))}
 
                                 {Object.entries(editData.customFields || {}).filter(([key]) => key !== 'district' && key !== 'basicProfile').map(([key, value]) => {
                                     const isImageField = ['customerPic', 'paymentSlip', 'structurePic', 'paymentProof', 'passbook'].includes(key) || formSchema.get(key) === 'image' || (typeof value === 'string' && value.startsWith('http'));
-
-                                    if (isImageField) return null; // Don't allow editing image strings directly, use upload.
-
+                                    if (isImageField) return null;
                                     return (
-                                        <div key={key}>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-text-muted mb-1">
+                                        <div key={key} className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-neon-cyan/70 ml-1">
                                                 {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                                             </label>
                                             <input
                                                 type="text"
                                                 value={value as string || ''}
                                                 onChange={(e) => handleEditChange(key, e.target.value, true)}
-                                                className="w-full p-2 border rounded-md bg-white dark:bg-secondary-background border-gray-300 dark:border-border-color text-sm"
+                                                className="w-full bg-white/5 border border-glass-border/30 rounded-xl px-4 py-3 text-sm font-bold text-text-primary focus:ring-2 focus:ring-neon-cyan/50 focus:border-neon-cyan outline-none transition-all"
                                             />
                                         </div>
                                     );
@@ -575,92 +607,152 @@ const LeadDetailPage: React.FC = () => {
                     </Card>
                 </div>
 
-                {/* Right Column */}
-                <div className="space-y-6">
+                {/* Right Column (4/12) */}
+                <div className="lg:col-span-4 space-y-8">
+
+                    {/* Vendor Assignment */}
                     {user?.role === 'Master' && (
-                        <Card>
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-text-light mb-4">Assign Vendor</h3>
-                            <select
-                                value={lead.assignedVendorId || ''}
-                                onChange={(e) => handleVendorAssign(e.target.value)}
-                                className="w-full p-2 border rounded-md bg-white dark:bg-secondary-background border-gray-300 dark:border-border-color focus:ring-accent-blue focus:border-accent-blue text-gray-900 dark:text-text-light"
-                            >
-                                <option value="">Unassigned</option>
-                                {vendors.map(vendor => (
-                                    <option key={vendor.id} value={vendor.id}>
-                                        {vendor.name} ({vendor.district}, {vendor.state})
-                                    </option>
-                                ))}
-                            </select>
+                        <Card className="bg-glass-surface/20 border-glass-border/30">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="p-3 rounded-2xl bg-warning-yellow/10 text-warning-yellow">
+                                    <ShieldCheck size={24} />
+                                </div>
+                                <h3 className="text-xl font-black text-text-primary tracking-tight">Assign Vendor</h3>
+                            </div>
+                            <div className="relative group">
+                                <select
+                                    value={lead.assignedVendorId || ''}
+                                    title="Assign Vendor"
+                                    onChange={(e) => handleVendorAssign(e.target.value)}
+                                    className="w-full bg-white/5 border border-glass-border/30 rounded-2xl px-4 py-4 text-sm font-bold text-text-primary appearance-none focus:ring-2 focus:ring-neon-cyan/50 focus:border-neon-cyan outline-none transition-all cursor-pointer"
+                                >
+                                    <option value="" className="bg-night-sky">Unassigned</option>
+                                    {vendors.map(vendor => (
+                                        <option key={vendor.id} value={vendor.id} className="bg-night-sky">
+                                            {vendor.name} ({vendor.district})
+                                        </option>
+                                    ))}
+                                </select>
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary group-hover:text-neon-cyan transition-colors">
+                                    <ChevronRight size={18} className="rotate-90" />
+                                </div>
+                            </div>
                         </Card>
                     )}
 
+                    {/* Activity & Notes */}
+                    <Card className="bg-glass-surface/20 border-glass-border/30 overflow-hidden">
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="p-3 rounded-2xl bg-electric-blue/10 text-electric-blue">
+                                <Activity size={24} />
+                            </div>
+                            <h3 className="text-xl font-black text-text-primary tracking-tight">Activity Log</h3>
+                        </div>
 
-
-                    <Card>
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-text-light mb-4">Activity & Notes</h3>
-                        <form onSubmit={handleAddNote} className="mb-4">
+                        <form onSubmit={handleAddNote} className="relative mb-8">
                             <textarea
                                 value={newNote}
                                 onChange={(e) => setNewNote(e.target.value)}
-                                placeholder="Add a note..."
-                                className="w-full p-2 border rounded-md bg-white dark:bg-secondary-background border-gray-300 dark:border-border-color focus:ring-accent-blue focus:border-accent-blue"
-                                rows={3}
+                                placeholder="Add a professional note..."
+                                title="Note Content"
+                                className="w-full bg-white/5 border border-glass-border/30 rounded-2xl p-4 text-sm font-bold text-text-primary focus:ring-2 focus:ring-electric-blue/50 focus:border-electric-blue outline-none transition-all min-h-[120px] resize-none"
                             ></textarea>
-                            <button type="submit" disabled={isSubmittingNote} className="mt-2 w-full flex items-center justify-center bg-gray-200 text-gray-700 font-semibold py-2 rounded-md hover:bg-gray-300 disabled:bg-gray-100 dark:bg-gray-700 dark:text-text-light dark:hover:bg-gray-600 dark:disabled:bg-gray-800">
-                                {isSubmittingNote ? (
-                                    <>
-                                        <LoadingSpinner size="sm" className="mr-2" />
-                                        Saving...
-                                    </>
-                                ) : 'Add Note'}
+                            <button
+                                type="submit"
+                                disabled={isSubmittingNote}
+                                title="Post Note"
+                                className="absolute bottom-4 right-4 p-3 rounded-xl bg-electric-blue text-white shadow-glow-sm shadow-electric-blue/20 hover:scale-105 transition-all disabled:opacity-50"
+                            >
+                                {isSubmittingNote ? <LoadingSpinner size="sm" /> : <Plus size={20} />}
                             </button>
                         </form>
-                        <div className="space-y-4 max-h-60 overflow-y-auto">
+
+                        <div className="space-y-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                             {lead.activityLog.slice().reverse().map((activity: LeadActivity, index) => (
-                                <div key={activity.timestamp + index} className="text-sm border-l-2 border-gray-300 dark:border-border-color pl-3">
-                                    <p className="font-semibold text-gray-800 dark:text-text-light">{activity.action}</p>
-                                    {activity.notes && <p className="text-gray-600 dark:text-text-muted bg-gray-100 dark:bg-primary-background p-2 rounded-md mt-1">{activity.notes}</p>}
-                                    <p className="text-xs text-gray-500 dark:text-text-muted mt-1">{new Date(activity.timestamp).toLocaleString()} by {activity.user}</p>
+                                <div key={activity.timestamp + index} className="relative pl-8 pb-6 last:pb-0">
+                                    {index !== lead.activityLog.length - 1 && (
+                                        <div className="absolute left-[11px] top-6 bottom-0 w-[2px] bg-glass-border/20" />
+                                    )}
+                                    <div className="absolute left-0 top-1 w-6 h-6 rounded-lg bg-white/5 border border-glass-border/30 flex items-center justify-center">
+                                        <div className="w-2 h-2 rounded-full bg-neon-cyan shadow-glow-sm shadow-neon-cyan/50" />
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <p className="text-xs font-black uppercase tracking-widest text-text-primary">{activity.action}</p>
+                                        {activity.notes && (
+                                            <div className="bg-white/5 border border-glass-border/10 rounded-xl p-3 mt-2">
+                                                <p className="text-sm font-medium text-text-secondary leading-relaxed italic">"{activity.notes}"</p>
+                                            </div>
+                                        )}
+                                        <div className="flex items-center gap-3 text-[10px] font-bold text-text-secondary/50 pt-1">
+                                            <span className="flex items-center gap-1">
+                                                <Clock size={12} />
+                                                {new Date(activity.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            </span>
+                                            <span className="w-1 h-1 rounded-full bg-glass-border/30" />
+                                            <span>{activity.user}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             ))}
                         </div>
                     </Card>
 
-                    <Card>
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-text-light mb-4">Documents</h3>
-                        <div className="space-y-2 mb-4">
+                    {/* Documents */}
+                    <Card className="bg-glass-surface/20 border-glass-border/30">
+                        <div className="flex justify-between items-center mb-6">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 rounded-2xl bg-neon-cyan/10 text-neon-cyan">
+                                    <FileText size={24} />
+                                </div>
+                                <h3 className="text-xl font-black text-text-primary tracking-tight">Documents</h3>
+                            </div>
+                            <span className="px-3 py-1 rounded-lg bg-white/5 border border-glass-border/30 text-[10px] font-black text-text-secondary">
+                                {lead.documents.length} Files
+                            </span>
+                        </div>
+
+                        <div className="space-y-3 mb-6">
                             {lead.documents.map((doc: LeadDocument) => (
-                                <div key={doc.filename} className="flex justify-between items-center bg-gray-100 dark:bg-primary-background p-2 rounded-md">
-                                    <span className="text-sm truncate pr-2 text-gray-700 dark:text-text-primary" title={doc.filename}>{doc.filename}</span>
-                                    <a
-                                        href={doc.filename.startsWith('http') ? doc.filename : `${API_BASE_URL}/files/${doc.filename}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-xs text-accent-blue hover:underline hidden" // Hide default link
-                                    >
-                                        View
-                                    </a>
-                                    <button
-                                        onClick={() => openPreview(doc.filename.startsWith('http') ? doc.filename : `${API_BASE_URL}/files/${doc.id}`)}
-                                        className="text-xs text-accent-blue hover:underline font-medium mr-2"
-                                    >
-                                        View
-                                    </button>
-                                    <button
-                                        onClick={() => handleDeleteDocument(doc.id)}
-                                        className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                                        title="Delete Document"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
+                                <div key={doc.filename} className="group flex justify-between items-center bg-white/5 border border-glass-border/20 p-4 rounded-2xl hover:border-neon-cyan/30 transition-all">
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        <div className="p-2 rounded-lg bg-neon-cyan/10 text-neon-cyan">
+                                            <FileText size={16} />
+                                        </div>
+                                        <span className="text-sm font-bold text-text-primary truncate" title={doc.filename}>{doc.filename}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                                        <button
+                                            onClick={() => openPreview(doc.filename.startsWith('http') ? doc.filename : `${API_BASE_URL}/files/${doc.id}`)}
+                                            className="p-2 rounded-lg bg-white/5 text-text-secondary hover:text-neon-cyan transition-all"
+                                            title="View Document"
+                                        >
+                                            <ClipboardCheck size={16} />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteDocument(doc.id)}
+                                            className="p-2 rounded-lg bg-white/5 text-text-secondary hover:text-error-red transition-all"
+                                            title="Delete Document"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
-                            {lead.documents.length === 0 && <p className="text-sm text-gray-500 dark:text-text-muted">No documents uploaded.</p>}
+                            {lead.documents.length === 0 && (
+                                <div className="text-center py-8 border border-dashed border-glass-border/30 rounded-2xl bg-white/5">
+                                    <p className="text-sm font-bold text-text-secondary/40 italic">No documents found</p>
+                                </div>
+                            )}
                         </div>
+
                         <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
-                        <button onClick={() => fileInputRef.current?.click()} className="w-full bg-secondary-cyan/10 text-secondary-cyan font-semibold py-2 rounded-md hover:bg-secondary-cyan/20 dark:bg-secondary-cyan/20 dark:hover:bg-secondary-cyan/30">
-                            + Upload Document
+                        <button
+                            onClick={() => fileInputRef.current?.click()}
+                            className="group w-full flex items-center justify-center gap-3 bg-neon-cyan/10 border border-neon-cyan/20 text-neon-cyan font-black uppercase tracking-widest text-xs py-4 rounded-2xl hover:bg-neon-cyan hover:text-white transition-all duration-500 shadow-glow-sm shadow-neon-cyan/5"
+                        >
+                            <Plus size={18} className="group-hover:rotate-90 transition-transform duration-500" />
+                            Add New Document
                         </button>
                     </Card>
                 </div>

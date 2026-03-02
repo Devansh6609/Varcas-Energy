@@ -1,56 +1,55 @@
 import React, { useState, useEffect } from 'react';
-import { Lead, User } from '../../types';
+import { User } from '../../types';
 import { getVendors, getDashboardStats, getChartData } from '../../service/adminService';
 import StatCard from '../../components/admin/StatCard';
 import { useCrmUpdates } from '../../contexts/CrmUpdatesContext';
 import Card from '../../components/admin/Card';
 import MonthlyLeadsChart from '../../components/admin/charts/MonthlyLeadsChart';
 import RevenueChart from '../../components/admin/charts/RevenueChart';
-import LeadSourceChart from '../../components/admin/charts/LeadSourceChart';
 import TaskWidget from '../../components/admin/TaskWidget';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { useAuth } from '../../contexts/AuthContext';
 
-import { Users, UserCheck, Trophy, IndianRupee } from 'lucide-react';
+import {
+    Users, UserCheck, Trophy, IndianRupee, Calendar,
+    Filter, Search, Zap, Activity
+} from 'lucide-react';
 
 const kpiIcons = {
     totalLeads: {
-        icon: <Users className="h-6 w-6" />,
-        colorClass: ''
+        icon: <Users size={24} />,
+        colorClass: 'text-neon-cyan'
     },
     verifiedLeads: {
-        icon: <UserCheck className="h-6 w-6" />,
-        colorClass: ''
+        icon: <UserCheck size={24} />,
+        colorClass: 'text-electric-blue'
     },
     projectsWon: {
-        icon: <Trophy className="h-6 w-6" />,
-        colorClass: ''
+        icon: <Trophy size={24} />,
+        colorClass: 'text-bright-violet'
     },
     pipelineValue: {
-        icon: <IndianRupee className="h-6 w-6" />,
-        colorClass: ''
+        icon: <IndianRupee size={24} />,
+        colorClass: 'text-status-green'
     },
 };
 
-const GroupByFilter: React.FC<{ value: string, onChange: (value: string) => void }> = ({ value, onChange }) => {
+const GroupByToggle: React.FC<{ value: string, onChange: (value: string) => void }> = ({ value, onChange }) => {
     const options = ['day', 'week', 'month'];
     return (
-        <div className="flex flex-col">
-            <label className="text-xs font-semibold text-gray-500 dark:text-text-muted mb-2 uppercase tracking-wider ml-1">Group By</label>
-            <div className="flex bg-white dark:bg-glass-surface border border-gray-300 dark:border-white/10 rounded-xl p-1.5 gap-2 shadow-sm">
-                {options.map(opt => (
-                    <button
-                        key={opt}
-                        onClick={() => onChange(opt)}
-                        className={`px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-[10px] md:text-sm font-medium transition-all duration-300 relative overflow-hidden ${value === opt
-                            ? 'bg-gradient-to-r from-accent-blue to-blue-600 text-white shadow-lg shadow-accent-blue/30 scale-105'
-                            : 'text-gray-600 dark:text-text-secondary hover:bg-gray-100 dark:hover:bg-white/5'
-                            }`}
-                    >
-                        {opt === 'day' ? 'Daily' : opt === 'week' ? 'Weekly' : 'Monthly'}
-                    </button>
-                ))}
-            </div>
+        <div className="flex bg-white/5 border border-glass-border/30 rounded-2xl p-1 gap-1">
+            {options.map(opt => (
+                <button
+                    key={opt}
+                    onClick={() => onChange(opt)}
+                    className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-500 ${value === opt
+                        ? 'bg-neon-cyan text-white shadow-glow-sm shadow-neon-cyan/40'
+                        : 'text-text-secondary hover:text-text-primary hover:bg-white/5'
+                        }`}
+                >
+                    {opt}
+                </button>
+            ))}
         </div>
     );
 };
@@ -76,9 +75,6 @@ const DashboardPage: React.FC = () => {
         setFilters(prev => ({ ...prev, [name]: value }));
     };
 
-    const formElementClasses = "bg-white dark:bg-glass-surface border border-gray-300 dark:border-white/10 text-gray-900 dark:text-text-primary text-sm rounded-xl focus:ring-accent-blue focus:border-accent-blue block w-full p-2.5 shadow-sm transition-all duration-300 hover:border-accent-blue/50";
-
-    // Fetch vendors for master admin's filter dropdown
     useEffect(() => {
         if (user?.role === 'Master') {
             getVendors().then(setVendors).catch(err => setError('Could not load vendors.'));
@@ -105,122 +101,165 @@ const DashboardPage: React.FC = () => {
         fetchData();
     }, [filters, groupBy, lastUpdate]);
 
+    const filterInputClasses = "bg-white/5 border border-glass-border/30 text-text-primary text-xs font-bold rounded-2xl focus:ring-2 focus:ring-neon-cyan/50 focus:border-neon-cyan block w-full px-4 py-3 transition-all appearance-none outline-none";
+
     return (
-        <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-[1920px] mx-auto">
-            {/* Header Section */}
-            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 bg-white dark:bg-gray-800/50 backdrop-blur-xl p-4 sm:p-6 rounded-3xl border border-gray-100 dark:border-white/5 shadow-sm">
-                <div className="relative z-10">
-                    <h1 className="text-2xl sm:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight mb-1 sm:mb-2">
-                        Dashboard
+        <div className="p-4 sm:p-8 lg:p-12 max-w-[1800px] mx-auto animate-fade-in-up space-y-10 font-inter">
+            {/* Executive Header */}
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
+                <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                        <div className="px-3 py-1 rounded-full bg-neon-cyan/10 border border-neon-cyan/20 text-neon-cyan text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                            <Zap size={12} className="fill-neon-cyan" />
+                            Insights Hub
+                        </div>
+                    </div>
+                    <h1 className="text-4xl lg:text-5xl font-black text-text-primary tracking-tight">
+                        Executive <span className="text-neon-cyan">Overview</span>
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm font-medium">
-                        Welcome back, {user?.name.split(' ')[0]}
+                    <p className="text-text-secondary/60 text-sm font-bold">
+                        Welcome back, <span className="text-text-primary">{user?.name}</span>. Here's your solar performance today.
                     </p>
                 </div>
+            </div>
 
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full xl:w-auto">
-                    <div className="bg-gray-50 dark:bg-gray-700/50 p-1 rounded-xl border border-gray-100 dark:border-white/5 flex justify-center sm:justify-start">
-                        <GroupByFilter value={groupBy} onChange={setGroupBy} />
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto bg-gray-50 dark:bg-gray-700/50 p-1.5 rounded-xl border border-gray-100 dark:border-white/5">
-                        {user?.role === 'Master' && (
+            {/* Filter Row */}
+            <div className="bg-glass-surface/20 backdrop-blur-3xl border border-glass-border/30 rounded-[2.5rem] p-6 lg:p-8 flex flex-col xl:flex-row items-stretch xl:items-center gap-6">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {user?.role === 'Master' && (
+                        <div className="relative group">
+                            <Filter className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary group-focus-within:text-neon-cyan transition-colors" />
                             <select
                                 name="vendorId"
                                 value={filters.vendorId}
+                                title="Vendor Filter"
                                 onChange={handleFilterChange}
-                                className="col-span-2 sm:col-span-1 bg-white dark:bg-gray-600/50 border-none text-gray-700 dark:text-gray-200 text-xs sm:text-sm rounded-lg focus:ring-2 focus:ring-accent-blue py-2 px-3 w-full sm:min-w-[140px]"
+                                className={`${filterInputClasses} pl-12`}
                             >
-                                <option value="all">All Vendors</option>
-                                {vendors.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
+                                <option value="all">All Global Vendors</option>
+                                {vendors.map(v => <option key={v.id} value={v.id} className="bg-night-sky">{v.name}</option>)}
                             </select>
-                        )}
+                        </div>
+                    )}
+                    <div className="relative group">
+                        <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary group-focus-within:text-neon-cyan transition-colors" />
                         <input
                             type="date"
                             name="startDate"
                             value={filters.startDate}
+                            title="Start Date"
                             onChange={handleFilterChange}
-                            className="bg-white dark:bg-gray-600/50 border-none text-gray-700 dark:text-gray-200 text-xs sm:text-sm rounded-lg focus:ring-2 focus:ring-accent-blue py-2 px-2 sm:px-3 w-full"
+                            className={`${filterInputClasses} pl-12`}
                         />
+                    </div>
+                    <div className="relative group">
+                        <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary group-focus-within:text-neon-cyan transition-colors" />
                         <input
                             type="date"
                             name="endDate"
                             value={filters.endDate}
+                            title="End Date"
                             onChange={handleFilterChange}
-                            className="bg-white dark:bg-gray-600/50 border-none text-gray-700 dark:text-gray-200 text-xs sm:text-sm rounded-lg focus:ring-2 focus:ring-accent-blue py-2 px-2 sm:px-3 w-full"
+                            className={`${filterInputClasses} pl-12`}
                         />
                     </div>
                 </div>
+
+                <div className="xl:pl-6 xl:border-l border-glass-border/20">
+                    <GroupByToggle value={groupBy} onChange={setGroupBy} />
+                </div>
+
+                <button className="px-8 py-3 rounded-2xl bg-neon-cyan text-white font-black uppercase tracking-[0.2em] text-[10px] shadow-glow-sm shadow-neon-cyan/20 hover:scale-105 active:scale-95 transition-all">
+                    Generate Report
+                </button>
             </div>
 
-            {error && (
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-xl text-sm font-medium">
-                    {error}
-                </div>
-            )}
-
             {loading ? (
-                <div className="flex justify-center items-center h-96">
+                <div className="h-[400px] flex items-center justify-center">
                     <LoadingSpinner size="lg" />
                 </div>
             ) : (
-                <>
-                    {/* Stats Grid */}
-                    {stats && (
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                            <StatCard title="Total Leads" value={stats.totalLeads} {...kpiIcons.totalLeads} />
-                            <StatCard title="Verified Leads" value={stats.verifiedLeads} {...kpiIcons.verifiedLeads} />
-                            <StatCard title="Projects Won" value={stats.projectsWon} {...kpiIcons.projectsWon} />
-                            <StatCard title="Pipeline Value" value={stats.pipelineValue} {...kpiIcons.pipelineValue} />
-                        </div>
-                    )}
+                <div className="space-y-10 pb-12">
+                    {/* KPI Stratosphere */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <StatCard
+                            title="Total Pipeline Leads"
+                            value={stats?.totalLeads ?? 0}
+                            {...kpiIcons.totalLeads}
+                            trend={{ value: 12.5, isPositive: true }}
+                        />
+                        <StatCard
+                            title="Verified Installations"
+                            value={stats?.verifiedLeads ?? 0}
+                            {...kpiIcons.verifiedLeads}
+                            trend={{ value: 3.2, isPositive: true }}
+                        />
+                        <StatCard
+                            title="Solar Projects Won"
+                            value={stats?.projectsWon ?? 0}
+                            {...kpiIcons.projectsWon}
+                            trend={{ value: 1.4, isPositive: false }}
+                        />
+                        <StatCard
+                            title="Total Pipeline Value"
+                            value={`₹${((stats?.pipelineValue ?? 0) / 10000000).toFixed(2)}Cr`}
+                            {...kpiIcons.pipelineValue}
+                            trend={{ value: 8.7, isPositive: true }}
+                        />
+                    </div>
 
-                    {/* Charts Grid */}
-                    {chartData && stats && (
-                        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                            {/* Main Chart Area */}
-                            <div className="xl:col-span-2 space-y-6">
-                                <Card className="!p-6 !rounded-3xl border border-gray-100 dark:border-white/5 bg-white dark:bg-gray-800/80 backdrop-blur-sm shadow-sm">
-                                    <div className="flex items-center justify-between mb-6">
-                                        <div>
-                                            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Leads Overview</h3>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Monthly lead acquisition trends</p>
-                                        </div>
+                    {/* Analytics Grid */}
+                    <div className="space-y-8">
+                        {/* Top Row: Performance & Trajectory */}
+                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                            <Card className="!p-8 group relative overflow-hidden flex flex-col">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-neon-cyan/5 blur-[100px] pointer-events-none" />
+                                <div className="flex items-center justify-between mb-8 relative z-10">
+                                    <div className="space-y-1">
+                                        <h3 className="text-xl font-black text-text-primary tracking-tight group-hover:text-neon-cyan transition-colors">Leads Performance</h3>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary/60">Real-time acquisition velocity</p>
                                     </div>
-                                    <div className="h-[350px]">
-                                        <MonthlyLeadsChart data={chartData.timeSeriesLeads} />
+                                    <div className="p-3 rounded-2xl bg-neon-cyan/10 text-neon-cyan">
+                                        <Activity size={20} />
                                     </div>
-                                </Card>
-
-                                <Card className="!p-6 !rounded-3xl border border-gray-100 dark:border-white/5 bg-white dark:bg-gray-800/80 backdrop-blur-sm shadow-sm">
-                                    <div className="flex items-center justify-between mb-6">
-                                        <div>
-                                            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Revenue Growth</h3>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">cumulative revenue over time</p>
-                                        </div>
-                                    </div>
-                                    <div className="h-[350px]">
-                                        <RevenueChart data={chartData.timeSeriesRevenue} />
-                                    </div>
-                                </Card>
-                            </div>
-
-                            {/* Sidebar Area */}
-                            <div className="space-y-6">
-                                <Card className="!p-6 !rounded-3xl border border-gray-100 dark:border-white/5 bg-white dark:bg-gray-800/80 backdrop-blur-sm shadow-sm h-[400px]">
-                                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Lead Sources</h3>
-                                    <div className="h-[300px]">
-                                        <LeadSourceChart data={chartData.leadSources} />
-                                    </div>
-                                </Card>
-
-                                <div className="bg-white dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl border border-gray-100 dark:border-white/5 shadow-sm overflow-hidden">
-                                    <TaskWidget tasks={stats.tasks} />
                                 </div>
-                            </div>
+                                <div className="h-[280px]">
+                                    <MonthlyLeadsChart data={chartData?.timeSeriesLeads ?? []} />
+                                </div>
+                            </Card>
+
+                            <Card className="!p-8 group relative overflow-hidden flex flex-col">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-electric-blue/5 blur-[100px] pointer-events-none" />
+                                <div className="flex items-center justify-between mb-8 relative z-10">
+                                    <div className="space-y-1">
+                                        <h3 className="text-xl font-black text-text-primary tracking-tight group-hover:text-electric-blue transition-colors">Revenue Trajectory</h3>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary/60">Financial growth projections</p>
+                                    </div>
+                                    <div className="p-3 rounded-2xl bg-electric-blue/10 text-electric-blue">
+                                        <IndianRupee size={20} />
+                                    </div>
+                                </div>
+                                <div className="h-[280px]">
+                                    <RevenueChart data={chartData?.timeSeriesRevenue ?? []} />
+                                </div>
+                            </Card>
                         </div>
-                    )}
-                </>
+
+                        {/* Bottom Row: Action Center */}
+                        <div className="w-full">
+                            <Card className="!p-0 overflow-hidden bg-glass-surface/30 group">
+                                <div className="p-8 pb-4 flex items-center justify-between border-b border-glass-border/5">
+                                    <div className="space-y-1">
+                                        <h3 className="text-xl font-black text-text-primary tracking-tight">Action Center</h3>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary/60">Critical pending tasks</p>
+                                    </div>
+                                    <div className="h-2 w-2 rounded-full bg-error-red animate-ping" />
+                                </div>
+                                <TaskWidget tasks={stats?.tasks} />
+                            </Card>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
