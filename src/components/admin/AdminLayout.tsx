@@ -105,12 +105,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
     return (
         <div className="flex h-screen bg-gray-50 font-sans overflow-hidden">
-            <Sidebar isCollapsed={isSidebarCollapsed} setCollapsed={setIsSidebarCollapsed} />
+            <Sidebar isCollapsed={isSidebarCollapsed} setCollapsed={setIsSidebarCollapsed} isMobileOpen={false} onMobileClose={() => {}} />
 
             <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${isSidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
                 <header className="flex justify-between items-center p-4 bg-white/80 backdrop-blur-sm border-b border-gray-200">
                     <div className="flex items-center">
-                        <h1 className="text-xl font-semibold text-gray-800">SuryaKiran CRM</h1>
+                        <h1 className="text-xl font-semibold text-gray-800">Varcas Energy CRM</h1>
                     </div>
                     <UserDropdown />
                 </header>

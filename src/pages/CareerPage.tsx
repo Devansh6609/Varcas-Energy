@@ -16,13 +16,13 @@ const CareerPage: React.FC = () => {
                 <AnimatedSection delay="delay-100">
                     <div className="prose prose-lg mx-auto text-text-secondary">
                         <p className="mb-6 text-base md:text-lg text-justify md:text-left leading-relaxed">
-                            Suryakiran Green Wave Pvt. Ltd. firmly believe that talented professionals are among our most vital resources. Suryakiran Green Wave Pvt. Ltd. have some time now been broadening its horizons and looking beyond India. Its companies are concentrating on global competitiveness, leveraging global opportunities and acquiring global capabilities.
+                            Varcas Energy firmly believes that talented professionals are among our most vital resources. Varcas Energy has for some time now been broadening its horizons and looking beyond India. Its companies are concentrating on global competitiveness, leveraging global opportunities and acquiring global capabilities.
                         </p>
                         <p className="mb-6 text-base md:text-lg text-justify md:text-left leading-relaxed">
-                            With attractive compensation packages, positive and productive work environments and challenging assignments across the world, Suryakiran Green Wave is committed to being the employer of choice wherever it operates, attracting and retaining the best of professionals.
+                            With attractive compensation packages, positive and productive work environments and challenging assignments across the world, Varcas Energy is committed to being the employer of choice wherever it operates, attracting and retaining the best of professionals.
                         </p>
                         <p className="mb-10 text-base md:text-lg text-justify md:text-left leading-relaxed">
-                            By developing a structure, systems and a workplace culture that provides challenging jobs, rewards performance and delivers opportunities continuously, the group is striving to get the best out of its most valuable asset — its people. Powering that quest is an entire range of human resource initiatives aimed at realizing the potential of Suryakiran employees.
+                            By developing a structure, systems and a workplace culture that provides challenging jobs, rewards performance and delivers opportunities continuously, the group is striving to get the best out of its most valuable asset — its people. Powering that quest is an entire range of human resource initiatives aimed at realizing the potential of Varcas Energy employees.
                         </p>
                     </div>
                 </AnimatedSection>
@@ -33,11 +33,11 @@ const CareerPage: React.FC = () => {
                             If you think you are creative, passionate and hard working, please send your resume at
                         </h2>
                         <div className="flex flex-col gap-4 justify-center items-center">
-                            <a href="mailto:suryakirangreenwave1984@gmail.com" className="text-lg md:text-xl font-medium text-primary-blue hover:text-accent-cyan transition-colors duration-300 break-all">
-                                suryakirangreenwave1984@gmail.com
+                            <a href="mailto:careers@varcasenergy.com" className="text-lg md:text-xl font-medium text-primary-blue hover:text-accent-cyan transition-colors duration-300 break-all">
+                                careers@varcasenergy.com
                             </a>
-                            <a href="mailto:suryakirangreenwave1994@gmail.com" className="text-lg md:text-xl font-medium text-primary-green hover:text-accent-yellow transition-colors duration-300 break-all">
-                                suryakirangreenwave1994@gmail.com
+                            <a href="mailto:hr@varcasenergy.com" className="text-lg md:text-xl font-medium text-primary-green hover:text-accent-yellow transition-colors duration-300 break-all">
+                                hr@varcasenergy.com
                             </a>
                         </div>
                     </div>

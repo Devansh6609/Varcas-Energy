@@ -51,7 +51,7 @@ const ValuePillar: React.FC<{ icon: React.ReactNode; title: string; description:
         <h3 className="mt-5 text-xl font-bold">{title}</h3>
         <p className="mt-2 text-base text-gray-200">{description}</p>
         <div className="mt-6">
-            <ReactRouterDOM.Link to={link} className="font-bold bg-white text-primary-green py-2 px-6 rounded-full hover:bg-gray-200 transition-colors">Learn More &rarr;</ReactRouterDOM.Link>
+            <ReactRouterDOM.Link to={link} className="font-bold bg-white text-varcas-navy py-2 px-6 rounded-full hover:bg-gray-200 transition-colors">Learn More &rarr;</ReactRouterDOM.Link>
         </div>
     </div>
 );
@@ -64,7 +64,7 @@ const HomePage: React.FC = () => {
                 <HeroSection />
             </section>
 
-            <section className="panel px-4 bg-slate-900/80 backdrop-blur-lg">
+            <section className="panel px-4 bg-varcas-navy/90 backdrop-blur-lg">
                 <div className="text-center text-white max-w-7xl w-full mx-auto overflow-y-auto max-h-[100vh] py-20 md:py-0 md:max-h-[80vh]">
                     <h2 className="text-3xl font-extrabold sm:text-5xl">Your Comprehensive Solar Solution</h2>
                     <p className="mt-4 text-lg text-gray-200">From homes to farms, we power your future with sustainable energy.</p>
@@ -91,11 +91,11 @@ const HomePage: React.FC = () => {
                 </div>
             </section>
 
-            <section className="panel bg-slate-800/80 backdrop-blur-lg px-4">
+            <section className="panel bg-varcas-navy/95 backdrop-blur-lg px-4">
                 <TrustBar />
             </section>
 
-            <section className="panel bg-slate-700/80 backdrop-blur-lg px-4">
+            <section className="panel bg-varcas-navy/90 backdrop-blur-lg px-4">
                 <div className="max-w-7xl w-full mx-auto text-center overflow-y-auto max-h-[100vh] py-20 md:py-0 md:max-h-[80vh]">
                     <h2 className="text-3xl font-extrabold text-white sm:text-5xl">Trusted by Thousands of Indians</h2>
                     <p className="mt-4 text-lg text-gray-300">Hear what our happy customers have to say.</p>
@@ -105,7 +105,7 @@ const HomePage: React.FC = () => {
                 </div>
             </section>
 
-            <section className="panel bg-slate-600/80 backdrop-blur-lg px-4">
+            <section className="panel bg-varcas-navy/85 backdrop-blur-lg px-4">
                 <div className="max-w-7xl w-full mx-auto text-center overflow-y-auto max-h-[100vh] py-20 md:py-0 md:max-h-[80vh]">
                     <h2 className="text-3xl font-extrabold text-white sm:text-5xl">Frequently Asked Questions</h2>
                     <p className="mt-4 text-lg text-gray-300">

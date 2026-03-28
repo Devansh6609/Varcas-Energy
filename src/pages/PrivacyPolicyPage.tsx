@@ -16,9 +16,8 @@ const PrivacyPolicyPage: React.FC = () => {
 
                     <div className="prose prose-lg text-gray-700 max-w-none space-y-8">
                         <section>
-                            <h2 className="text-xl font-bold text-gray-900 mb-3">1. Introduction</h2>
                             <p>
-                                Welcome to SuryaKiran Solar Solutions ("we," "our," or "us"). We are committed to protecting your privacy and ensuring the security of your personal information.
+                                Welcome to Varcas Energy ("we," "our," or "us"). We are committed to protecting your privacy and ensuring the security of your personal information.
                                 This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website or use our services.
                             </p>
                         </section>
@@ -67,7 +66,7 @@ const PrivacyPolicyPage: React.FC = () => {
                         <section>
                             <h2 className="text-xl font-bold text-gray-900 mb-3">6. Your Rights</h2>
                             <p>
-                                You have the right to access, update, or delete your personal information. If you wish to exercise these rights, please contact us at support@suryakiransolar.com.
+                                You have the right to access, update, or delete your personal information. If you wish to exercise these rights, please contact us at support@varcasenergy.com.
                             </p>
                         </section>
 
@@ -83,8 +82,8 @@ const PrivacyPolicyPage: React.FC = () => {
                             <p>
                                 If you have any questions about this Privacy Policy, please contact us:
                             </p>
-                            <p className="mt-2 font-medium">SuryaKiran Solar Solutions</p>
-                            <p>Email: info@suryakiransolar.com</p>
+                            <p className="mt-2 font-medium">Varcas Energy Pvt. Ltd.</p>
+                            <p>Email: info@varcasenergy.com</p>
                             <p>Phone: +91 98765 43210</p>
                         </section>
                     </div>

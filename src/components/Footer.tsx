@@ -63,7 +63,7 @@ const Footer: React.FC = () => {
                     </div>
                 </div>
                 <div className="mt-12 border-t border-white/10 pt-8">
-                    <p className="text-base text-gray-300 xl:text-center">&copy; {new Date().getFullYear()} SuryaKiran Solar Solutions. All rights reserved.</p>
+                    <p className="text-base text-gray-300 xl:text-center">&copy; {new Date().getFullYear()} Varcas Energy. All rights reserved.</p>
                     <div className="mt-4 flex justify-center space-x-4">
                         <span className="font-bold">MNRE Approved</span>
                         <span>|</span>

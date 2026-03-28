@@ -72,7 +72,7 @@ const LoginPage: React.FC = () => {
                         </div>
 
                         <div className="relative z-10 pt-10 mt-10 border-t border-glass-border/10">
-                            <p className="text-xs font-black uppercase tracking-[0.2em] text-text-secondary/40">Suryakiran Solar Solution</p>
+                            <p className="text-xs font-black uppercase tracking-[0.2em] text-text-secondary/40">Varcas Energy</p>
                         </div>
                     </div>
 
@@ -171,11 +171,11 @@ const LoginPage: React.FC = () => {
                                     </div>
                                     <h2 className="text-2xl font-black text-text-primary mb-3">Join our Network</h2>
                                     <p className="text-text-secondary font-bold text-sm leading-relaxed mb-8">
-                                        Access to Suryakiran CRM is managed by administrators. Please contact your system supervisor to request an account.
+                                        Access to Varcas Energy CRM is managed by administrators. Please contact your system supervisor to request an account.
                                     </p>
                                     <div className="p-4 bg-white/5 border border-white/10 rounded-2xl mb-8">
                                         <p className="text-xs font-bold text-text-secondary/40 uppercase tracking-widest mb-1">Company Contact</p>
-                                        <p className="text-sm font-black text-text-primary">hr@suryakiransolar.com</p>
+                                        <p className="text-sm font-black text-text-primary">hr@varcasenergy.com</p>
                                     </div>
                                     <button
                                         onClick={() => setIsSignUp(false)}

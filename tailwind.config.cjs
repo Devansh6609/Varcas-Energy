@@ -45,14 +45,19 @@ module.exports = {
         'text-muted': 'rgb(var(--text-secondary) / <alpha-value>)',
         'border-color': 'rgb(var(--border-glass) / <alpha-value>)',
         
-        // Original Light Theme Colors (for Public Site)
-        'brand-blue': '#293B5F',
+        // Original Light Theme Colors (for Public Site) - Updated to Varcas Energy palette
+        'varcas-navy': '#011B44',
+        'solar-gold': '#FFB800',
+        'solar-amber': '#E6A700',
+        'aurora-blue': '#003E8C',
+        'cloud-white': '#F8FAFC',
+        'brand-blue': '#011B44', // Backward compatibility
         'primary-green': '#10B981',
-        'primary-blue': '#3B82F6',
-        'accent-orange': '#F97316',
-        'accent-orange-hover': '#EA580C',
-        'accent-yellow': '#F59E0B',
-        'accent-yellow-hover': '#D97706',
+        'primary-blue': '#003E8C',
+        'accent-orange': '#FFB800',
+        'accent-orange-hover': '#E6A700',
+        'accent-yellow': '#FFB800',
+        'accent-yellow-hover': '#E6A700',
       },
       backgroundImage: {
         'electric-gradient': 'linear-gradient(135deg, var(--tw-gradient-stops))',

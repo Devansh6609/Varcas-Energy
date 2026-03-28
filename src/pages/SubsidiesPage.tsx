@@ -9,7 +9,7 @@ import subsidyFinance from '../assets/subsidies/subsidy-finance.png';
 const pmSuryaGharProcess = [
     { id: 1, title: 'Register on Portal', description: 'Begin by registering on the National Portal for Rooftop Solar. You will need your latest electricity bill and other basic household details to start the process.', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg> },
     { id: 2, title: 'Feasibility Approval', description: 'Submit your application through the portal. It will be automatically forwarded to your local DISCOM, who will provide technical feasibility approval within approximately 15 days.', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
-    { id: 3, title: 'Installation', description: 'Once approved, select SuryaKiran Solar as your registered vendor. We will procure high-quality components and complete the installation as per MNRE standards.', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12V6a2 2 0 012-2h10a2 2 0 012 2v6m-7-3h4m-2 2v2m-2-2l-2-2m4 4l-2 2" /></svg> },
+    { id: 3, title: 'Installation', description: 'Once approved, select Varcas Energy as your registered vendor. We will procure high-quality components and complete the installation as per MNRE standards.', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12V6a2 2 0 012-2h10a2 2 0 012 2v6m-7-3h4m-2 2v2m-2-2l-2-2m4 4l-2 2" /></svg> },
     { id: 4, title: 'Net Metering & Inspection', description: 'After installation, we submit the project details. Your DISCOM will then inspect the system and install the net meter, which tracks your energy export and import.', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg> },
     { id: 5, title: 'Subsidy Disbursal', description: 'Upon successful inspection, a commissioning certificate is issued. The central government subsidy is then directly credited to your bank account within 30-60 days.', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg> }
 ];
@@ -99,15 +99,15 @@ const SubsidiesPage: React.FC = () => {
                         <p className="mt-4 max-w-3xl mx-auto text-lg text-text-secondary">Don't let upfront costs stop you. We partner with leading financial institutions to offer attractive loan and EMI options tailored to your needs.</p>
                         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div className="bg-glass-surface backdrop-blur-sm border border-glass-border p-6 rounded-lg shadow transform hover:-translate-y-1 transition-transform">
-                                <h3 className="font-bold text-xl text-accent-yellow">Bank Loans</h3>
+                                <h3 className="font-bold text-xl text-solar-gold">Bank Loans</h3>
                                 <p className="mt-2 text-text-secondary">Easy processing with our partner banks at competitive interest rates.</p>
                             </div>
                             <div className="bg-glass-surface backdrop-blur-sm border border-glass-border p-6 rounded-lg shadow transform hover:-translate-y-1 transition-transform">
-                                <h3 className="font-bold text-xl text-accent-yellow">EMI Options</h3>
+                                <h3 className="font-bold text-xl text-solar-gold">EMI Options</h3>
                                 <p className="mt-2 text-text-secondary">Convert your investment into manageable monthly payments.</p>
                             </div>
                             <div className="bg-glass-surface backdrop-blur-sm border border-glass-border p-6 rounded-lg shadow transform hover:-translate-y-1 transition-transform">
-                                <h3 className="font-bold text-xl text-accent-yellow">Power Purchase Agreements (PPAs)</h3>
+                                <h3 className="font-bold text-xl text-solar-gold">Power Purchase Agreements (PPAs)</h3>
                                 <p className="mt-2 text-text-secondary">For commercial clients, pay only for the energy you consume with zero upfront investment.</p>
                             </div>
                         </div>

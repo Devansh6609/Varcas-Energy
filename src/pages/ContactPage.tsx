@@ -76,7 +76,7 @@ const ContactPage: React.FC = () => {
         return (
             <div className="bg-transparent min-h-[60vh] flex items-center justify-center">
                 <div className="max-w-2xl mx-auto text-center py-20 px-4">
-                    <h2 className="text-3xl font-bold text-primary-green">Thank You!</h2>
+                    <h2 className="text-3xl font-bold text-solar-gold">Thank You!</h2>
                     <p className="mt-4 text-lg text-text-secondary">Your request has been received. Our team will contact you shortly.</p>
                 </div>
             </div>
@@ -94,9 +94,9 @@ const ContactPage: React.FC = () => {
                         Have a question or ready to start your solar journey? Fill out the form, and our experts will get back to you.
                     </p>
                     <div className="mt-8 space-y-4 text-lg">
-                        <p className="flex items-center"><svg className="w-6 h-6 mr-3 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg> +91 12345 67890</p>
-                        <p className="flex items-center"><svg className="w-6 h-6 mr-3 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg> contact@suryakiran.com</p>
-                        <p className="flex items-center"><svg className="w-6 h-6 mr-3 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> 123 Solar Marg, Green City, India</p>
+                        <p className="flex items-center"><svg className="w-6 h-6 mr-3 text-solar-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg> +91 12345 67890</p>
+                        <p className="flex items-center"><svg className="w-6 h-6 mr-3 text-solar-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg> contact@varcasenergy.com</p>
+                        <p className="flex items-center"><svg className="w-6 h-6 mr-3 text-solar-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> 123 Solar Marg, Green City, India</p>
                     </div>
                 </div>
                 <div className="bg-glass-surface backdrop-blur-md border border-glass-border p-8 rounded-lg shadow-xl">
@@ -111,12 +111,12 @@ const ContactPage: React.FC = () => {
                         {!isOtpSent && (
                             <>
                                 <div className="flex items-start">
-                                    <input id="consent" name="consent" type="checkbox" required checked={consent} onChange={(e) => setConsent(e.target.checked)} className="h-4 w-4 text-accent-orange bg-gray-700 border-gray-600 rounded focus:ring-accent-orange mt-1" />
+                                    <input id="consent" name="consent" type="checkbox" required checked={consent} onChange={(e) => setConsent(e.target.checked)} className="h-4 w-4 text-solar-gold bg-gray-700 border-gray-600 rounded focus:ring-solar-gold mt-1" />
                                     <label htmlFor="consent" className="ml-3 block text-sm text-text-secondary">
-                                        By checking this box, I provide my Prior Express Written Consent to be contacted by SuryaKiran Solar Solutions via phone, SMS, or email. See our <a href="#" className="font-medium text-accent-orange hover:underline">Privacy Policy</a>.
+                                        By checking this box, I provide my Prior Express Written Consent to be contacted by Varcas Energy via phone, SMS, or email. See our <a href="#" className="font-medium text-solar-gold hover:underline">Privacy Policy</a>.
                                     </label>
                                 </div>
-                                <button type="submit" disabled={isLoading} className="w-full flex justify-center items-center font-bold bg-accent-orange text-white py-3 px-4 rounded-lg shadow-lg hover:bg-accent-orange-hover transition-colors duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                                <button type="submit" disabled={isLoading} className="w-full flex justify-center items-center font-bold bg-solar-gold text-varcas-navy py-3 px-4 rounded-lg shadow-lg hover:bg-solar-amber transition-colors duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed">
                                     {isLoading ? (
                                         <>
                                             <LoadingSpinner size="sm" className="mr-2 !text-white" />
@@ -133,7 +133,7 @@ const ContactPage: React.FC = () => {
                                     <p className="text-sm text-text-secondary">Enter the 4-digit OTP sent to {formData.phone}.</p>
                                 </div>
                                 <input type="text" name="otp" placeholder="Enter 4-Digit OTP" required value={otp} onChange={(e) => setOtp(e.target.value)} className="w-full px-3 py-2 border border-glass-border rounded-md bg-night-sky/80 text-white placeholder-gray-400" />
-                                <button type="submit" disabled={isLoading} className="w-full flex justify-center items-center font-bold bg-primary-green text-white py-3 px-4 rounded-lg shadow-lg hover:bg-green-800 transition-colors duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                                <button type="submit" disabled={isLoading} className="w-full flex justify-center items-center font-bold bg-solar-gold text-varcas-navy py-3 px-4 rounded-lg shadow-lg hover:bg-solar-amber transition-colors duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed">
                                     {isLoading ? (
                                         <>
                                             <LoadingSpinner size="sm" className="mr-2 !text-white" />

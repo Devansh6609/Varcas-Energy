@@ -199,7 +199,7 @@ body {
     height: 2px;
     bottom: 0;
     left: 0;
-    background-color: theme("colors.neon-cyan");
+    background-color: theme("colors.solar-gold");
     transform-origin: bottom right;
     transition: transform 0.25s ease-out;
   }
@@ -250,7 +250,7 @@ body {
 
 @layer utilities {
   .text-glow {
-    text-shadow: 0 0 8px theme("colors.glow-cyan");
+    text-shadow: 0 0 8px theme("colors.solar-gold");
   }
 }
 

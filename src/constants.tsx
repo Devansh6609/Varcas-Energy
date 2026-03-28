@@ -1,6 +1,7 @@
 import React from 'react';
 import { Testimonial, SuccessStory, StorySegment, PipelineStage } from './types';
-import logoUrl from './assets/suryakiran.png';
+import logoIcon from './assets/logo-icon.png';
+
 import sharmaResidenceImage from './assets/success-story-sharma-residence.png';
 import patelFarmsImage from './assets/success-story-patel-farms.png';
 import guptaTextilesImage from './assets/success-story-gupta-textiles.png';
@@ -34,7 +35,7 @@ export const HERO_MARQUEE_TEXT = [
 
 export const TESTIMONIALS: Testimonial[] = [
     {
-        quote: "Our electricity bills have vanished! SuryaKiran's team handled the entire subsidy process flawlessly. Highly recommended for any homeowner.",
+        quote: "Our electricity bills have vanished! Varcas Energy's team handled the entire subsidy process flawlessly. Highly recommended for any homeowner.",
         name: 'Anjali & Rohan Mehta',
         segment: StorySegment.Residential,
         image: 'https://picsum.photos/seed/anjali/100/100',
@@ -46,7 +47,7 @@ export const TESTIMONIALS: Testimonial[] = [
         image: 'https://picsum.photos/seed/balwinder/100/100',
     },
     {
-        quote: "The professionalism and technical expertise of SuryaKiran are unmatched. Our commercial unit now runs on clean energy, and the ROI is even better than projected.",
+        quote: "The professionalism and technical expertise of Varcas Energy are unmatched. Our commercial unit now runs on clean energy, and the ROI is even better than projected.",
         name: 'Priya Desai, Factory Manager',
         segment: StorySegment.Commercial,
         image: 'https://picsum.photos/seed/priya/100/100',
@@ -85,7 +86,7 @@ export const SUCCESS_STORIES: SuccessStory[] = [
         title: "Gupta Textiles: Slashing Operational Costs",
         segment: StorySegment.Commercial,
         image: guptaTextilesImage,
-        customerQuote: "Our factory's energy overhead was a major concern. The 50kW rooftop system from SuryaKiran has cut our power costs by over 70%, making us more competitive in the market.",
+        customerQuote: "Our factory's energy overhead was a major concern. The 50kW rooftop system from Varcas Energy has cut our power costs by over 70%, making us more competitive in the market.",
         roiData: [
             { label: 'System Size', value: '50 kW' },
             { label: 'Monthly Savings', value: '₹ 85,000' },
@@ -98,7 +99,7 @@ export const SUCCESS_STORIES: SuccessStory[] = [
         title: "Jaipur Smart Home: Future-Proof Energy",
         segment: StorySegment.Residential,
         image: jaipurHomeImage,
-        customerQuote: "Integrating solar with our smart home setup was a dream. SuryaKiran provided a seamless solution with high-efficiency panels. We even charge our EV for free!",
+        customerQuote: "Integrating solar with our smart home setup was a dream. Varcas Energy provided a seamless solution with high-efficiency panels. We even charge our EV for free!",
         roiData: [
             { label: 'System Size', value: '8 kW' },
             { label: 'Annual Savings', value: '₹ 96,000' },
@@ -132,7 +133,13 @@ export const FAQ_DATA = [
 ];
 
 export const Logo: React.FC<{ className?: string }> = ({ className }) => (
-    <img src={logoUrl} alt="SuryaKiran Solar Solutions Logo" className={`h-20 md:h-[150px] w-auto ${className}`} />
+    <div className={`flex items-center gap-3 ${className}`}>
+        <img src={logoIcon} alt="Varcas Energy Icon" className="h-10 md:h-14 w-auto object-contain brightness-110" />
+        <div className="flex flex-col justify-center leading-none">
+            <span className="text-solar-gold font-extrabold text-xl md:text-2xl tracking-tight uppercase">Varcas</span>
+            <span className="text-white font-bold text-[0.6rem] md:text-sm tracking-[0.2em] uppercase mt-0.5 opacity-90">Energy</span>
+        </div>
+    </div>
 );
 
 import {

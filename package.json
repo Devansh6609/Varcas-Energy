@@ -1,11 +1,11 @@
 {
-  "name": "suryakiran-solar",
+  "name": "varcas-energy",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "chmod +x ./node_modules/.bin/vite && npx vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {

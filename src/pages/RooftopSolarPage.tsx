@@ -65,24 +65,24 @@ const RooftopSolarPage: React.FC = () => {
                 <AnimatedSection className="mt-10 md:mt-20">
                     <div className="bg-glass-surface backdrop-blur-sm border border-glass-border p-8 rounded-lg">
                         <div className="text-center">
-                            <h2 className="text-2xl md:text-3xl font-extrabold text-primary-green text-glow">Unlock Your Maximum ₹78,000 Subsidy</h2>
+                            <h2 className="text-2xl md:text-3xl font-extrabold text-solar-gold text-glow">Unlock Your Maximum ₹78,000 Subsidy</h2>
                             <p className="mt-4 text-lg text-text-secondary">
                                 With the "PM Surya Ghar: Muft Bijli Yojana", going solar has never been more affordable. We are experts in navigating the 45-120 day approval process for you.
                             </p>
                         </div>
                         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
                             <div className="bg-glass-surface/70 backdrop-blur-sm p-6 rounded-md">
-                                <p className="text-xl font-bold text-primary-green">Up to 2 kW</p>
+                                <p className="text-xl font-bold text-solar-gold">Up to 2 kW</p>
                                 <p className="text-2xl font-extrabold text-white mt-2">₹30,000 / kW</p>
                                 <p className="text-sm text-text-secondary">Total: ₹60,000</p>
                             </div>
                             <div className="bg-glass-surface/70 backdrop-blur-sm p-6 rounded-md">
-                                <p className="text-xl font-bold text-primary-green">For the 3rd kW</p>
+                                <p className="text-xl font-bold text-solar-gold">For the 3rd kW</p>
                                 <p className="text-2xl font-extrabold text-white mt-2">₹18,000</p>
                                 <p className="text-sm text-text-secondary">Additional Subsidy</p>
                             </div>
                             <div className="bg-glass-surface/70 backdrop-blur-sm p-6 rounded-md">
-                                <p className="text-xl font-bold text-primary-green">3 kW & Above</p>
+                                <p className="text-xl font-bold text-solar-gold">3 kW & Above</p>
                                 <p className="text-2xl font-extrabold text-white mt-2">₹78,000</p>
                                 <p className="text-sm text-text-secondary">Maximum Capped Subsidy</p>
                             </div>
@@ -98,10 +98,10 @@ const RooftopSolarPage: React.FC = () => {
                         <div className="lg:col-span-3">
                             <h3 className="text-2xl font-bold text-white">Case Study: The Mehra Residence, Pune</h3>
                             <p className="mt-2 text-lg text-text-secondary">
-                                After installing a 3 kW system, the Mehras now enjoy zero electricity bills and are projected to save over <span className="font-bold text-primary-green">₹12 Lakhs</span> over 25 years.
+                                After installing a 3 kW system, the Mehras now enjoy zero electricity bills and are projected to save over <span className="font-bold text-solar-gold">₹12 Lakhs</span> over 25 years.
                             </p>
                             <div className="mt-8">
-                                <Link to="/calculator/rooftop" className="inline-block text-lg font-bold bg-accent-orange text-white py-4 px-8 rounded-lg shadow-lg hover:bg-accent-orange-hover transform hover:scale-105 transition-all duration-300">
+                                <Link to="/calculator/rooftop" className="inline-block text-lg font-bold bg-solar-gold text-varcas-navy py-4 px-8 rounded-lg shadow-lg hover:bg-solar-amber transform hover:scale-105 transition-all duration-300">
                                     Calculate Your Net System Cost & Savings Now
                                 </Link>
                             </div>

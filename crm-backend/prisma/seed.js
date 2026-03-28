@@ -8,15 +8,15 @@ async function main() {
 
   // --- Seed Master Admin User Only ---
   const saltRounds = 10;
-  const password = await bcrypt.hash('suryakiran@155', saltRounds);
+  const password = await bcrypt.hash('varcas@155', saltRounds);
 
   const masterAdmin = await prisma.user.upsert({
-    where: { email: 'admin@suryakiran.com' },
+    where: { email: 'admin@varcasenergy.com' },
     update: {
       password: password,
     },
     create: {
-      email: 'admin@suryakiran.com',
+      email: 'admin@varcasenergy.com',
       name: 'Master Admin',
       password: password,
       role: 'Master',
