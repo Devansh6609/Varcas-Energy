@@ -122,18 +122,21 @@ export const RooftopWorkflowSection: React.FC<RooftopWorkflowSectionProps> = ({ 
         const previousLead = { ...lead };
 
         // Optimistic update
-        let optimisticLead = { ...lead };
+        // Safely parse customFields if it's a string
+        const currentCustomFields = typeof lead.customFields === 'string' 
+            ? JSON.parse(lead.customFields || '{}') 
+            : (lead.customFields || {});
+
+        const optimisticLead = { ...lead };
         if (isCustom) {
-            optimisticLead = {
-                ...lead,
-                customFields: {
-                    ...lead.customFields,
-                    [field]: value
-                }
+            optimisticLead.customFields = {
+                ...currentCustomFields,
+                [field]: value
             };
         } else {
-            optimisticLead = { ...lead, [field]: value };
+            optimisticLead[field as keyof Lead] = value as any;
         }
+        
         onUpdate(optimisticLead);
 
         try {

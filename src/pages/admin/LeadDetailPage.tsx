@@ -215,6 +215,27 @@ const LeadDetailPage: React.FC = () => {
         }
     }, [leadId, user]);
 
+    // Synchronize editData when lead is updated (e.g. after stage change)
+    useEffect(() => {
+        if (lead) {
+            setEditData({
+                name: lead.name,
+                email: lead.email,
+                phone: lead.phone,
+                productType: lead.productType,
+                fatherName: lead.fatherName,
+                district: lead.district,
+                tehsil: lead.tehsil,
+                village: lead.village,
+                hp: lead.hp,
+                connectionType: lead.connectionType,
+                customFields: typeof lead.customFields === 'string' 
+                    ? JSON.parse(lead.customFields || '{}') 
+                    : (lead.customFields || {})
+            });
+        }
+    }, [lead]);
+
     const handleStageChange = async (newStage: PipelineStage) => {
         if (!leadId || !lead) return;
         try {
@@ -526,7 +547,20 @@ const LeadDetailPage: React.FC = () => {
 
                                 {(() => {
                                     const REQUIRED_IMAGE_FIELDS = ['customerPic', 'paymentSlip', 'structurePic', 'paymentProof', 'passbook'];
-                                    const allFields = { ...lead.customFields };
+                                    
+                                    // Standardized helper for custom field parsing
+                                    let fieldsObj = typeof lead.customFields === 'string'
+                                        ? JSON.parse(lead.customFields || '{}')
+                                        : (lead.customFields || {});
+                                    try {
+                                        // Double check if it was a stringified JSON inside an object
+                                        if (typeof fieldsObj === 'string') fieldsObj = JSON.parse(fieldsObj);
+                                    } catch (e) {
+                                        console.error("Failed to parse customFields", e);
+                                        fieldsObj = {};
+                                    }
+
+                                    const allFields = { ...fieldsObj };
                                     REQUIRED_IMAGE_FIELDS.forEach(field => {
                                         if (!(field in allFields)) allFields[field] = null;
                                     });
