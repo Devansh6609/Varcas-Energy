@@ -1,0 +1,110 @@
+{
+    "wallTime": 30,
+    "cpuTime": 27,
+    "truncated": false,
+    "executionModel": "stateless",
+    "outcome": "ok",
+    "scriptVersion": {
+        "id": "1fc8b5fe-c4a9-4edf-9016-3362708c1ca0"
+    },
+    "scriptName": "varcas-energy-backend",
+    "diagnosticsChannelEvents": [],
+    "exceptions": [],
+    "logs": [
+        {
+            "message": [
+                "Login error:",
+                "SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+            ],
+            "level": "error",
+            "timestamp": 1775200764020
+        }
+    ],
+    "eventTimestamp": 1775200764020,
+    "event": {
+        "request": {
+            "url": "https://varcas-energy-backend.varcas-energy.workers.dev/api/auth/login",
+            "method": "POST",
+            "headers": {
+                "accept": "*/*",
+                "accept-encoding": "gzip, br",
+                "cf-connecting-ip": "152.59.36.19",
+                "cf-ipcountry": "IN",
+                "cf-ray": "9e664e071aa3ce79",
+                "cf-visitor": "{\"scheme\":\"https\"}",
+                "connection": "Keep-Alive",
+                "content-length": "49",
+                "content-type": "application/json",
+                "host": "varcas-energy-backend.varcas-energy.workers.dev",
+                "user-agent": "curl/8.18.0",
+                "x-forwarded-proto": "https",
+                "x-real-ip": "152.59.36.19"
+            },
+            "cf": {
+                "httpProtocol": "HTTP/1.1",
+                "requestPriority": "",
+                "edgeRequestKeepAliveStatus": 1,
+                "requestHeaderNames": {},
+                "clientTcpRtt": 92,
+                "clientQuicRtt": 0,
+                "colo": "SIN",
+                "asn": 55836,
+                "asOrganization": "Reliance Jio Infocomm Limited",
+                "country": "IN",
+                "isEUCountry": false,
+                "city": "Surat",
+                "continent": "AS",
+                "region": "Gujarat",
+                "regionCode": "GJ",
+                "timezone": "Asia/Kolkata",
+                "longitude": "72.83023",
+                "latitude": "21.19594",
+                "postalCode": "395005",
+                "tlsVersion": "TLSv1.3",
+                "tlsCipher": "AEAD-AES256-GCM-SHA384",
+                "tlsClientRandom": "xJzR3t5yElDJh8qy0ZSZpcIc9XnfyDwNON6coswKc+c=",
+                "tlsClientCiphersSha1": "kTkJ+HAwBvIuoPFncb1wEDLcgfg=",
+                "tlsClientExtensionsSha1": "p2XN7z/lcnmBD9Q+f8xSyG4x4VA=",
+                "tlsClientExtensionsSha1Le": "ydwLHTahJx17MvHnnvv2lsdgs/g=",
+                "tlsExportedAuthenticator": {
+                    "clientHandshake": "c86ec372b54493e78fbff41db651ed7ddceda599c2a08dc2a738781742331d1757c17169bf7edfd9df23dd7446e473c5",
+                    "serverHandshake": "1d5dbfb6ba46c44d69fdd1aaca949cf9ea7b2c98edf6292494a2fdd4891d3681da4898b982fa7eebd482fda1257ae099",
+                    "clientFinished": "85ecaaaeda540d0615c16e0de1dcf5531940031e835113f7d3c94e3434441c3457cb9b336190928eef3a3755bb22f62b",
+                    "serverFinished": "4dfe05a80263f26c59d1522182fc227afb21386fe7181323e41097223b5f1b24674ea48a38fe08d8e29e06ce98931a18"
+                },
+                "tlsClientHelloLength": "485",
+                "tlsClientAuth": {
+                    "certPresented": "0",
+                    "certVerified": "NONE",
+                    "certRevoked": "0",
+                    "certIssuerDN": "",
+                    "certSubjectDN": "",
+                    "certIssuerDNRFC2253": "",
+                    "certSubjectDNRFC2253": "",
+                    "certIssuerDNLegacy": "",
+                    "certSubjectDNLegacy": "",
+                    "certSerial": "",
+                    "certIssuerSerial": "",
+                    "certSKI": "",
+                    "certIssuerSKI": "",
+                    "certFingerprintSHA1": "",
+                    "certFingerprintSHA256": "",
+                    "certNotBefore": "",
+                    "certNotAfter": "",
+                    "certRFC9440": "",
+                    "certRFC9440TooLarge": false,
+                    "certChainRFC9440": "",
+                    "certChainRFC9440TooLarge": false
+                },
+                "verifiedBotCategory": "",
+                "edgeL4": {
+                    "deliveryRate": 22669
+                }
+            }
+        },
+        "response": {
+            "status": 500
+        }
+    }
+}
+Terminate batch job (Y/N)? 

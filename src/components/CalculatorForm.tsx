@@ -1,12 +1,26 @@
-import React, { useState, FormEvent, useEffect, Fragment } from 'react';
-import { CalculatorType, FormField, FormFieldType } from '../types.ts';
-import { getFormSchema as getCrmFormSchema, createLead, sendOtp, verifyOtp, uploadLeadFile } from '../service/crmService.ts';
-import { getStates, getDistricts } from '../service/adminService.ts';
-import LoadingSpinner from './LoadingSpinner.tsx';
+import React, { useState, FormEvent } from 'react';
+import { CalculatorType } from '../types';
+import * as crmService from '../service/crmService';
+import LoadingSpinner from './LoadingSpinner';
+import AnimatedSection from './AnimatedSection';
+import { 
+    User, 
+    MapPin, 
+    Phone, 
+    CheckCircle2, 
+    TrendingUp, 
+    Zap, 
+    ArrowRight, 
+    FileText,
+    ShieldCheck,
+    CloudLightning
+} from 'lucide-react';
+import { CalculationResults } from '../utils/calculatorUtils';
 
 interface CalculatorFormProps {
     type: CalculatorType;
     initialValue?: number | null;
+    calculatorResults?: CalculationResults | null;
 }
 
 const InputField: React.FC<{
@@ -18,24 +32,31 @@ const InputField: React.FC<{
     required?: boolean;
     placeholder?: string;
     error?: string;
-}> = ({ label, name, type, value, onChange, required = true, placeholder = '', error }) => (
-    <div>
-        <label htmlFor={name} className="block text-sm font-medium text-text-secondary">
-            {label} {required && <span className="text-red-500">*</span>}
+    icon?: React.ReactNode;
+}> = ({ label, name, type, value, onChange, required = true, placeholder = '', error, icon }) => (
+    <div className="space-y-1.5">
+        <label htmlFor={name} className="block text-[10px] font-black text-text-secondary uppercase tracking-widest ml-1">
+            {label} {required && <span className="text-neon-cyan">*</span>}
         </label>
-        <input
-            type={type}
-            name={name}
-            id={name}
-            value={value}
-            onChange={onChange}
-            required={required}
-            placeholder={placeholder}
-            className={`mt-1 block w-full px-3 py-2 bg-night-sky/80 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-accent-orange focus:border-accent-orange sm:text-sm text-white ${error ? 'border-red-500' : 'border-glass-border'}`}
-            aria-invalid={!!error}
-            aria-describedby={error ? `${name}-error` : undefined}
-        />
-        {error && <p id={`${name}-error`} className="mt-1 text-xs text-red-500">{error}</p>}
+        <div className="relative group">
+            {icon && (
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-neon-cyan transition-colors">
+                    {icon}
+                </div>
+            )}
+            <input
+                type={type}
+                name={name}
+                id={name}
+                value={value}
+                onChange={onChange}
+                required={required}
+                placeholder={placeholder}
+                className={`w-full ${icon ? 'pl-10' : 'px-4'} py-3.5 bg-night-sky/40 border rounded-xl shadow-inner shadow-black/20 text-white placeholder:text-text-secondary/40 focus:outline-none focus:ring-2 focus:ring-neon-cyan/30 focus:border-neon-cyan transition-all duration-300 ${error ? 'border-red-500/50' : 'border-glass-border/30 group-hover:border-glass-border/50'}`}
+                aria-invalid={error ? true : false}
+            />
+            {error && <p className="mt-1 text-[10px] text-red-500 font-bold ml-1 uppercase">{error}</p>}
+        </div>
     </div>
 );
 
@@ -46,380 +67,280 @@ const SelectField: React.FC<{
     onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
     options: string[];
     required?: boolean;
-    disabled?: boolean;
     error?: string;
-}> = ({ label, name, value, onChange, options, required = true, disabled = false, error }) => (
-    <div>
-        <label htmlFor={name} className="block text-sm font-medium text-text-secondary">
-            {label} {required && <span className="text-red-500">*</span>}
+    icon?: React.ReactNode;
+}> = ({ label, name, value, onChange, options, required = true, error, icon }) => (
+    <div className="space-y-1.5">
+        <label htmlFor={name} className="block text-[10px] font-black text-text-secondary uppercase tracking-widest ml-1">
+            {label} {required && <span className="text-neon-cyan">*</span>}
         </label>
-        <select
-            name={name}
-            id={name}
-            value={value}
-            onChange={onChange}
-            required={required}
-            disabled={disabled}
-            className={`mt-1 block w-full pl-3 pr-10 py-2 text-base border rounded-md shadow-sm focus:outline-none focus:ring-accent-orange focus:border-accent-orange sm:text-sm bg-night-sky/80 text-white ${error ? 'border-red-500' : 'border-glass-border'} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-            aria-invalid={!!error}
-            aria-describedby={error ? `${name}-error` : undefined}
-        >
-            <option value="" disabled>Select an option</option>
-            {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-        </select>
-        {error && <p id={`${name}-error`} className="mt-1 text-xs text-red-500">{error}</p>}
-    </div>
-);
-
-const FileInputField: React.FC<{
-    label: string;
-    name: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    required?: boolean;
-    error?: string;
-    fileName?: string;
-}> = ({ label, name, onChange, required = true, error, fileName }) => (
-    <div>
-        <label className="block text-sm font-medium text-text-secondary">
-            {label} {required && <span className="text-red-500">*</span>}
-        </label>
-        <div className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 ${error ? 'border-red-500' : 'border-glass-border'} border-dashed rounded-md`}>
-            <div className="space-y-1 text-center">
-                <svg className="mx-auto h-12 w-12 text-text-secondary" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                <div className="flex text-sm text-gray-400">
-                    <label htmlFor={name} className="relative cursor-pointer bg-night-sky rounded-md font-medium text-accent-orange hover:text-accent-orange-hover focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-accent-orange">
-                        <span>Upload a file</span>
-                        <input id={name} name={name} type="file" className="sr-only" onChange={onChange} accept="image/*,.pdf" />
-                    </label>
-                    <p className="pl-1">or drag and drop</p>
+        <div className="relative group">
+            {icon && (
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-neon-cyan transition-colors pointer-events-none">
+                    {icon}
                 </div>
-                {fileName ? (
-                    <p className="text-xs text-green-400">{fileName}</p>
-                ) : (
-                    <p className="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
-                )}
+            )}
+            <select
+                name={name}
+                id={name}
+                value={value}
+                onChange={onChange}
+                required={required}
+                className={`w-full ${icon ? 'pl-10' : 'px-4'} py-3.5 bg-night-sky/40 border rounded-xl border-glass-border/30 text-white focus:outline-none focus:ring-2 focus:ring-neon-cyan/30 focus:border-neon-cyan transition-all cursor-pointer appearance-none ${error ? 'border-red-500/50' : 'group-hover:border-glass-border/50'}`}
+            >
+                <option value="" disabled className="bg-night-sky text-text-secondary">Select Option</option>
+                {options.map(opt => <option key={opt} value={opt} className="bg-night-sky text-white">{opt}</option>)}
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary">
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
             </div>
+            {error && <p className="mt-1 text-[10px] text-red-500 font-bold ml-1 uppercase">{error}</p>}
         </div>
-        {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
     </div>
 );
 
-const CalculatorForm: React.FC<CalculatorFormProps> = ({ type, initialValue }) => {
+const SavingsBar: React.FC<{ results: CalculationResults }> = ({ results }) => (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-8 bg-black/20 p-2 rounded-2xl border border-glass-border/10">
+        <div className="bg-primary-green/10 border border-primary-green/20 rounded-xl p-3 flex flex-col justify-center text-center">
+            <p className="text-[8px] font-black text-primary-green uppercase tracking-tighter">Est. Savings</p>
+            <p className="text-sm font-black text-white">₹{results.annualSavings.toLocaleString('en-IN')}</p>
+        </div>
+        <div className="bg-neon-cyan/10 border border-neon-cyan/20 rounded-xl p-3 flex flex-col justify-center text-center">
+            <p className="text-[8px] font-black text-neon-cyan uppercase tracking-tighter">System Size</p>
+            <p className="text-sm font-black text-white">{results.recommendedSize}</p>
+        </div>
+        <div className="bg-electric-blue/10 border border-electric-blue/20 rounded-xl p-3 flex flex-col justify-center text-center">
+            <p className="text-[8px] font-black text-electric-blue uppercase tracking-tighter">Subsidy</p>
+            <p className="text-sm font-black text-white">{results.subsidy}</p>
+        </div>
+        <div className="bg-accent-orange/10 border border-accent-orange/20 rounded-xl p-3 flex flex-col justify-center text-center">
+            <p className="text-[8px] font-black text-accent-orange uppercase tracking-tighter">Payback</p>
+            <p className="text-sm font-black text-white">{results.paybackPeriod}</p>
+        </div>
+    </div>
+);
+
+const CalculatorForm: React.FC<CalculatorFormProps> = ({ type, initialValue, calculatorResults }) => {
     const [step, setStep] = useState(1);
-    const [formSchema, setFormSchema] = useState<FormField[]>([]);
-    const [formData, setFormData] = useState<Record<string, any>>({});
-    const [fileData, setFileData] = useState<Record<string, File | null>>({});
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        fatherName: '',
+        district: '',
+        tehsil: '',
+        village: '',
+        hp: '',
+        connectionType: type === 'rooftop' ? 'Single Phase' : '5HP',
+        consent: false,
+        bill: initialValue ? initialValue.toString() : ''
+    });
 
-    const [otp, setOtp] = useState('');
-    const [leadId, setLeadId] = useState<string | null>(null);
-    const [results, setResults] = useState<Record<string, string> | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
-
-    const [loading, setLoading] = useState(true);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [apiError, setApiError] = useState<string | null>(null);
 
-    const [states, setStates] = useState<string[]>([]);
-    const [districts, setDistricts] = useState<string[]>([]);
-
-    useEffect(() => {
-        const fetchSchemaAndLocations = async () => {
-            try {
-                const schema = await getCrmFormSchema(type);
-                const fetchedStates = await getStates();
-                setStates(fetchedStates);
-
-                const stateField = schema.find((f: FormField) => f.name === 'state');
-                if (stateField) {
-                    stateField.options = fetchedStates;
-                }
-
-                setFormSchema(schema);
-                const initialFormData: Record<string, string> = {};
-                schema.forEach((field: FormField) => {
-                    initialFormData[field.name] = '';
-                });
-
-                if (initialValue !== null && initialValue !== undefined) {
-                    const initialFieldName = type === CalculatorType.Rooftop ? 'bill' : 'energyCost';
-                    initialFormData[initialFieldName] = String(initialValue);
-                }
-
-                setFormData(initialFormData);
-            } catch (err) {
-                setApiError("Failed to load calculator configuration. Please try again later.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchSchemaAndLocations();
-    }, [type, initialValue]);
-
-    useEffect(() => {
-        if (formData.state) {
-            getDistricts(formData.state)
-                .then(setDistricts)
-                .catch(() => setApiError("Failed to load districts for the selected state."));
-        } else {
-            setDistricts([]);
-        }
-    }, [formData.state]);
-
-    const validate = (currentStep: number): boolean => {
+    const validateStep = (currentStep: number): boolean => {
         const newErrors: Record<string, string> = {};
-        let fieldsToValidate: string[] = [];
-
         if (currentStep === 1) {
-            fieldsToValidate = formSchema.map(f => f.name);
+            if (!formData.district) newErrors.district = "District required";
+            if (!formData.tehsil) newErrors.tehsil = "Tehsil required";
+            if (!formData.village) newErrors.village = "Village required";
         } else if (currentStep === 2) {
-            fieldsToValidate = ['name', 'email', 'phone'];
+            if (!formData.name) newErrors.name = "Full name required";
+            if (!formData.phone || !/^\d{10}$/.test(formData.phone)) newErrors.phone = "10-digit mobile required";
+            if (!formData.consent) newErrors.consent = "Agreement required";
         }
-
-        fieldsToValidate.forEach(fieldName => {
-            const fieldSchema = formSchema.find(f => f.name === fieldName);
-            const value = formData[fieldName];
-            const file = fileData[fieldName];
-
-            // Required field check
-            if ((fieldSchema?.required || ['name', 'email', 'phone'].includes(fieldName)) && !value && !file) {
-                newErrors[fieldName] = "This field is required.";
-                return;
-            }
-
-            // Type-specific validation
-            const fieldType = fieldSchema?.type;
-            if (value) {
-                if (fieldType === 'email' || fieldName === 'email') {
-                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-                        newErrors[fieldName] = "Please enter a valid email address.";
-                    }
-                } else if (fieldType === 'tel' || fieldName === 'phone') {
-                    if (!/^\d{10}$/.test(value)) {
-                        newErrors[fieldName] = "Please enter a valid 10-digit phone number.";
-                    }
-                } else if (fieldName === 'pincode' && !/^\d{6}$/.test(value)) {
-                    newErrors[fieldName] = "Please enter a valid 6-digit pincode.";
-                } else if (fieldType === 'number' && isNaN(Number(value))) {
-                    newErrors[fieldName] = "Please enter a valid number.";
-                }
-            }
-        });
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
-        }
-    };
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, files } = e.target;
-        if (files && files.length > 0) {
-            setFileData(prev => ({ ...prev, [name]: files[0] }));
-            if (errors[name]) {
-                setErrors(prev => ({ ...prev, [name]: '' }));
-            }
-        }
-    };
-
-    const handleNextStep = async (e: FormEvent) => {
+    const handleNext = (e: FormEvent) => {
         e.preventDefault();
         setApiError(null);
-        if (!validate(1)) return;
-
-        setIsSubmitting(true);
-        try {
-            const leadPayload = {
-                productType: type,
-                customFields: { ...formData }
-            };
-            const newLead = await createLead(leadPayload);
-
-            // Upload files if any
-            const fileUploadPromises = Object.entries(fileData).map(([fieldName, file]) => {
-                if (file) {
-                    return uploadLeadFile(newLead.id, fieldName, file);
-                }
-                return Promise.resolve();
-            });
-            await Promise.all(fileUploadPromises);
-
-            setLeadId(newLead.id);
+        if (validateStep(1)) {
             setStep(2);
-        } catch (err: any) {
-            setApiError(err.message || 'An error occurred. Please try again.');
-        } finally {
-            setIsSubmitting(false);
         }
     };
 
-    const triggerOtp = async (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setApiError(null);
-        if (!validate(2)) return;
-        if (!leadId) {
-            setApiError("Lead ID is missing. Please start over.");
-            return;
-        }
+        if (!validateStep(2)) return;
 
-        setIsSubmitting(true);
+        setIsLoading(true);
         try {
-            await sendOtp(leadId, {
-                name: formData.name,
-                email: formData.email,
-                phone: formData.phone
+            const customFields: Record<string, any> = { ...formData };
+            if (initialValue) customFields.calculatorInput = initialValue;
+            if (calculatorResults) {
+                customFields.estimatedAnnualSavings = calculatorResults.annualSavings;
+                customFields.recommendedSystemSize = calculatorResults.recommendedSize;
+                customFields.subsidyEstimate = calculatorResults.subsidy;
+            }
+
+            await crmService.createLead({
+                ...formData,
+                productType: type === 'rooftop' ? 'Rooftop Solar' : 'Solar Pump',
+                source: 'Calculator_Form',
+                customFields
             });
             setStep(3);
         } catch (err: any) {
-            setApiError(err.message || 'Failed to send OTP. Please try again.');
+            setApiError(err.message || 'Submission failed. Please try again.');
         } finally {
-            setIsSubmitting(false);
+            setIsLoading(false);
         }
     };
 
-    const handleOtpSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-        setApiError(null);
-        if (!otp || otp.length !== 4) {
-            setErrors({ otp: "Please enter a valid 4-digit OTP." });
-            return;
-        }
-        if (!leadId) {
-            setApiError("Lead ID is missing. Please start over.");
-            return;
-        }
-
-        setIsSubmitting(true);
-        try {
-            const response = await verifyOtp(leadId, otp);
-            setResults(response.results);
-            setStep(4);
-        } catch (err: any) {
-            setApiError(err.message || 'Invalid OTP. Please try again.');
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const renderField = (field: FormField) => {
-        let options: string[] = field.options || [];
-        if (field.name === 'district') {
-            options = districts;
-        }
-
-        switch (field.type) {
-            case 'select':
-                return <SelectField key={field.id} {...field} value={formData[field.name]} onChange={handleInputChange} options={options} error={errors[field.name]} disabled={field.name === 'district' && !formData.state} />;
-            case 'image':
-                return <FileInputField key={field.id} {...field} onChange={handleFileChange} error={errors[field.name]} fileName={fileData[field.name]?.name} />;
-            default:
-                return <InputField key={field.id} {...field} type={field.type} value={formData[field.name]} onChange={handleInputChange} error={errors[field.name]} />;
-        }
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value, type: fieldType } = e.target as HTMLInputElement;
+        const val = fieldType === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
+        setFormData(prev => ({ ...prev, [name]: val }));
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
     };
 
     const StepIndicator = () => {
-        const steps = ["Details", "Contact", "Verify", "Results"];
+        const steps = ["Details", "Contact", "Success"];
         return (
-            <div className="flex items-center mb-12">
+            <div className="flex items-center justify-between mb-12 px-2 relative">
+                <div className="absolute top-5 left-10 right-10 h-0.5 bg-glass-border/30 -z-10"></div>
                 {steps.map((name, index) => {
                     const stepNum = index + 1;
                     const isCompleted = step > stepNum;
                     const isCurrent = step === stepNum;
 
                     return (
-                        <Fragment key={name}>
-                            <div className="flex flex-col items-center">
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-500
-                                    ${isCompleted ? 'bg-primary-green text-white' : ''}
-                                    ${isCurrent ? 'bg-accent-orange text-white scale-110' : ''}
-                                    ${!isCompleted && !isCurrent ? 'bg-night-sky text-text-secondary border-2 border-glass-border' : ''}
-                                `}>
-                                    {isCompleted ? '✓' : stepNum}
-                                </div>
-                                <p className={`mt-2 text-xs font-medium transition-colors duration-500 ${isCurrent ? 'text-accent-orange' : 'text-text-secondary'}`}>{name}</p>
+                        <div key={name} className="flex flex-col items-center">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black transition-all duration-500 shadow-lg
+                                ${isCompleted ? 'bg-primary-green text-night-sky border-transparent' : ''}
+                                ${isCurrent ? 'bg-neon-cyan text-night-sky ring-4 ring-neon-cyan/20 scale-110' : ''}
+                                ${!isCompleted && !isCurrent ? 'bg-night-sky border-2 border-glass-border/50 text-text-secondary' : ''}
+                            `}>
+                                {isCompleted ? '✓' : stepNum}
                             </div>
-                            {index < steps.length - 1 && (
-                                <div className="flex-1 h-1 mx-2 relative bg-glass-border rounded-full overflow-hidden">
-                                    <div className="absolute top-0 left-0 h-full bg-accent-orange rounded-full transition-all duration-700 ease-out" style={{ width: step > stepNum ? '100%' : '0%' }}></div>
-                                </div>
-                            )}
-                        </Fragment>
+                            <p className={`mt-3 text-[10px] font-black uppercase tracking-widest transition-colors duration-500 ${isCurrent ? 'text-neon-cyan' : 'text-text-secondary/60'}`}>{name}</p>
+                        </div>
                     );
                 })}
             </div>
         );
     };
 
-    if (loading) {
-        return (
-            <div className="bg-glass-surface backdrop-blur-md border border-glass-border p-8 rounded-lg shadow-2xl max-w-2xl mx-auto flex justify-center items-center h-96">
-                <LoadingSpinner size="lg" />
-            </div>
-        );
-    }
-
     return (
-        <div className="bg-glass-surface backdrop-blur-md border border-glass-border p-8 rounded-lg shadow-2xl max-w-2xl mx-auto">
-            <StepIndicator />
-            {apiError && <p className="mb-4 text-center text-red-500 bg-red-500/10 p-3 rounded-md">{apiError}</p>}
+        <div className="relative">
+            <div className="absolute -top-20 -right-20 w-64 h-64 bg-neon-cyan/10 rounded-full blur-[100px] pointer-events-none"></div>
+            <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-electric-blue/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-            {step === 1 && (
-                <form onSubmit={handleNextStep} className="space-y-4 animate-fade-in">
-                    {formSchema.map(field => renderField(field))}
-                    <button type="submit" disabled={isSubmitting} className="w-full font-bold bg-accent-orange text-white py-3 px-4 rounded-lg shadow-lg hover:bg-accent-orange-hover transition-colors duration-300 flex justify-center items-center disabled:bg-gray-500">
-                        {isSubmitting ? <LoadingSpinner size="sm" className="mr-2 !text-white" /> : 'Next'}
-                    </button>
-                </form>
-            )}
+            <div className="bg-glass-surface/40 backdrop-blur-3xl border border-glass-border/30 p-8 sm:p-10 rounded-3xl shadow-glow-sm shadow-neon-cyan/5 max-w-2xl mx-auto overflow-hidden">
+                <StepIndicator />
+                {apiError && <div className="mb-6 bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-xl text-xs font-bold text-center uppercase tracking-widest">{apiError}</div>}
 
-            {step === 2 && (
-                <form onSubmit={triggerOtp} className="space-y-4 animate-fade-in">
-                    <h3 className="text-xl font-bold text-center text-white">Step 2: Your Contact Information</h3>
-                    <InputField label="Full Name" name="name" type="text" value={formData.name} onChange={handleInputChange} error={errors.name} />
-                    <InputField label="Email Address" name="email" type="email" value={formData.email} onChange={handleInputChange} error={errors.email} />
-                    <InputField label="Phone Number" name="phone" type="tel" value={formData.phone} onChange={handleInputChange} error={errors.phone} />
-                    <button type="submit" disabled={isSubmitting} className="w-full font-bold bg-accent-orange text-white py-3 px-4 rounded-lg shadow-lg hover:bg-accent-orange-hover transition-colors duration-300 flex justify-center items-center disabled:bg-gray-500">
-                        {isSubmitting ? <LoadingSpinner size="sm" className="mr-2 !text-white" /> : 'Get OTP to View Results'}
-                    </button>
-                </form>
-            )}
+                {calculatorResults && step < 3 && <SavingsBar results={calculatorResults} />}
 
-            {step === 3 && (
-                <form onSubmit={handleOtpSubmit} className="space-y-4 animate-fade-in">
-                    <h3 className="text-xl font-bold text-center text-white">Step 3: Verify Your Number</h3>
-                    <p className="text-center text-text-secondary">Enter the 4-digit OTP sent to {formData.phone}.</p>
-                    <InputField label="OTP Code" name="otp" type="text" value={otp} onChange={(e) => { setOtp(e.target.value); setErrors(prev => ({ ...prev, otp: '' })) }} placeholder="XXXX" error={errors.otp} />
-                    <button type="submit" disabled={isSubmitting} className="w-full font-bold bg-accent-orange text-white py-3 px-4 rounded-lg shadow-lg hover:bg-accent-orange-hover transition-colors duration-300 flex justify-center items-center disabled:bg-gray-500">
-                        {isSubmitting ? <LoadingSpinner size="sm" className="mr-2 !text-white" /> : 'Verify & See My Estimate'}
-                    </button>
-                </form>
-            )}
-
-            {step === 4 && results && (
-                <div className="text-center animate-fade-in">
-                    <h3 className="text-2xl font-bold text-primary-green">Thank You, {formData.name}!</h3>
-                    <p className="mt-2 text-text-secondary">Here is your personalized estimate:</p>
-                    <div className="mt-6 border-t border-b border-glass-border divide-y divide-glass-border">
-                        {Object.entries(results).map(([key, value]) => (
-                            <div key={key} className="py-4 flex justify-between text-lg">
-                                <dt className="font-medium text-text-secondary">{key}:</dt>
-                                <dd className="font-bold text-white">{value}</dd>
+                {step === 1 && (
+                    <AnimatedSection className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="md:col-span-2 flex items-center gap-2 mb-2 pb-2 border-b border-glass-border/20">
+                                <CloudLightning size={18} className="text-neon-cyan" />
+                                <h3 className="text-sm font-black text-text-primary tracking-widest">TECHNICAL DETAILS</h3>
                             </div>
-                        ))}
+                            
+                            {type === 'rooftop' ? (
+                                <SelectField label="Connection" name="connectionType" value={formData.connectionType} onChange={handleInputChange} icon={<Zap size={16} />} options={["Single Phase", "Three Phase", "No Connection"]} error={errors.connectionType} />
+                            ) : (
+                                <SelectField label="Pump Capacity" name="hp" value={formData.hp} onChange={handleInputChange} icon={<CloudLightning size={16} />} options={["3HP", "5HP", "7.5HP", "10HP"]} error={errors.hp} />
+                            )}
+                            
+                            <InputField label={type === 'rooftop' ? "Avg. Monthly Bill" : "Seasonal Diesel Cost"} name="bill" type="number" value={formData.bill} onChange={handleInputChange} icon={<TrendingUp size={16} />} placeholder="Enter amount" />
+
+                            <div className="md:col-span-2 flex items-center gap-2 mt-4 mb-2 pb-2 border-b border-glass-border/20">
+                                <MapPin size={18} className="text-neon-cyan" />
+                                <h3 className="text-sm font-black text-text-primary tracking-widest uppercase text-xs">Location Details</h3>
+                            </div>
+
+                            <InputField label="District" name="district" type="text" value={formData.district} onChange={handleInputChange} icon={<MapPin size={16} />} placeholder="Village district" error={errors.district} />
+                            <InputField label="Tehsil" name="tehsil" type="text" value={formData.tehsil} onChange={handleInputChange} icon={<MapPin size={16} />} placeholder="Your tehsil" error={errors.tehsil} />
+                            <div className="md:col-span-2">
+                                <InputField label="Village / Area" name="village" type="text" value={formData.village} onChange={handleInputChange} icon={<MapPin size={16} />} placeholder="Village name" error={errors.village} />
+                            </div>
+                        </div>
+
+                        <button onClick={handleNext} className="w-full mt-8 py-4 px-6 rounded-2xl bg-neon-cyan text-night-sky font-black tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 uppercase text-xs shadow-glow-sm shadow-neon-cyan/20">
+                            Proceed to Contact Information <ArrowRight size={18} />
+                        </button>
+                    </AnimatedSection>
+                )}
+
+                {step === 2 && (
+                    <AnimatedSection className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="md:col-span-2 flex items-center gap-2 mb-2 pb-2 border-b border-glass-border/20">
+                                <User size={18} className="text-neon-cyan" />
+                                <h3 className="text-sm font-black text-text-primary tracking-widest uppercase text-xs">Personal Details</h3>
+                            </div>
+
+                            <InputField label="Full Name" name="name" type="text" value={formData.name} onChange={handleInputChange} icon={<User size={16} />} placeholder="Enter your name" error={errors.name} />
+                            <InputField label="Father's Name" name="fatherName" type="text" value={formData.fatherName} onChange={handleInputChange} icon={<User size={16} />} placeholder="Father's name" error={errors.fatherName} />
+                            
+                            <div className="md:col-span-2">
+                                <InputField label="Mobile Number" name="phone" type="tel" value={formData.phone} onChange={handleInputChange} icon={<Phone size={16} />} placeholder="10-digit number" error={errors.phone} />
+                            </div>
+                            <div className="md:col-span-2">
+                                <InputField label="Email Address" name="email" type="email" value={formData.email} onChange={handleInputChange} icon={<FileText size={16} />} required={false} placeholder="Email (optional)" />
+                            </div>
+                        </div>
+
+                        <div className="pt-6 border-t border-glass-border/20">
+                            <div className="flex items-start mb-6">
+                                <input id="consent" name="consent" type="checkbox" required checked={formData.consent} onChange={handleInputChange} className="h-5 w-5 mt-1 rounded bg-night-sky/50 border-glass-border border checked:bg-neon-cyan checked:border-neon-cyan transition-all cursor-pointer" />
+                                <label htmlFor="consent" className="ml-3 text-[10px] text-text-secondary leading-relaxed font-bold uppercase tracking-wider">
+                                    I agree to be contacted for solar services. My data is secure and will be processed as per Privacy Policy.
+                                </label>
+                            </div>
+
+                            <button onClick={handleSubmit} disabled={isLoading} className={`w-full py-4 rounded-2xl bg-gradient-to-r from-neon-cyan to-electric-blue text-night-sky font-black tracking-widest shadow-glow-sm shadow-neon-cyan/20 transition-all transform hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-3 uppercase text-xs ${isLoading ? 'opacity-70 cursor-wait' : ''}`}>
+                                {isLoading ? <><LoadingSpinner size="sm" className="!text-night-sky" /> Validating Application...</> : <><ShieldCheck size={18} /> Submit & Get Verified Quote</>}
+                            </button>
+                            <button onClick={() => setStep(1)} className="w-full mt-4 text-[10px] font-black text-text-secondary uppercase tracking-widest hover:text-neon-cyan transition-colors">← Edit Details</button>
+                        </div>
+                    </AnimatedSection>
+                )}
+
+                {step === 3 && (
+                    <div className="text-center py-8 animate-fade-in">
+                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary-green/20 border border-primary-green/30 text-primary-green mb-8 shadow-glow-sm shadow-primary-green/10">
+                            <CheckCircle2 size={40} />
+                        </div>
+                        <h2 className="text-3xl font-black text-white mb-4 uppercase tracking-tight">Application <span className="text-primary-green">Verified!</span></h2>
+                        <p className="text-text-secondary font-bold max-w-md mx-auto mb-10">
+                            Thank you, {formData.name}! Your application is registered. Our experts will contact you within 24 hours to guide your subsidy process.
+                        </p>
+                        
+                        {calculatorResults && (
+                            <div className="bg-night-sky/60 border border-glass-border/30 rounded-3xl p-8 space-y-6">
+                                <h3 className="text-xs font-black text-neon-cyan uppercase tracking-[0.2em] mb-4">Final Summary</h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                                        <p className="text-[10px] font-black text-text-secondary uppercase mb-1">Savings / Year</p>
+                                        <p className="text-xl font-bold text-white">₹{calculatorResults.annualSavings.toLocaleString('en-IN')}</p>
+                                    </div>
+                                    <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                                        <p className="text-[10px] font-black text-text-secondary uppercase mb-1">System Capacity</p>
+                                        <p className="text-xl font-bold text-white">{calculatorResults.recommendedSize}</p>
+                                    </div>
+                                </div>
+                                <div className="p-6 bg-gradient-to-r from-primary-green/20 to-neon-cyan/20 rounded-2xl border border-white/10">
+                                    <p className="text-[10px] font-black text-text-secondary uppercase mb-1">Govt. Subsidy Estimate</p>
+                                    <p className="text-2xl font-black text-white ml-2">{calculatorResults.subsidy}</p>
+                                </div>
+                            </div>
+                        )}
+                        
+                        <button onClick={() => window.location.href = '#/'} className="mt-12 text-sm font-black text-text-secondary hover:text-neon-cyan transition-colors uppercase tracking-[0.3em]">Return to Home</button>
                     </div>
-                    <p className="mt-6 text-base bg-primary-green/20 text-green-300 p-4 rounded-md">
-                        A specialist is now reviewing your results and will call you within 24 hours to guide your subsidy application.
-                    </p>
-                </div>
-            )}
+                )}
+            </div>
         </div>
     );
 };

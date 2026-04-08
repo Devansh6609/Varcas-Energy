@@ -37,6 +37,7 @@ const LeadDetailPage = lazy(() => import('./pages/admin/LeadDetailPage'));
 const DataExplorerPage = lazy(() => import('./pages/admin/DataExplorerPage'));
 const FormBuilderPage = lazy(() => import('./pages/admin/FormBuilderPage'));
 const SettingsPage = lazy(() => import('./pages/admin/SettingsPage'));
+const QuotationGeneratorPage = lazy(() => import('./pages/admin/QuotationGeneratorPage'));
 
 const UserProfilePage = lazy(() => import('./pages/admin/UserProfilePage'));
 const VendorManagementPage = lazy(() => import('./pages/admin/VendorManagementPage'));
@@ -85,6 +86,7 @@ const AppRoutes: React.FC = () => {
                     <Route path="leads" element={<LeadsListPage />} />
                     <Route path="leads/manual" element={<ManualLeadEntryPage />} />
                     <Route path="leads/:leadId" element={<LeadDetailPage />} />
+                    <Route path="quotation/:leadId?" element={<QuotationGeneratorPage />} />
                     <Route path="data-explorer" element={<DataExplorerPage />} />
                     <Route path="form-builder" element={<FormBuilderPage />} />
                     <Route path="settings" element={<SettingsPage />} />

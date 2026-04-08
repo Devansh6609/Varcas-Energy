@@ -1,106 +1,205 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
 import AnimatedSection from '../components/AnimatedSection';
-import pumpInFieldImage from '../assets/solar-pump-in-field.png';
+import CalculatorForm from '../components/CalculatorForm';
+import InteractiveCalculator from '../components/InteractiveCalculator';
+import { CalculatorType } from '../types';
+import { CalculationResults } from '../utils/calculatorUtils';
+import { 
+    Droplets, 
+    Sun, 
+    Zap, 
+    ShieldCheck, 
+    ArrowRight, 
+    Leaf,
+    Sprout
+} from 'lucide-react';
 import pumpVideo from '../assets/solar-pump-agriculture.mp4';
-import pumpThumbnail from '../assets/solar-pump-thumbnail.png';
 
 const SolarPumpsPage: React.FC = () => {
+    const [calcValue, setCalcValue] = useState<number>(10000);
+    const [calcResults, setCalcResults] = useState<CalculationResults | null>(null);
+
+    const handleCalcChange = (val: number, results: CalculationResults) => {
+        setCalcValue(val);
+        setCalcResults(results);
+    };
+
+    const features = [
+        {
+            icon: <Zap className="text-primary-green" />,
+            title: "Zero Diesel Cost",
+            description: "Replace expensive diesel with free solar energy and increase your farm's profitability immediately."
+        },
+        {
+            icon: <Leaf className="text-neon-cyan" />,
+            title: "Eco-Friendly",
+            description: "Reduce your carbon footprint and eliminate noise and smoke pollution from your irrigation process."
+        },
+        {
+            icon: <ShieldCheck className="text-accent-orange" />,
+            title: "PM-KUSUM Subsidy",
+            description: "Avail up to 60% subsidy from the government. Pay only 40% and get a permanent irrigation solution."
+        }
+    ];
+
     return (
-        <div className="bg-transparent text-text-primary">
-            <div className="max-w-7xl mx-auto py-8 md:py-16 px-4 sm:px-6 lg:px-8">
-                <AnimatedSection>
-                    <div className="text-center">
-                        <h1 className="text-3xl font-extrabold text-white sm:text-5xl">
-                            Solar Water Pumps
-                        </h1>
-                        <p className="mt-4 max-w-2xl mx-auto text-xl text-text-secondary">
-                            Empowering agriculture with reliable, cost-effective water access.
-                        </p>
-                    </div>
-                </AnimatedSection>
+        <div className="text-white selection:bg-neon-cyan/30">
+            {/* Hero Section */}
+            <section className="relative pb-20 px-4 overflow-hidden pt-10">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none">
+                    <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary-green/10 rounded-full blur-[120px]"></div>
+                    <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-neon-cyan/10 rounded-full blur-[120px]"></div>
+                </div>
 
-                <AnimatedSection className="mt-10 md:mt-16">
-                    <div className="grid gap-8 md:gap-16 lg:grid-cols-2 lg:gap-x-8 items-center">
-                        <div className="rounded-lg shadow-xl overflow-hidden lg:order-2">
-                            <video
-                                className="w-full h-full object-cover"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                poster={pumpThumbnail}
-                            >
-                                <source src={pumpVideo} type="video/mp4" />
-                                Your browser does not support the video tag.
-                            </video>
-                        </div>
-                        <div className="lg:order-1">
-                            <h2 className="text-3xl font-extrabold text-white">See Our Pumps in Action</h2>
-                            <p className="mt-4 text-lg text-text-secondary">
-                                Watch how our solar pumps transform arid land into fertile fields, providing a reliable and cost-effective water supply for farmers across India.
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <AnimatedSection>
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-green/10 border border-primary-green/20 text-primary-green text-xs font-black tracking-widest uppercase mb-6">
+                                <Droplets size={14} /> Smart Irrigation Solutions
+                            </div>
+                            <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
+                                Empower Your Farm with <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-green to-neon-cyan">Solar Pumps</span>
+                            </h1>
+                            <p className="text-lg text-text-secondary font-medium mb-8 max-w-xl leading-relaxed">
+                                Experience hassle-free irrigation with Varcas Solar Pumps. No dependence on diesel or irregular grid power. High efficiency, low maintenance, and massive government subsidies.
                             </p>
-                            <div className="mt-6 space-y-4">
-                                <div className="flex items-start">
-                                    <div className="flex-shrink-0">
-                                        <svg className="h-6 w-6 text-solar-gold" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+                            <div className="flex flex-wrap gap-4">
+                                <a href="#apply" className="px-8 py-4 rounded-2xl bg-gradient-to-r from-primary-green to-neon-cyan text-night-sky font-black tracking-widest shadow-glow-sm shadow-primary-green/20 hover:scale-105 transition-all flex items-center gap-2 uppercase text-sm">
+                                    Calculate My Savings <ArrowRight size={18} />
+                                </a>
+                            </div>
+                        </AnimatedSection>
+
+                        <AnimatedSection className="relative">
+                            <div className="relative rounded-3xl overflow-hidden border border-glass-border/30 shadow-2xl">
+                                <video 
+                                    src={pumpVideo}
+                                    autoPlay 
+                                    loop 
+                                    muted 
+                                    playsInline
+                                    className="w-full h-[500px] object-cover"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-night-sky via-transparent to-transparent"></div>
+                                <div className="absolute bottom-8 left-8 right-8 p-6 bg-glass-surface/60 backdrop-blur-xl border border-glass-border/20 rounded-2xl">
+                                    <div className="flex items-center gap-6 mb-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-neon-cyan/20 flex items-center justify-center text-neon-cyan">
+                                                <Sun size={20} />
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest">Efficiency</p>
+                                                <p className="text-sm font-bold text-white">98% Energy Conversion</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-primary-green/20 flex items-center justify-center text-primary-green">
+                                                <Sprout size={20} />
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest">Farm ROI</p>
+                                                <p className="text-sm font-bold text-white">1.5 Year Payback</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="ml-3">
-                                        <p className="text-lg font-medium text-white">Submersible & Surface models available.</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start">
-                                    <div className="flex-shrink-0">
-                                        <svg className="h-6 w-6 text-primary-green" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
-                                    </div>
-                                    <div className="ml-3">
-                                        <p className="text-lg font-medium text-white">Payback period as short as 1.875 years.</p>
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-sm font-bold text-text-primary">Monthly Diesel Savings</p>
+                                        <p className="text-xl font-black text-primary-green">₹ 15,000+</p>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </AnimatedSection>
                     </div>
-                </AnimatedSection>
+                </div>
+            </section>
 
-                <AnimatedSection className="mt-10 md:mt-20">
-                    <div className="bg-glass-surface backdrop-blur-sm border border-glass-border p-8 rounded-lg relative overflow-hidden">
-                        <img src="https://picsum.photos/1200/400?random=8" alt="Farmer with solar pump" className="absolute top-0 left-0 w-full h-full object-cover opacity-10 z-0" />
-                        <div className="relative z-10 text-center">
-                            <h2 className="text-2xl md:text-3xl font-extrabold text-solar-gold text-glow">Secure Your Solar Pump with Up to 60%+ Subsidy</h2>
-                            <p className="mt-4 max-w-3xl mx-auto text-lg text-text-secondary">
-                                Under PM-KUSUM Component B & C, farmers can get substantial financial assistance. We guide you through the entire process.
-                            </p>
-                            <div className="mt-8 max-w-2xl mx-auto bg-glass-surface/80 backdrop-blur-sm p-6 rounded-md shadow-lg">
-                                <p className="text-xl font-bold text-solar-gold">Typical Subsidy Structure</p>
-                                <p className="text-lg text-white mt-2">
-                                    <span className="font-bold">30%</span> Central Financial Assistance (CFA) <br />
-                                    <span className="font-bold">+ 30%</span> State Subsidy <br />
-                                    <span className="font-bold">= 60%</span> Total Government Support*
+            {/* Features Grid */}
+            <section className="py-20 px-4 bg-night-sky-light/30">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {features.map((feature, index) => (
+                            <AnimatedSection key={index} className="p-8 rounded-3xl bg-glass-surface/20 border border-glass-border/10 hover:border-primary-green/30 transition-all group">
+                                <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-6 text-2xl group-hover:scale-110 transition-transform">
+                                    {feature.icon}
+                                </div>
+                                <h3 className="text-xl font-black text-white mb-4 uppercase tracking-wider">{feature.title}</h3>
+                                <p className="text-text-secondary font-medium leading-relaxed">
+                                    {feature.description}
                                 </p>
-                                <p className="text-sm text-text-secondary mt-2">*Subsidy may reach 75-80% in select states. Capped at 7.5 HP capacity.</p>
-                            </div>
-                        </div>
+                            </AnimatedSection>
+                        ))}
                     </div>
-                </AnimatedSection>
+                </div>
+            </section>
 
-                <AnimatedSection className="mt-10 md:mt-20">
-                    <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
-                        <div>
-                            <h2 className="text-3xl font-extrabold text-white">Eliminate Diesel Costs, Boost Your Yield</h2>
-                            <p className="mt-4 text-lg text-text-secondary">A solar pump is not an expense; it's an investment in your farm's profitability. With a typical payback period of less than 2 years, the benefits are immediate and long-lasting.</p>
-                            <div className="mt-10">
-                                <Link to="/calculator/pump" className="inline-block text-lg font-bold bg-solar-gold text-varcas-navy py-4 px-8 rounded-lg shadow-lg hover:bg-solar-amber transform hover:scale-105 transition-all duration-300">
-                                    Estimate Subsidy & Diesel Savings ROI
-                                </Link>
+            {/* Why Solar Pumps? */}
+            <section className="py-24 px-4 overflow-hidden relative">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                        <AnimatedSection>
+                            <h2 className="text-4xl md:text-5xl font-black text-white mb-8 leading-tight">
+                                Reliable Water Supply, <span className="text-primary-green">Day and Night</span>
+                            </h2>
+                            <p className="text-lg text-text-secondary font-medium mb-8">
+                                Varcas Solar Pumps are designed specifically for the unique challenges of Indian agriculture. Our systems guarantee water flow even in low sunlight conditions.
+                            </p>
+                            <ul className="space-y-4">
+                                {[
+                                    "Hybrid connectivity with existing grid power.",
+                                    "Stainless steel body for long-lasting durability.",
+                                    "Remote monitoring via mobile application.",
+                                    "Anti-theft and anti-vandalism features."
+                                ].map((item, i) => (
+                                    <li key={i} className="flex items-start gap-3">
+                                        <div className="mt-1 w-5 h-5 rounded-full bg-primary-green/20 flex items-center justify-center text-primary-green">
+                                            <ArrowRight size={12} />
+                                        </div>
+                                        <span className="text-white font-medium">{item}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </AnimatedSection>
+                        <AnimatedSection>
+                            <div className="grid grid-cols-2 gap-4">
+                                <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=500&auto=format" alt="Farm" className="rounded-2xl border border-glass-border/20 shadow-xl" />
+                                <img src="https://images.unsplash.com/photo-1622383563227-04401ab4e5ea?q=80&w=500&auto=format" alt="Pump" className="rounded-2xl border border-glass-border/20 shadow-xl translate-y-8" />
                             </div>
-                        </div>
-                        <div>
-                            <img className="rounded-lg shadow-xl" src={pumpInFieldImage} alt="Solar pump in an agricultural field" />
-                        </div>
+                        </AnimatedSection>
                     </div>
-                </AnimatedSection>
+                </div>
+            </section>
 
-            </div>
+            {/* Integrated Calculator Section */}
+            <section className="py-24 px-4 bg-gradient-to-b from-night-sky to-night-sky-light/40 overflow-hidden relative">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-black text-white mb-4 uppercase">Diesel vs <span className="text-primary-green">Solar</span> ROI</h2>
+                        <p className="text-text-secondary font-bold italic">Adjust your current diesel cost to see how soon your solar pump pays for itself.</p>
+                    </div>
+                    <div className="max-w-4xl mx-auto">
+                        <InteractiveCalculator 
+                            type={CalculatorType.Pump} 
+                            onChange={handleCalcChange}
+                            initialValue={calcValue}
+                        />
+                    </div>
+                </div>
+            </section>
+
+            {/* Application Form */}
+            <section id="apply" className="py-24 px-4">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl font-black text-white mb-4 uppercase tracking-tight">Kusum Yojana <span className="text-primary-green">Registration</span></h2>
+                        <p className="text-text-secondary font-bold">Fill details to check your subsidy eligibility.</p>
+                    </div>
+                    <CalculatorForm 
+                        type={CalculatorType.Pump} 
+                        initialValue={calcValue}
+                        calculatorResults={calcResults}
+                    />
+                </div>
+            </section>
         </div>
     );
 };

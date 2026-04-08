@@ -1,25 +1,13 @@
+import { Hono } from 'hono';
+import * as publicController from '../controllers/public.controller.js';
 
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-const publicController = require('../controllers/public.controller');
+const publicApi = new Hono();
 
-const router = express.Router();
+publicApi.get('/locations/states', publicController.getStates);
+publicApi.get('/locations/districts/:state', publicController.getDistricts);
+publicApi.post('/leads', publicController.createPublicLead);
+publicApi.post('/leads/:id/send-otp', publicController.sendOtp);
+publicApi.post('/verify-otp', publicController.verifyLeadOtp);
+publicApi.get('/forms/:formType', publicController.getFormSchema);
 
-// --- Multer Setup for public lead forms ---
-const upload = require('../../config/storage.config');
-
-// --- Public Routes ---
-router.get('/locations/states', publicController.getStates);
-router.get('/locations/districts/:state', publicController.getDistricts);
-router.get('/forms/:formType', publicController.getFormSchema);
-
-router.post('/leads', publicController.createLead);
-router.post('/leads/:leadId/send-otp', publicController.sendOtp);
-router.post('/leads/:leadId/verify-otp', publicController.verifyOtp);
-
-// This handles the initial file upload during the multi-step form process.
-router.post('/leads/:leadId/application', upload.any(), publicController.handleApplicationFileUpload);
-
-module.exports = router;
+export default publicApi;

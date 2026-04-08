@@ -379,6 +379,13 @@ const LeadDetailPage: React.FC = () => {
                     >
                         <Download size={20} />
                     </button>
+                    <Link
+                        to={`/admin/quotation/${leadId}`}
+                        className="px-6 py-3 rounded-2xl bg-white/5 border border-glass-border/30 text-text-primary font-black uppercase tracking-widest text-xs hover:bg-neon-cyan/10 hover:border-neon-cyan/50 transition-all flex items-center gap-2"
+                    >
+                        <FileText size={18} className="text-neon-cyan" />
+                        Create Quotation
+                    </Link>
                     <button className="px-6 py-3 rounded-2xl bg-neon-cyan text-white font-black uppercase tracking-widest text-xs shadow-glow-sm shadow-neon-cyan/20 hover:scale-105 transition-all">
                         Convert to Project
                     </button>

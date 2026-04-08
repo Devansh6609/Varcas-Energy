@@ -2,44 +2,14 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
-
-// --- ENUMS ---
-
-enum UserRole {
-  Master
-  Vendor
-}
-
-enum ProductType {
-  rooftop
-  pump
-  Contact_Inquiry
-}
-
-enum PipelineStage {
-  New_Lead
-  Verified_Lead
-  Qualified
-  Site_Survey_Scheduled
-  Proposal_Sent
-  Negotiation
-  Closed_Won
-  Closed_Lost
-}
-
-enum LeadScoreStatus {
-  Hot
-  Warm
-  Cold
-}
-
 
 // --- MODELS ---
 
@@ -48,7 +18,7 @@ model User {
   email        String    @unique
   name         String
   password     String
-  role         UserRole  @default(Vendor)
+  role         String    @default("Vendor") // migrated from UserRole enum
   country      String?
   state        String?
   district     String?
@@ -64,20 +34,20 @@ model User {
 
 model Lead {
   id           String   @id @default(cuid())
-  productType  ProductType
+  productType  String   // migrated from ProductType enum
   name         String?
   email        String?
   phone        String?
   otpVerified  Boolean  @default(false)
 
-  customFields Json @default("{}")
+  customFields String @default("{}")
   
   source       String?
 
-  pipelineStage PipelineStage @default(New_Lead)
-  score         Int           @default(30)
+  pipelineStage String @default("New_Lead") // migrated from PipelineStage enum
+  score         Int    @default(30)
 
-  scoreStatus   LeadScoreStatus @default(Cold)
+  scoreStatus   String @default("Cold") // migrated from LeadScoreStatus enum
 
   // --- Manual Workflow Fields ---
   fatherName      String?
@@ -87,14 +57,14 @@ model Lead {
   hp              String?
   connectionType  String?
   
-  approvalStatus  ApprovalStatus?
-  paymentStatus   PaymentStatus?
-  allotmentStatus AllotmentStatus?
-  surveyStatus    SurveyStatus?
-  ntpStatus       NtpStatus?
-  aifStatus       AifStatus?
+  approvalStatus  String? // migrated from ApprovalStatus enum
+  paymentStatus   String? // migrated from PaymentStatus enum
+  allotmentStatus String? // migrated from AllotmentStatus enum
+  surveyStatus    String? // migrated from SurveyStatus enum
+  ntpStatus       String? // migrated from NtpStatus enum
+  aifStatus       String? // migrated from AifStatus enum
   cifStatus       Boolean?
-  workStatus      WorkStatus?
+  workStatus      String? // migrated from WorkStatus enum
   
   bankAccountOpen Boolean?
   meterSerialNo   String?
@@ -116,7 +86,7 @@ model Document {
   id        String   @id @default(cuid())
   filename  String
   mimeType  String   @default("application/octet-stream")
-  data      Bytes
+  url       String?  // R2 object key
   size      Int      @default(0)
   lead      Lead     @relation(fields: [leadId], references: [id])
   leadId    String
@@ -150,43 +120,11 @@ model Notification {
   createdAt DateTime @default(now())
 }
 
-// --- NEW ENUMS for Manual Workflow ---
-
-enum ApprovalStatus {
-  Approved
-  Rejected
-  Discom_Pending
-}
-
-enum PaymentStatus {
-  Complete
-  Hold
-  Payment_Slip_Uploaded
-  Other
-}
-
-enum AllotmentStatus {
-  Received
-  Pending
-}
-
-enum SurveyStatus {
-  Pending
-  Completed
-}
-
-enum NtpStatus {
-  Received
-  Not_Received
-}
-
-enum AifStatus {
-  Done
-  Pending
-}
-
-enum WorkStatus {
-  Pending
-  Material_Dispatched
-  Work_Complete
-}
+// --- MANUAL ENUMS (Kept as comment reference) ---
+// ApprovalStatus: Approved, Rejected, Discom_Pending
+// PaymentStatus: Complete, Hold, Payment_Slip_Uploaded, Other
+// AllotmentStatus: Received, Pending
+// SurveyStatus: Pending, Completed
+// NtpStatus: Received, Not_Received
+// AifStatus: Done, Pending
+// WorkStatus: Pending, Material_Dispatched, Work_Complete

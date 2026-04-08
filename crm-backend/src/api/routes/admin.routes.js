@@ -1,76 +1,57 @@
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+import { Hono } from 'hono';
+import * as adminController from '../controllers/admin.controller.js';
+import authMiddleware from '../middlewares/auth.middleware.js';
+import masterOnlyMiddleware from '../middlewares/masterOnly.middleware.js';
 
-const adminController = require('../controllers/admin.controller');
-const authMiddleware = require('../middlewares/auth.middleware');
-const masterOnlyMiddleware = require('../middlewares/masterOnly.middleware');
+const admin = new Hono();
 
-const router = express.Router();
+admin.use('*', authMiddleware);
 
-const upload = require('../../config/storage.config');
+// Dashboard
+admin.get('/dashboard/stats', adminController.getDashboardStats);
+admin.get('/dashboard/charts', adminController.getChartData);
+admin.get('/dashboard/chart', adminController.getChartData); // legacy alias
 
-// --- Multer Setup for CSV Import (Local Temp Storage) ---
-// We use local storage for CSVs because we need to read them with fs.readFileSync immediately
-const tempUploadsDir = path.join(__dirname, '../../../temp_uploads');
-if (!fs.existsSync(tempUploadsDir)) {
-    fs.mkdirSync(tempUploadsDir, { recursive: true });
-}
-const tempStorage = multer.diskStorage({
-    destination: (req, file, cb) => { cb(null, tempUploadsDir); },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, `${uniqueSuffix}-${file.originalname}`);
-    }
-});
-const uploadTemp = multer({ storage: tempStorage });
+// Leads
+admin.get('/leads', adminController.getLeads);
+admin.get('/leads/:id', adminController.getLeadDetails);
+admin.patch('/leads/:id', adminController.updateLead);
+admin.post('/leads/:id/notes', adminController.addLeadNote);
+admin.post('/leads/:id/documents', adminController.uploadLeadDocument);
+admin.post('/leads/:id/generate-summary', adminController.generateLeadSummary);
+admin.delete('/leads/:id/documents/:docId', adminController.deleteLeadDocument);
+admin.delete('/leads/:id', adminController.deleteLead);
+admin.post('/leads/bulk-action', adminController.performBulkLeadAction);
+admin.post('/leads/import', adminController.importLeads);
+admin.post('/leads/manual', adminController.createManualLead);
 
+// Vendors
+admin.get('/vendors', adminController.getVendors);
+admin.post('/vendors', masterOnlyMiddleware, adminController.createVendor);
 
-// Protect all admin routes
-router.use(authMiddleware);
+// Admin management (frontend uses /admins)
+admin.get('/admins', masterOnlyMiddleware, adminController.getMasterAdmins);
+admin.post('/admins', masterOnlyMiddleware, adminController.createMasterAdmin);
+admin.get('/master-admins', masterOnlyMiddleware, adminController.getMasterAdmins);
+admin.post('/master-admins', masterOnlyMiddleware, adminController.createMasterAdmin);
 
-// --- SSE for real-time updates ---
-router.get('/events', adminController.getRealtimeEvents);
+// User deletion (frontend uses /users/*)
+admin.post('/users/request-deletion-otp', masterOnlyMiddleware, adminController.requestUserDeletionOtp);
+admin.post('/users/confirm-deletion', masterOnlyMiddleware, adminController.deleteUserWithOtp);
+admin.post('/request-user-deletion', masterOnlyMiddleware, adminController.requestUserDeletionOtp);
+admin.delete('/delete-user-with-otp', masterOnlyMiddleware, adminController.deleteUserWithOtp);
 
-// --- Dashboard ---
-router.get('/dashboard/stats', adminController.getDashboardStats);
-router.get('/dashboard/charts', adminController.getChartData);
+// Profile
+admin.patch('/profile', adminController.updateProfile);
 
-// --- Leads ---
-router.get('/leads', adminController.getLeads);
-// router.get('/leads/export', adminController.exportLeads); // TODO: Implement exportLeads function
-router.post('/leads/import', masterOnlyMiddleware, uploadTemp.single('leadsCsv'), adminController.importLeads);
-router.get('/leads/:id', adminController.getLeadDetails);
-router.patch('/leads/:id', upload.any(), adminController.updateLead);
-router.delete('/leads/:id', masterOnlyMiddleware, adminController.deleteLead);
-router.post('/leads/:id/notes', adminController.addLeadNote);
-router.post('/leads/:id/documents', upload.single('document'), adminController.uploadLeadDocument);
-router.delete('/leads/:id/documents/:docId', adminController.deleteLeadDocument);
-router.post('/leads/manual', upload.single('basicProfile'), adminController.createManualLead);
-// FIX: Add route for bulk lead actions.
-router.post('/leads/bulk-action', adminController.performBulkLeadAction);
+// Settings
+admin.get('/settings', adminController.getSettings);
+admin.post('/settings', adminController.updateSettings);
 
-// --- Vendor Management (Master Only) ---
-router.get('/vendors', masterOnlyMiddleware, adminController.getVendors);
-router.post('/vendors', masterOnlyMiddleware, adminController.createVendor);
+// Form Builder
+admin.put('/forms/:formType', adminController.updateFormSchema);
 
-// --- Admin Management (Master Only) ---
-router.get('/admins', masterOnlyMiddleware, adminController.getMasterAdmins);
-router.post('/admins', masterOnlyMiddleware, adminController.createMasterAdmin);
+// Events (SSE stub — Cloudflare Workers don't support long-polling well)
+admin.get('/events', adminController.getEvents);
 
-// --- Secure User Deletion (Master Only) ---
-router.post('/users/request-deletion-otp', masterOnlyMiddleware, adminController.requestUserDeletionOtp);
-router.post('/users/confirm-deletion', masterOnlyMiddleware, adminController.deleteUserWithOtp);
-
-// --- User Profile ---
-router.patch('/profile', upload.single('profileImage'), adminController.updateProfile);
-
-// --- Form Builder & Settings (Master Only) ---
-router.put('/forms/:formType', masterOnlyMiddleware, adminController.updateFormSchema);
-router.get('/settings', masterOnlyMiddleware, adminController.getSettings);
-router.post('/settings', masterOnlyMiddleware, adminController.saveSettings);
-router.post('/leads/:id/generate-summary', masterOnlyMiddleware, adminController.generateLeadSummary);
-
-
-module.exports = router;
+export default admin;

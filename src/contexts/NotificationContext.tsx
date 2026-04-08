@@ -31,13 +31,16 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         if (!user) return;
         try {
             const token = localStorage.getItem('authToken');
-            const response = await fetch(`${API_BASE_URL}/api/notifications?limit=10`, {
+            if (!token) return;
+            const response = await fetch(`${API_BASE_URL}/api/notifications`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
                 const data = await response.json();
-                setNotifications(data.notifications);
-                setUnreadCount(data.unreadCount);
+                // Backend returns a plain array of notifications
+                const notifs = Array.isArray(data) ? data : (data.notifications || []);
+                setNotifications(notifs);
+                setUnreadCount(notifs.filter((n: Notification) => !n.isRead).length);
             }
         } catch (error) {
             console.error("Failed to fetch notifications", error);
@@ -46,28 +49,14 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     useEffect(() => {
         fetchNotifications();
+        // Poll notifications every 60 seconds
+        const intervalId = setInterval(fetchNotifications, 60000);
+        return () => clearInterval(intervalId);
     }, [fetchNotifications]);
 
-    // Listen for real-time events (SSE)
+    // Listen for custom events dispatched from AdminLayout
     useEffect(() => {
         if (!user) return;
-
-        const token = localStorage.getItem('authToken');
-        if (!token) return;
-
-        const eventSource = new EventSource(`${API_BASE_URL}/api/admin/events?token=${token}`); // Note: standard EventSource doesn't support headers easily, usually need a polyfill or query param auth. 
-        // However, our backend currently checks headers. Standard EventSource API limitation.
-        // For now, let's rely on the existing polling or the custom fetch-based SSE in AdminLayout if we want to reuse it.
-        // Actually, AdminLayout uses fetch for SSE which allows headers. 
-        // To avoid double connections, we should probably expose the event stream from a central place or just use polling for now for simplicity/reliability if SSE is tricky with headers.
-
-        // WAIT: AdminLayout ALREADY implements SSE with fetch and headers!
-        // We should hook into that or move that logic here.
-        // The Implementation Plan said "Handle SSE connection and incoming events" in Context.
-        // So I should probably move the SSE logic from AdminLayout to here, OR expose a way to consume events.
-
-        // For this step, I will implement the state management and API calls. 
-        // I will add a listener for a custom window event 'crm-notification' which AdminLayout can dispatch.
 
         const handleNotificationEvent = (event: CustomEvent) => {
             const newNotification = event.detail;
@@ -86,7 +75,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         try {
             const token = localStorage.getItem('authToken');
             await fetch(`${API_BASE_URL}/api/notifications/${id}/read`, {
-                method: 'PUT',
+                method: 'PATCH',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -98,13 +87,16 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     };
 
     const markAllAsRead = async () => {
+        // Mark all locally since we don't have a bulk endpoint
         try {
             const token = localStorage.getItem('authToken');
-            await fetch(`${API_BASE_URL}/api/notifications/all/read`, {
-                method: 'PUT',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
+            const unread = notifications.filter(n => !n.isRead);
+            for (const n of unread) {
+                await fetch(`${API_BASE_URL}/api/notifications/${n.id}/read`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                }).catch(() => {});
+            }
             setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
             setUnreadCount(0);
         } catch (error) {

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useIntersectionObserver } from '../hooks/useIntersectionObserver.ts';
+import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 
 interface ProcessStep {
     id: number;

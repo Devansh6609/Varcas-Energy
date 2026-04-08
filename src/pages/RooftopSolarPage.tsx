@@ -1,115 +1,167 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
 import AnimatedSection from '../components/AnimatedSection';
-import mehraResidenceImage from '../assets/case-study-mehra-residence.png';
+import CalculatorForm from '../components/CalculatorForm';
+import InteractiveCalculator from '../components/InteractiveCalculator';
+import { CalculatorType } from '../types';
+import { CalculationResults } from '../utils/calculatorUtils';
+import { 
+    Sun, 
+    Zap, 
+    ShieldCheck, 
+    ArrowRight, 
+    PieChart, 
+    Coins, 
+    CheckCircle2
+} from 'lucide-react';
 import rooftopVideo from '../assets/rooftop-solar-installation.mp4';
-import rooftopThumbnail from '../assets/rooftop-solar-thumbnail.png';
 
 const RooftopSolarPage: React.FC = () => {
+    const [calcValue, setCalcValue] = useState<number>(3000);
+    const [calcResults, setCalcResults] = useState<CalculationResults | null>(null);
+
+    const handleCalcChange = (val: number, results: CalculationResults) => {
+        setCalcValue(val);
+        setCalcResults(results);
+    };
+
+    const features = [
+        {
+            icon: <Zap className="text-neon-cyan" />,
+            title: "Zero Electricity Bills",
+            description: "Generate your own power and significantly reduce or even eliminate your monthly electricity costs."
+        },
+        {
+            icon: <ShieldCheck className="text-primary-green" />,
+            title: "25 Years Warranty",
+            description: "Our high-efficiency solar panels come with a performance warranty of up to 25 years for peace of mind."
+        },
+        {
+            icon: <Coins className="text-accent-orange" />,
+            title: "Government Subsidy",
+            description: "Avail up to ₹78,000 in direct subsidies under the PM-Surya Ghar: Muft Bijli Yojana."
+        }
+    ];
+
     return (
-        <div className="bg-transparent text-text-primary">
-            <div className="max-w-7xl mx-auto py-8 md:py-16 px-4 sm:px-6 lg:px-8">
-                <AnimatedSection>
-                    <div className="text-center">
-                        <h1 className="text-3xl font-extrabold text-white sm:text-5xl">
-                            Rooftop Solar Systems
-                        </h1>
-                        <p className="mt-4 max-w-2xl mx-auto text-xl text-text-secondary">
-                            Own your power. Eliminate electricity bills and secure your energy future.
-                        </p>
-                    </div>
-                </AnimatedSection>
+        <div className="text-white selection:bg-neon-cyan/30">
+            {/* Hero Section */}
+            <section className="relative pb-20 px-4 overflow-hidden pt-10">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none">
+                    <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-neon-cyan/10 rounded-full blur-[120px]"></div>
+                    <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-electric-blue/10 rounded-full blur-[120px]"></div>
+                </div>
 
-                <AnimatedSection className="mt-10 md:mt-16">
-                    <div className="grid gap-8 md:gap-16 lg:grid-cols-2 lg:gap-x-8 items-center">
-                        <div>
-                            <h2 className="text-3xl font-extrabold text-white">Witness Our Professional Installation</h2>
-                            <p className="mt-4 text-lg text-text-secondary">
-                                Our video showcases the meticulous and professional installation process our certified engineers follow, ensuring your system's peak performance and longevity.
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <AnimatedSection>
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neon-cyan/10 border border-neon-cyan/20 text-neon-cyan text-xs font-black tracking-widest uppercase mb-6">
+                                <Sun size={14} /> Power Your Home With Sun
+                            </div>
+                            <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
+                                Turn Your Roof Into a <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-electric-blue">Power Plant</span>
+                            </h1>
+                            <p className="text-lg text-text-secondary font-medium mb-8 max-w-xl leading-relaxed">
+                                Experience energy independence with Varcas Rooftop Solar. Reduce bills, increase property value, and contribute to a greener planet with India's most trusted solar partner.
                             </p>
-                            <dl className="mt-8 space-y-6">
-                                <div className="flex">
-                                    <dt className="flex-shrink-0 w-32 font-medium text-white">System Size:</dt>
-                                    <dd className="ml-4 text-text-secondary">1 kW to 100+ kW</dd>
-                                </div>
-                                <div className="flex">
-                                    <dt className="flex-shrink-0 w-32 font-medium text-white">Annual Production:</dt>
-                                    <dd className="ml-4 text-text-secondary">~1,500 kWh per kW installed</dd>
-                                </div>
-                                <div className="flex">
-                                    <dt className="flex-shrink-0 w-32 font-medium text-white">Components:</dt>
-                                    <dd className="ml-4 text-text-secondary">Tier-1 Solar Panels & Inverters</dd>
-                                </div>
-                                <div className="flex">
-                                    <dt className="flex-shrink-0 w-32 font-medium text-white">Warranty:</dt>
-                                    <dd className="ml-4 text-text-secondary">25-Year Performance Warranty on Panels</dd>
-                                </div>
-                            </dl>
-                        </div>
-                        <div className="rounded-lg shadow-xl overflow-hidden">
-                            <video
-                                className="w-full h-full object-cover"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                poster={rooftopThumbnail}
-                            >
-                                <source src={rooftopVideo} type="video/mp4" />
-                                Your browser does not support the video tag.
-                            </video>
-                        </div>
-                    </div>
-                </AnimatedSection>
+                            <div className="flex flex-wrap gap-4">
+                                <a href="#apply" className="px-8 py-4 rounded-2xl bg-gradient-to-r from-neon-cyan to-electric-blue text-night-sky font-black tracking-widest shadow-glow-sm shadow-neon-cyan/20 hover:scale-105 transition-all flex items-center gap-2 uppercase text-sm">
+                                    Start Saving Now <ArrowRight size={18} />
+                                </a>
+                                <button className="px-8 py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-black tracking-widest hover:bg-white/10 transition-all uppercase text-sm">
+                                    View Projects
+                                </button>
+                            </div>
+                        </AnimatedSection>
 
-                <AnimatedSection className="mt-10 md:mt-20">
-                    <div className="bg-glass-surface backdrop-blur-sm border border-glass-border p-8 rounded-lg">
-                        <div className="text-center">
-                            <h2 className="text-2xl md:text-3xl font-extrabold text-solar-gold text-glow">Unlock Your Maximum ₹78,000 Subsidy</h2>
-                            <p className="mt-4 text-lg text-text-secondary">
-                                With the "PM Surya Ghar: Muft Bijli Yojana", going solar has never been more affordable. We are experts in navigating the 45-120 day approval process for you.
-                            </p>
-                        </div>
-                        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                            <div className="bg-glass-surface/70 backdrop-blur-sm p-6 rounded-md">
-                                <p className="text-xl font-bold text-solar-gold">Up to 2 kW</p>
-                                <p className="text-2xl font-extrabold text-white mt-2">₹30,000 / kW</p>
-                                <p className="text-sm text-text-secondary">Total: ₹60,000</p>
+                        <AnimatedSection className="relative">
+                            <div className="relative rounded-3xl overflow-hidden border border-glass-border/30 shadow-2xl">
+                                <video 
+                                    src={rooftopVideo}
+                                    autoPlay 
+                                    loop 
+                                    muted 
+                                    playsInline
+                                    className="w-full h-[500px] object-cover"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-night-sky via-transparent to-transparent"></div>
+                                <div className="absolute bottom-8 left-8 right-8 p-6 bg-glass-surface/60 backdrop-blur-xl border border-glass-border/20 rounded-2xl">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-primary-green/20 flex items-center justify-center text-primary-green">
+                                                <PieChart size={20} />
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest">Real-time Savings</p>
+                                                <p className="text-sm font-bold text-white">Generating 12.4 kWh</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest">Status</p>
+                                            <p className="text-sm font-bold text-primary-green flex items-center gap-1 justify-end">
+                                                <CheckCircle2 size={14} /> Optimal
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                                        <div className="bg-primary-green h-full w-[85%] rounded-full"></div>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="bg-glass-surface/70 backdrop-blur-sm p-6 rounded-md">
-                                <p className="text-xl font-bold text-solar-gold">For the 3rd kW</p>
-                                <p className="text-2xl font-extrabold text-white mt-2">₹18,000</p>
-                                <p className="text-sm text-text-secondary">Additional Subsidy</p>
-                            </div>
-                            <div className="bg-glass-surface/70 backdrop-blur-sm p-6 rounded-md">
-                                <p className="text-xl font-bold text-solar-gold">3 kW & Above</p>
-                                <p className="text-2xl font-extrabold text-white mt-2">₹78,000</p>
-                                <p className="text-sm text-text-secondary">Maximum Capped Subsidy</p>
-                            </div>
-                        </div>
+                        </AnimatedSection>
                     </div>
-                </AnimatedSection>
+                </div>
+            </section>
 
-                <AnimatedSection className="mt-10 md:mt-20">
-                    <div className="grid lg:grid-cols-5 gap-8 items-center">
-                        <div className="lg:col-span-2">
-                            <img className="rounded-lg shadow-xl" src={mehraResidenceImage} alt="Happy family in front of their solar-powered home" />
-                        </div>
-                        <div className="lg:col-span-3">
-                            <h3 className="text-2xl font-bold text-white">Case Study: The Mehra Residence, Pune</h3>
-                            <p className="mt-2 text-lg text-text-secondary">
-                                After installing a 3 kW system, the Mehras now enjoy zero electricity bills and are projected to save over <span className="font-bold text-solar-gold">₹12 Lakhs</span> over 25 years.
-                            </p>
-                            <div className="mt-8">
-                                <Link to="/calculator/rooftop" className="inline-block text-lg font-bold bg-solar-gold text-varcas-navy py-4 px-8 rounded-lg shadow-lg hover:bg-solar-amber transform hover:scale-105 transition-all duration-300">
-                                    Calculate Your Net System Cost & Savings Now
-                                </Link>
-                            </div>
-                        </div>
+            {/* Features Grid */}
+            <section className="py-20 px-4 bg-night-sky-light/30">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {features.map((feature, index) => (
+                            <AnimatedSection key={index} className="p-8 rounded-3xl bg-glass-surface/20 border border-glass-border/10 hover:border-neon-cyan/30 transition-all group">
+                                <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-6 text-2xl group-hover:scale-110 transition-transform">
+                                    {feature.icon}
+                                </div>
+                                <h3 className="text-xl font-black text-white mb-4 uppercase tracking-wider">{feature.title}</h3>
+                                <p className="text-text-secondary font-medium leading-relaxed">
+                                    {feature.description}
+                                </p>
+                            </AnimatedSection>
+                        ))}
                     </div>
-                </AnimatedSection>
+                </div>
+            </section>
 
-            </div>
+            {/* Savings Calculator INTEGRATED SECTION */}
+            <section className="py-24 px-4 bg-gradient-to-b from-night-sky to-night-sky-light/40 overflow-hidden relative">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl md:text-5xl font-black text-white mb-6 uppercase tracking-tight">Calculate Your <span className="text-primary-green">ROI</span></h2>
+                        <p className="text-text-secondary font-bold max-w-2xl mx-auto text-lg italic">Adjust your load to see immediate savings potential.</p>
+                    </div>
+                    <div className="max-w-4xl mx-auto">
+                         <InteractiveCalculator 
+                            type={CalculatorType.Rooftop} 
+                            onChange={handleCalcChange}
+                            initialValue={calcValue}
+                        />
+                    </div>
+                </div>
+            </section>
+
+            {/* Application Form */}
+            <section id="apply" className="py-24 px-4">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl font-black text-white mb-4 uppercase">Apply for <span className="text-neon-cyan">Subsidy</span></h2>
+                        <p className="text-text-secondary font-bold">Secure your verified quote in 3 simple steps.</p>
+                    </div>
+                    <CalculatorForm 
+                        type={CalculatorType.Rooftop} 
+                        initialValue={calcValue}
+                        calculatorResults={calcResults}
+                    />
+                </div>
+            </section>
         </div>
     );
 };

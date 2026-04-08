@@ -5,7 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useCrmUpdates } from '../../contexts/CrmUpdatesContext';
 import Toast from '../../components/admin/Toast';
 
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = import.meta.env.VITE_CRM_API_URL || 'http://localhost:3001';
 
 interface AdminLayoutProps {
     children: React.ReactNode;
@@ -54,52 +54,51 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     const location = useLocation();
     const { triggerUpdate } = useCrmUpdates();
     const [toastMessage, setToastMessage] = useState<string | null>(null);
-    const abortControllerRef = useRef<AbortController | null>(null);
 
+    // Lightweight polling for events — NO infinite retry loop
     useEffect(() => {
         let isMounted = true;
+        let timeoutId: ReturnType<typeof setTimeout>;
 
-        const subscribe = async () => {
+        const pollEvents = async () => {
             if (!isMounted) return;
-
-            abortControllerRef.current = new AbortController();
-            const signal = abortControllerRef.current.signal;
-
+            
+            const token = localStorage.getItem('authToken');
+            if (!token) return; // Don't poll if not authenticated
+            
             try {
-                const response = await fetch(`${API_BASE_URL}/api/admin/events`, { signal });
+                const response = await fetch(`${API_BASE_URL}/api/admin/events`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
                 if (response.ok) {
                     const event = await response.json();
-                    console.log('Received real-time event:', event);
                     if (event.type === 'NEW_LEAD') {
-                        setToastMessage(`New lead received: ${event.data.name || 'N/A'}`);
+                        setToastMessage(`New lead received: ${event.data?.name || 'N/A'}`);
+                        triggerUpdate();
                     } else if (event.type === 'LEAD_UPDATE') {
-                        setToastMessage(`Lead updated: ${event.data.name || 'N/A'}`);
+                        setToastMessage(`Lead updated: ${event.data?.name || 'N/A'}`);
+                        triggerUpdate();
                     }
-                    triggerUpdate();
                 }
-            } catch (e: any) {
-                if (e.name === 'AbortError') {
-                    console.log('Subscription aborted.');
-                    return; // Don't retry on abort
-                }
-                console.error('Subscription error, retrying in 5 seconds...', e);
-                // Wait before retrying to avoid spamming the server
-                await new Promise(resolve => setTimeout(resolve, 5000));
+            } catch (e) {
+                // Silently ignore — don't flood console, don't retry aggressively
             }
 
-            // Resubscribe immediately after success or after retry delay
+            // Poll every 30 seconds instead of aggressive retry
             if (isMounted) {
-                subscribe();
+                timeoutId = setTimeout(pollEvents, 30000);
             }
         };
 
-        subscribe();
+        // Start polling after a brief delay
+        timeoutId = setTimeout(pollEvents, 5000);
 
         return () => {
             isMounted = false;
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
-            }
+            clearTimeout(timeoutId);
         };
     }, [triggerUpdate]);
 

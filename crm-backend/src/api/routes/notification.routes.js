@@ -1,12 +1,12 @@
-const express = require('express');
-const router = express.Router();
-const notificationController = require('../controllers/notification.controller');
-const authMiddleware = require('../middlewares/auth.middleware');
+import { Hono } from 'hono';
+import * as notificationController from '../controllers/notification.controller.js';
+import authMiddleware from '../middlewares/auth.middleware.js';
 
-// All routes require authentication
-router.use(authMiddleware);
+const notifications = new Hono();
 
-router.get('/', notificationController.getNotifications);
-router.put('/:id/read', notificationController.markAsRead);
+notifications.use('*', authMiddleware);
 
-module.exports = router;
+notifications.get('/', notificationController.getNotifications);
+notifications.patch('/:id/read', notificationController.markAsRead);
+
+export default notifications;

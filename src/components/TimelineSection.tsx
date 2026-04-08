@@ -1,6 +1,6 @@
 /// <reference types="react" />
 import React from 'react';
-import AnimatedSection from './AnimatedSection.tsx';
+import AnimatedSection from './AnimatedSection';
 
 // Define props based on what SubsidiesPage provides
 interface ProcessStep {

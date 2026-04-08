@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 // FIX: Changed to named import to resolve module export errors.
 import { Link } from 'react-router-dom';
-import { SUCCESS_STORIES } from '../constants.tsx';
-import { StorySegment, SuccessStory } from '../types.ts';
-import AnimatedSection from '../components/AnimatedSection.tsx';
+import { SUCCESS_STORIES } from '../constants';
+import { StorySegment, SuccessStory } from '../types';
+import AnimatedSection from '../components/AnimatedSection';
 
 const StoryCard: React.FC<{ story: SuccessStory }> = ({ story }) => (
     <div className="bg-glass-surface backdrop-blur-sm border border-glass-border rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 h-full flex flex-col">

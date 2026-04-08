@@ -2,13 +2,13 @@
 import React from 'react';
 // FIX: Changed to namespace import to resolve module export errors.
 import * as ReactRouterDOM from 'react-router-dom';
-import TestimonialCarousel from '../components/TestimonialCarousel.tsx';
-import AnimatedCounter from '../components/AnimatedCounter.tsx';
-import HeroSection from '../components/HeroSection.tsx';
-import Faq from '../components/Faq.tsx';
-import { FAQ_DATA } from '../constants.tsx';
-import Footer from '../components/Footer.tsx';
-import AnimatedSection from '../components/AnimatedSection.tsx';
+import TestimonialCarousel from '../components/TestimonialCarousel';
+import AnimatedCounter from '../components/AnimatedCounter';
+import HeroSection from '../components/HeroSection';
+import Faq from '../components/Faq';
+import { FAQ_DATA } from '../constants';
+import Footer from '../components/Footer';
+import AnimatedSection from '../components/AnimatedSection';
 
 const TrustBar: React.FC = () => (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white w-full max-w-7xl">

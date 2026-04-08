@@ -1,40 +1,44 @@
-const prisma = require('../../config/prisma');
-const bcrypt = require('bcrypt');
-const sgMail = require('@sendgrid/mail');
-const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
+import bcrypt from 'bcryptjs';
+import sgMail from '@sendgrid/mail';
+import { sign } from 'hono/jwt';
+import crypto from 'node:crypto';
 
-const login = async (req, res) => {
-    const { email, password } = req.body;
+export const login = async (c) => {
     try {
+        const prisma = c.get('prisma');
+        const { email, password } = await c.req.json();
         const user = await prisma.user.findUnique({ where: { email } });
 
         if (user && await bcrypt.compare(password, user.password)) {
-            const { password, ...userWithoutPassword } = user;
+            const { password: _, ...userWithoutPassword } = user;
             
-            const token = jwt.sign(
-                { userId: user.id, email: user.email, role: user.role },
-                process.env.JWT_SECRET || 'your-secret-key', // Use env var in production
-                { expiresIn: '1h' }
-            );
+            const payload = {
+                userId: user.id,
+                email: user.email,
+                role: user.role,
+                exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1 hour
+            };
+            
+            const secret = c.env.JWT_SECRET || 'varcas_secret_key_2024';
+            const token = await sign(payload, secret, 'HS256');
 
-            res.json({ token, user: userWithoutPassword });
+            return c.json({ token, user: userWithoutPassword });
         } else {
-            res.status(401).json({ message: 'Invalid credentials' });
+            return c.json({ message: 'Invalid credentials' }, 401);
         }
     } catch (error) {
         console.error("Login error:", error);
-        res.status(500).json({ message: 'An internal server error occurred.' });
+        return c.json({ message: 'An internal server error occurred.' }, 500);
     }
 };
 
-const requestPasswordReset = async (req, res) => {
-    const { email } = req.body;
+export const requestPasswordReset = async (c) => {
     try {
+        const prisma = c.get('prisma');
+        const { email } = await c.req.json();
         const user = await prisma.user.findUnique({ where: { email } });
 
         if (user) {
-            // Generate a secure, random, expiring token.
             const resetToken = crypto.randomBytes(32).toString('hex');
 
             await prisma.user.update({
@@ -42,18 +46,13 @@ const requestPasswordReset = async (req, res) => {
                 data: { resetToken },
             });
             
-            const resetLink = `http://localhost:5173/#/reset-password/${resetToken}`;
+            const resetLink = `https://crm.varcasenergy.com/#/reset-password/${resetToken}`;
 
-            // If SendGrid API key is configured, send a real email.
             if (process.env.SENDGRID_API_KEY) {
                 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
                 const fromEmail = process.env.SENDGRID_FROM_EMAIL;
-                if (!fromEmail) {
-                    console.warn('SENDGRID_FROM_EMAIL not set in .env. Falling back to default. This may fail if the sender is not verified in SendGrid.');
-                }
                 const msg = {
                     to: email,
-                    // IMPORTANT: This 'from' email MUST be a verified sender in your SendGrid account.
                     from: fromEmail || 'devanshagile@gmail.com', 
                     subject: 'SuryaKiran CRM: Password Reset Request',
                     html: `
@@ -69,38 +68,30 @@ const requestPasswordReset = async (req, res) => {
                 };
                 await sgMail.send(msg);
             } else {
-                // Fallback for local development if no API key is present.
-                console.warn('SENDGRID_API_KEY not found. Logging password reset link to console instead of sending email.');
-                console.log(`Password reset link for ${email}: ${resetLink}`);
+                console.warn('SENDGRID_API_KEY not found. Logging password reset link:', resetLink);
             }
         }
 
-        // Always return a success message to prevent email enumeration attacks.
-        res.json({ message: 'If an account with that email exists, a password reset link has been sent.' });
+        return c.json({ message: 'If an account with that email exists, a password reset link has been sent.' });
 
     } catch (error) {
         console.error("Forgot password error:", error);
-        if (error.response) {
-            console.error(error.response.body)
-        }
-        if (error.code === 'ENOTFOUND') {
-            return res.status(503).json({ message: 'Mail Service Unavailable: Could not connect to the email provider. Please check network settings.' });
-        }
-        res.status(500).json({ message: 'An internal server error occurred.' });
+        return c.json({ message: 'An internal server error occurred.' }, 500);
     }
 };
 
-const resetPassword = async (req, res) => {
-    const { token, password } = req.body;
-    if (!token || !password) {
-        return res.status(400).json({ message: 'Token and new password are required.' });
-    }
-
+export const resetPassword = async (c) => {
     try {
+        const prisma = c.get('prisma');
+        const { token, password } = await c.req.json();
+        if (!token || !password) {
+            return c.json({ message: 'Token and new password are required.' }, 400);
+        }
+
         const user = await prisma.user.findUnique({ where: { resetToken: token } });
 
         if (!user) {
-            return res.status(400).json({ message: 'Invalid or expired password reset token.' });
+            return c.json({ message: 'Invalid or expired password reset token.' }, 400);
         }
         
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -109,20 +100,14 @@ const resetPassword = async (req, res) => {
             where: { id: user.id },
             data: {
                 password: hashedPassword,
-                resetToken: null, // Invalidate the token after use
+                resetToken: null,
             },
         });
 
-        res.json({ message: 'Password has been reset successfully.' });
+        return c.json({ message: 'Password has been reset successfully.' });
 
     } catch (error) {
         console.error("Reset password error:", error);
-        res.status(500).json({ message: 'An internal server error occurred.' });
+        return c.json({ message: 'An internal server error occurred.' }, 500);
     }
-};
-
-module.exports = {
-    login,
-    requestPasswordReset,
-    resetPassword,
 };

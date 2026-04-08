@@ -3,9 +3,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 // NOTE: Please ensure you have this image file at 'src/assets/solar-panels-on-hill.jpeg'
 import heroPoster from '../assets/solar-panels-on-hill.jpeg';
-import Marquee from './Marquee.tsx';
-import { HERO_MARQUEE_TEXT, HERO_HEADLINES } from '../constants.tsx';
-import { useTypewriter } from '../hooks/useTypewriter.ts';
+import Marquee from './Marquee';
+import { HERO_MARQUEE_TEXT, HERO_HEADLINES } from '../constants';
+import { useTypewriter } from '../hooks/useTypewriter';
 import heroVideo from '../assets/hero-background-video.mp4';
 
 const HeroSection: React.FC = () => {

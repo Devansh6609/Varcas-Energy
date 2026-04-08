@@ -1,0 +1,18 @@
+name = "varcas-energy-backend"
+main = "src/worker.mjs"
+compatibility_date = "2024-09-23"
+
+# Node compat is required for some Express dependencies
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+JWT_SECRET = "varcas_secret_key_2024"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "varcas-db"
+database_id = "28d631dc-c30f-4bc2-85de-cd054766926a"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "varcas-storage"

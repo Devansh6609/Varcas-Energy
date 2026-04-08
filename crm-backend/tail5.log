@@ -1,0 +1,215 @@
+{
+    "wallTime": 315,
+    "cpuTime": 286,
+    "truncated": false,
+    "executionModel": "stateless",
+    "outcome": "ok",
+    "scriptVersion": {
+        "id": "0c0069c2-7b24-4778-9d7f-9cb25421c4ad"
+    },
+    "scriptName": "varcas-energy-backend",
+    "diagnosticsChannelEvents": [],
+    "exceptions": [],
+    "logs": [],
+    "eventTimestamp": 1775205025476,
+    "event": {
+        "request": {
+            "url": "https://varcas-energy-backend.varcas-energy.workers.dev/api/auth/login",
+            "method": "POST",
+            "headers": {
+                "accept": "*/*",
+                "accept-encoding": "gzip, br",
+                "accept-language": "*",
+                "cf-connecting-ip": "152.59.36.19",
+                "cf-ipcountry": "IN",
+                "cf-ray": "9e66b610eafc3e4e",
+                "cf-visitor": "{\"scheme\":\"https\"}",
+                "connection": "Keep-Alive",
+                "content-length": "57",
+                "content-type": "application/json",
+                "host": "varcas-energy-backend.varcas-energy.workers.dev",
+                "sec-fetch-mode": "cors",
+                "user-agent": "node",
+                "x-forwarded-proto": "https",
+                "x-real-ip": "152.59.36.19"
+            },
+            "cf": {
+                "httpProtocol": "HTTP/1.1",
+                "clientAcceptEncoding": "gzip, deflate, br",
+                "requestPriority": "",
+                "edgeRequestKeepAliveStatus": 1,
+                "requestHeaderNames": {},
+                "clientTcpRtt": 85,
+                "clientQuicRtt": 0,
+                "colo": "SIN",
+                "asn": 55836,
+                "asOrganization": "Reliance Jio Infocomm Limited",
+                "country": "IN",
+                "isEUCountry": false,
+                "city": "Surat",
+                "continent": "AS",
+                "region": "Gujarat",
+                "regionCode": "GJ",
+                "timezone": "Asia/Kolkata",
+                "longitude": "72.83023",
+                "latitude": "21.19594",
+                "postalCode": "395005",
+                "tlsVersion": "TLSv1.3",
+                "tlsCipher": "AEAD-AES256-GCM-SHA384",
+                "tlsClientRandom": "6N1IfixlIqEC4bYTBF5XrmJVCl2k33YaiIQKo9UAN/M=",
+                "tlsClientCiphersSha1": "kXrN3VEKDdzz2cPKTQaKzpxVTxQ=",
+                "tlsClientExtensionsSha1": "1eY97BUYYO8vDaTfHQywB1pcNdM=",
+                "tlsClientExtensionsSha1Le": "u4wtEMFQBY18l3BzHAvORm+KGRw=",
+                "tlsExportedAuthenticator": {
+                    "clientHandshake": "51e97cac5547d6dacea36d394eff6fcbfb9a391ea47b11ceba6807fdc61db55a67e3980e13492e15af2b89658c76d5c1",
+                    "serverHandshake": "279eaa4584b968ce99cee91a3af7a2544cfbbbdbc4ac60c3682a84b4cfb9603851eaa7e6fe92a19f94b28ed5267a655d",
+                    "clientFinished": "3cf2bac81567c5257c9b0ab2b240a83fc1cfbc31752a52fff2eba7373eecfe7db6422c972f9c8ef66245c5b48c446176",
+                    "serverFinished": "49069fe46b2fffe5831ad9fdc41765832558af876350664e95c814d0a7532ed9a587c288070baa249b0b193ca48d7946"
+                },
+                "tlsClientHelloLength": "1630",
+                "tlsClientAuth": {
+                    "certPresented": "0",
+                    "certVerified": "NONE",
+                    "certRevoked": "0",
+                    "certIssuerDN": "",
+                    "certSubjectDN": "",
+                    "certIssuerDNRFC2253": "",
+                    "certSubjectDNRFC2253": "",
+                    "certIssuerDNLegacy": "",
+                    "certSubjectDNLegacy": "",
+                    "certSerial": "",
+                    "certIssuerSerial": "",
+                    "certSKI": "",
+                    "certIssuerSKI": "",
+                    "certFingerprintSHA1": "",
+                    "certFingerprintSHA256": "",
+                    "certNotBefore": "",
+                    "certNotAfter": "",
+                    "certRFC9440": "",
+                    "certRFC9440TooLarge": false,
+                    "certChainRFC9440": "",
+                    "certChainRFC9440TooLarge": false
+                },
+                "verifiedBotCategory": "",
+                "edgeL4": {
+                    "deliveryRate": 44328
+                }
+            }
+        },
+        "response": {
+            "status": 200
+        }
+    }
+}
+{
+    "wallTime": 1,
+    "cpuTime": 1,
+    "truncated": false,
+    "executionModel": "stateless",
+    "outcome": "ok",
+    "scriptVersion": {
+        "id": "0c0069c2-7b24-4778-9d7f-9cb25421c4ad"
+    },
+    "scriptName": "varcas-energy-backend",
+    "diagnosticsChannelEvents": [],
+    "exceptions": [],
+    "logs": [
+        {
+            "message": [
+                "Auth Middleware Error:",
+                "JwtAlgorithmRequired: JWT verification requires \"alg\" option to be specified"
+            ],
+            "level": "error",
+            "timestamp": 1775205025930
+        }
+    ],
+    "eventTimestamp": 1775205025930,
+    "event": {
+        "request": {
+            "url": "https://varcas-energy-backend.varcas-energy.workers.dev/api/admin/dashboard/stats",
+            "method": "GET",
+            "headers": {
+                "accept": "*/*",
+                "accept-encoding": "gzip, br",
+                "accept-language": "*",
+                "authorization": "REDACTED",
+                "cf-connecting-ip": "152.59.36.19",
+                "cf-ipcountry": "IN",
+                "cf-ray": "9e66b6140e3c3e4e",
+                "cf-visitor": "{\"scheme\":\"https\"}",
+                "connection": "Keep-Alive",
+                "host": "varcas-energy-backend.varcas-energy.workers.dev",
+                "sec-fetch-mode": "cors",
+                "user-agent": "node",
+                "x-forwarded-proto": "https",
+                "x-real-ip": "152.59.36.19"
+            },
+            "cf": {
+                "httpProtocol": "HTTP/1.1",
+                "clientAcceptEncoding": "gzip, deflate, br",
+                "requestPriority": "",
+                "edgeRequestKeepAliveStatus": 1,
+                "requestHeaderNames": {},
+                "clientTcpRtt": 83,
+                "clientQuicRtt": 0,
+                "colo": "SIN",
+                "asn": 55836,
+                "asOrganization": "Reliance Jio Infocomm Limited",
+                "country": "IN",
+                "isEUCountry": false,
+                "city": "Surat",
+                "continent": "AS",
+                "region": "Gujarat",
+                "regionCode": "GJ",
+                "timezone": "Asia/Kolkata",
+                "longitude": "72.83023",
+                "latitude": "21.19594",
+                "postalCode": "395005",
+                "tlsVersion": "TLSv1.3",
+                "tlsCipher": "AEAD-AES256-GCM-SHA384",
+                "tlsClientRandom": "6N1IfixlIqEC4bYTBF5XrmJVCl2k33YaiIQKo9UAN/M=",
+                "tlsClientCiphersSha1": "kXrN3VEKDdzz2cPKTQaKzpxVTxQ=",
+                "tlsClientExtensionsSha1": "1eY97BUYYO8vDaTfHQywB1pcNdM=",
+                "tlsClientExtensionsSha1Le": "u4wtEMFQBY18l3BzHAvORm+KGRw=",
+                "tlsExportedAuthenticator": {
+                    "clientHandshake": "51e97cac5547d6dacea36d394eff6fcbfb9a391ea47b11ceba6807fdc61db55a67e3980e13492e15af2b89658c76d5c1",
+                    "serverHandshake": "279eaa4584b968ce99cee91a3af7a2544cfbbbdbc4ac60c3682a84b4cfb9603851eaa7e6fe92a19f94b28ed5267a655d",
+                    "clientFinished": "3cf2bac81567c5257c9b0ab2b240a83fc1cfbc31752a52fff2eba7373eecfe7db6422c972f9c8ef66245c5b48c446176",
+                    "serverFinished": "49069fe46b2fffe5831ad9fdc41765832558af876350664e95c814d0a7532ed9a587c288070baa249b0b193ca48d7946"
+                },
+                "tlsClientHelloLength": "1630",
+                "tlsClientAuth": {
+                    "certPresented": "0",
+                    "certVerified": "NONE",
+                    "certRevoked": "0",
+                    "certIssuerDN": "",
+                    "certSubjectDN": "",
+                    "certIssuerDNRFC2253": "",
+                    "certSubjectDNRFC2253": "",
+                    "certIssuerDNLegacy": "",
+                    "certSubjectDNLegacy": "",
+                    "certSerial": "",
+                    "certIssuerSerial": "",
+                    "certSKI": "",
+                    "certIssuerSKI": "",
+                    "certFingerprintSHA1": "",
+                    "certFingerprintSHA256": "",
+                    "certNotBefore": "",
+                    "certNotAfter": "",
+                    "certRFC9440": "",
+                    "certRFC9440TooLarge": false,
+                    "certChainRFC9440": "",
+                    "certChainRFC9440TooLarge": false
+                },
+                "verifiedBotCategory": "",
+                "edgeL4": {
+                    "deliveryRate": 52745
+                }
+            }
+        },
+        "response": {
+            "status": 401
+        }
+    }
+}
+Terminate batch job (Y/N)? 

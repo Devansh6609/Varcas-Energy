@@ -1,59 +1,26 @@
-const path = require('path');
-const prisma = require('../../config/prisma');
-
-
-const getMimeType = (filename) => {
-    const ext = path.extname(filename).toLowerCase();
-    switch (ext) {
-        case '.jpg':
-        case '.jpeg': return 'image/jpeg';
-        case '.png': return 'image/png';
-        case '.gif': return 'image/gif';
-        case '.pdf': return 'application/pdf';
-        case '.doc': return 'application/msword';
-        case '.docx': return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-        default: return 'application/octet-stream';
-    }
-};
-
-const getFile = async (req, res, next) => {
-    const { id } = req.params;
-
+export const getFile = async (c) => {
     try {
-        const document = await prisma.document.findUnique({
-            where: { id: id }
-        });
-
-        if (!document) {
-            return next(); // Pass to static middleware
+        const prisma = c.get('prisma');
+        const id = c.req.param('id');
+        const doc = await prisma.document.findUnique({ where: { id } });
+        if (!doc) return c.json({ message: 'Document not found' }, 404);
+        
+        // Files are stored in R2 — the url field is the R2 key
+        if (doc.url && c.env.BUCKET) {
+            const object = await c.env.BUCKET.get(doc.url);
+            if (object) {
+                const fileData = await object.arrayBuffer();
+                const mimeType = object.httpMetadata?.contentType || doc.mimeType;
+                return c.body(fileData, 200, {
+                    'Content-Type': mimeType,
+                    'Content-Disposition': `inline; filename="${doc.filename}"`
+                });
+            }
         }
 
-        if (document.data) {
-            let contentType = document.mimeType;
-            // Fallback inference if missing or generic
-            if (!contentType || contentType === 'application/octet-stream') {
-                contentType = getMimeType(document.filename);
-            }
-
-            res.setHeader('Content-Type', contentType);
-            res.setHeader('Content-Length', document.data.length);
-            res.send(document.data);
-        } else {
-            // If record exists but no data (e.g. legacy record? or Cloudinary link stored in filename?),
-            // handle accordingly.
-            // If Cloudinary, redirect?
-            if (document.filename.startsWith('http')) {
-                return res.redirect(document.filename);
-            }
-            res.status(404).send('File content not available');
-        }
-
-    } catch (error) {
-        console.error('Error fetching file:', error);
-        res.status(500).send('Internal Server Error');
+        return c.json({ message: 'File data not found in storage' }, 404);
+    } catch (e) {
+        console.error('Error fetching file:', e);
+        return c.json({ message: 'Error fetching file' }, 500);
     }
-};
-
-module.exports = {
-    getFile
 };

@@ -1,49 +1,64 @@
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const path = require('path');
-const apiRouter = require('./api/routes');
-const helmet = require('helmet');
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
 
-const app = express();
+import authRoutes from './api/routes/auth.routes.js';
+import publicRoutes from './api/routes/public.routes.js';
+import adminRoutes from './api/routes/admin.routes.js';
+import notificationRoutes from './api/routes/notification.routes.js';
+import * as documentController from './api/controllers/document.controller.js';
+import { prismaMiddleware } from './config/prisma.js';
 
-// --- Middlewares ---
-app.use(helmet());
-app.use(cors({
-  origin: [
-    'http://localhost:5173', 
-    'http://localhost:4173', 
-    'http://127.0.0.1:5173', 
-    'http://127.0.0.1:4173',
-    'https://suryakiran-solar.onrender.com'
-  ], // Allow Dev (localhost & 127.0.0.1), Preview, and Production
-  methods: 'GET,POST,PATCH,PUT,DELETE',
-  allowedHeaders: 'Content-Type,Authorization',
+const app = new Hono();
+
+// --- CORS must be FIRST so headers are present on ALL responses (including errors) ---
+app.use('*', cors({
+  origin: (origin) => {
+    if (!origin) return '*'; // Allow non-browser requests (curl, etc.)
+    const allowed = [
+      'http://localhost:5173', 'http://localhost:4173', 
+      'http://localhost:5174', 'http://localhost:4173',
+      'http://127.0.0.1:5173', 'http://127.0.0.1:4173',
+      'http://127.0.0.1:5174', 'http://127.0.0.1:4173',
+      'https://suryakiran-solar.onrender.com',
+      'https://varcas-energy.pages.dev',
+      'https://varcas-energy-crm.pages.dev',
+    ];
+    // Allow exact matches or any *.pages.dev subdomain (for preview deployments)
+    if (allowed.includes(origin) || /\.pages\.dev$/.test(origin)) {
+      return origin;
+    }
+    return allowed[0]; // Fallback
+  },
+  allowMethods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposeHeaders: ['Content-Length'],
+  maxAge: 600,
+  credentials: true,
 }));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
-// --- Static File Serving ---
-// --- Document Serving (DB) ---
-const documentController = require('./api/controllers/document.controller');
+// --- Prisma middleware AFTER cors ---
+app.use('*', prismaMiddleware);
+
+// --- Health Check ---
+app.get('/api/health', (c) => c.json({ status: 'ok', timestamp: new Date().toISOString() }));
+
+// --- Routes ---
 app.get('/files/:id', documentController.getFile);
 
-// --- Static File Serving (Legacy/Fallback) ---
-app.use('/files', express.static(path.join(__dirname, '../uploads')));
-
-// --- API Routes ---
-const authRoutes = require('./api/routes/auth.routes');
-const publicRoutes = require('./api/routes/public.routes');
-const adminRoutes = require('./api/routes/admin.routes');
-const notificationRoutes = require('./api/routes/notification.routes');
-
-app.use('/api/auth', authRoutes);
-app.use('/api', publicRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/notifications', notificationRoutes);
+app.route('/api/auth', authRoutes);
+app.route('/api', publicRoutes);
+app.route('/api/admin', adminRoutes);
+app.route('/api/notifications', notificationRoutes);
 
 // --- Global Error Handler ---
-const errorHandler = require('./api/middlewares/error.middleware');
-app.use(errorHandler);
+app.onError((err, c) => {
+  console.error('Global Error:', err.stack || err.message);
+  return c.json({ message: err.message || 'Internal Server Error' }, err.status || 500);
+});
 
-module.exports = app;
+// --- 404 handler ---
+app.notFound((c) => {
+  return c.json({ message: 'Not Found' }, 404);
+});
+
+export default app;

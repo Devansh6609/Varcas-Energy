@@ -1,10 +1,10 @@
-
-const masterOnlyMiddleware = (req, res, next) => {
-    if (req.user && req.user.role === 'Master') {
-        next();
+const masterOnlyMiddleware = async (c, next) => {
+    const user = c.get('user');
+    if (user && user.role === 'Master') {
+        await next();
     } else {
-        res.status(403).json({ message: 'Access denied. Master role required.' });
+        return c.json({ message: 'Access denied: Master priority only.' }, 403);
     }
 };
 
-module.exports = masterOnlyMiddleware;
+export default masterOnlyMiddleware;
