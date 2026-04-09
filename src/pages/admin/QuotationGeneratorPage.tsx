@@ -121,40 +121,35 @@ const QuotationGeneratorPage: React.FC = () => {
         if (!previewRef.current) return;
         setGeneratingPdf(true);
         try {
-            const A4_WIDTH = 210;
-            const A4_HEIGHT = 297;
+            // Pre-calculate target dimensions
+            const element = previewRef.current;
+            const pdf = new jsPDF('p', 'mm', 'a4', true);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
 
-            const canvas = await html2canvas(previewRef.current, {
-                scale: 3,
+            const canvas = await html2canvas(element, {
+                scale: 2,
                 useCORS: true,
                 logging: false,
                 backgroundColor: '#ffffff',
-                width: previewRef.current.offsetWidth,
-                height: previewRef.current.offsetHeight,
+                width: element.offsetWidth,
+                height: element.offsetHeight,
+                windowWidth: element.offsetWidth,
+                windowHeight: element.offsetHeight,
                 onclone: (clonedDoc) => {
                     const el = clonedDoc.querySelector('[data-pdf-content]');
                     if (el instanceof HTMLElement) {
                         el.style.transform = 'none';
                         el.style.margin = '0';
+                        el.style.padding = '0';
                     }
                 }
             });
             
-            const imgData = canvas.toDataURL('image/png', 1.0);
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
             
-            if (pdfHeight > A4_HEIGHT) {
-                if (pdfHeight < A4_HEIGHT * 1.1) {
-                    pdf.addImage(imgData, 'PNG', 0, 0, A4_WIDTH, A4_HEIGHT);
-                } else {
-                    pdf.addImage(imgData, 'PNG', 0, 0, A4_WIDTH, pdfHeight);
-                }
-            } else {
-                pdf.addImage(imgData, 'PNG', 0, 0, A4_WIDTH, pdfHeight);
-            }
+            // Force fit exactly to one page to avoid cutting or slicing
+            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
             
             pdf.save(`Quotation_${data.consumerName.replace(/\s+/g, '_') || 'Customer'}_${data.date}.pdf`);
         } catch (error) {
@@ -448,90 +443,91 @@ const QuotationGeneratorPage: React.FC = () => {
                              style={{ 
                                  width: '210mm',
                                  transform: `scale(${scaleFactor})`,
-                                 height: '297mm'
+                                 minHeight: '297mm',
+                                 height: 'auto'
                              }}>
                             <div 
                                 ref={previewRef}
-                                className="bg-white text-gray-900 font-sans h-full"
-                                style={{ width: '210mm', height: '297mm', padding: '15mm' }}
+                                className="bg-white text-gray-900 font-sans"
+                                style={{ width: '210mm', minHeight: '297mm', height: 'auto', padding: '10mm' }}
                             >
-                                <div className="border border-gray-800 h-full p-6 flex flex-col relative">
-                                    <div className="flex flex-col items-center mb-8">
-                                        <Logo className="scale-150 mb-6 !text-gray-900" />
+                                <div className="border border-gray-800 min-h-[277mm] p-4 flex flex-col relative h-auto">
+                                    <div className="flex flex-col items-center mb-4">
+                                        <Logo className="scale-125 mb-4 !text-gray-900" />
                                         <div className="text-center">
-                                            <h1 className="text-3xl font-black text-blue-900 tracking-wider mb-1">VARCAS ENERGY</h1>
+                                            <h1 className="text-2xl font-black text-blue-900 tracking-wider mb-1">VARCAS ENERGY</h1>
                                             <div className="w-full h-1 bg-yellow-500 mb-2"></div>
-                                            <h2 className="text-xl font-bold tracking-[0.2em] text-gray-800 border-b-2 border-gray-900 inline-block px-12 py-1 uppercase">Quotation</h2>
+                                            <h2 className="text-lg font-bold tracking-[0.2em] text-gray-800 border-b-2 border-gray-900 inline-block px-12 py-0.5 uppercase">Quotation</h2>
                                         </div>
                                     </div>
 
-                                    <div className="space-y-4 flex-1">
+                                    <div className="space-y-2 flex-1">
                                         <section>
                                             <h3 className="font-bold text-xs mb-1.5 text-blue-900 uppercase tracking-wider">Basic Information:</h3>
                                             <table className="w-full border-collapse border-2 border-gray-800 text-xs">
                                                 <tbody>
                                                     <tr>
-                                                        <td className="border border-gray-800 p-2 w-1/3 font-bold bg-gray-50">Consumer Name</td>
-                                                        <td className="border border-gray-800 p-2 text-center font-bold">{data.consumerName || '—'}</td>
+                                                        <td className="border border-gray-800 p-1 font-bold bg-gray-50">Consumer Name</td>
+                                                        <td className="border border-gray-800 p-1 text-center font-bold">{data.consumerName || '—'}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td className="border border-gray-800 p-2 font-bold bg-gray-50">Date</td>
-                                                        <td className="border border-gray-800 p-2 text-center font-bold uppercase">{new Date(data.date).toLocaleDateString('en-GB')}</td>
+                                                        <td className="border border-gray-800 p-1 font-bold bg-gray-50">Date</td>
+                                                        <td className="border border-gray-800 p-1 text-center font-bold uppercase">{new Date(data.date).toLocaleDateString('en-GB')}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td className="border border-gray-800 p-2 font-bold bg-gray-50">System Size [KW]</td>
-                                                        <td className="border border-gray-800 p-2 text-center font-black text-blue-900">{data.systemSize}</td>
+                                                        <td className="border border-gray-800 p-1 font-bold bg-gray-50">System Size [KW]</td>
+                                                        <td className="border border-gray-800 p-1 text-center font-black text-blue-900">{data.systemSize}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </section>
 
                                         <section>
-                                            <h3 className="font-bold text-xs mb-1.5 text-blue-900 uppercase tracking-wider">Cost Calculation:</h3>
+                                            <h3 className="font-bold text-xs mb-1 text-blue-900 uppercase tracking-wider">Cost Calculation:</h3>
                                             <table className="w-full border-collapse border-2 border-gray-800 text-xs">
                                                 <tbody>
                                                     <tr>
-                                                        <td className="border border-gray-800 p-2 w-2/3 font-bold bg-gray-50">DISCOM Charges</td>
-                                                        <td className="border border-gray-800 p-2 text-left font-bold">₹ {Number(data.discomCharges).toLocaleString()}</td>
+                                                        <td className="border border-gray-800 p-1 w-2/3 font-bold bg-gray-50">DISCOM Charges</td>
+                                                        <td className="border border-gray-800 p-1 text-left font-bold">₹ {Number(data.discomCharges).toLocaleString()}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td className="border border-gray-800 p-2 font-bold bg-gray-50">Payable Cost</td>
-                                                        <td className="border border-gray-800 p-2 text-left font-bold">₹ {Number(data.payableCost).toLocaleString()}</td>
+                                                        <td className="border border-gray-800 p-1 font-bold bg-gray-50">Payable Cost</td>
+                                                        <td className="border border-gray-800 p-1 text-left font-bold">₹ {Number(data.payableCost).toLocaleString()}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td className="border border-gray-800 p-2 font-bold bg-gray-50">Discount/Gift voucher</td>
-                                                        <td className="border border-gray-800 p-2 text-left font-bold">₹ {Number(data.discount).toLocaleString()}</td>
+                                                        <td className="border border-gray-800 p-1 font-bold bg-gray-50">Discount/Gift voucher</td>
+                                                        <td className="border border-gray-800 p-1 text-left font-bold">₹ {Number(data.discount).toLocaleString()}</td>
                                                     </tr>
                                                     <tr className="bg-blue-50">
-                                                        <td className="border-2 border-gray-800 p-2 font-black text-blue-900">Final Payable Cost</td>
-                                                        <td className="border-2 border-gray-800 p-2 text-left font-black text-sm text-blue-900">₹ {payableFinalCost.toLocaleString()}</td>
+                                                        <td className="border-2 border-gray-800 p-1 font-black text-blue-900">Final Payable Cost</td>
+                                                        <td className="border-2 border-gray-800 p-1 text-left font-black text-sm text-blue-900">₹ {payableFinalCost.toLocaleString()}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
-                                            <p className="mt-2 font-black text-[10px] text-blue-900 bg-yellow-400 inline-block px-3 py-0.5 rounded-sm">NOTE: SUBSIDY ₹ {data.subsidy}*</p>
+                                            <p className="mt-1 font-black text-[10px] text-blue-900 bg-yellow-400 inline-block px-3 py-0.5 rounded-sm">NOTE: SUBSIDY ₹ {data.subsidy}*</p>
                                         </section>
 
                                         <section>
-                                            <h3 className="font-bold text-xs mb-1.5 text-blue-900 uppercase tracking-wider">Payment Terms:</h3>
+                                            <h3 className="font-bold text-xs mb-1 text-blue-900 uppercase tracking-wider">Payment Terms:</h3>
                                             <table className="w-full border-collapse border-2 border-gray-800 text-xs">
                                                 <thead>
                                                     <tr className="bg-gray-800 text-white">
-                                                        <th className="border border-gray-800 p-1.5 text-left w-2/3 uppercase text-[10px]">Description</th>
-                                                        <th className="border border-gray-800 p-1.5 text-center uppercase text-[10px]">Amount</th>
+                                                        <th className="border border-gray-800 p-1 text-left w-2/3 uppercase text-[10px]">Description</th>
+                                                        <th className="border border-gray-800 p-1 text-center uppercase text-[10px]">Amount</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr>
-                                                        <td className="border border-gray-800 p-2 font-bold">Registration Fees</td>
-                                                        <td className="border border-gray-800 p-2 text-left font-bold">₹ {Number(data.paymentTerms.registrationFees).toLocaleString()}</td>
+                                                        <td className="border border-gray-800 p-1 font-bold">Registration Fees</td>
+                                                        <td className="border border-gray-800 p-1 text-left font-bold">₹ {Number(data.paymentTerms.registrationFees).toLocaleString()}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td className="border border-gray-800 p-2 font-bold bg-gray-50 text-blue-900">After DISCOM Approval</td>
-                                                        <td className="border border-gray-800 p-2 text-left font-bold bg-gray-50 text-blue-900">₹ {Number(data.paymentTerms.afterDiscomApproval).toLocaleString()}</td>
+                                                        <td className="border border-gray-800 p-1 font-bold bg-gray-50 text-blue-900">After DISCOM Approval</td>
+                                                        <td className="border border-gray-800 p-1 text-left font-bold bg-gray-50 text-blue-900">₹ {Number(data.paymentTerms.afterDiscomApproval).toLocaleString()}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td className="border border-gray-800 p-2 font-bold">After Material dispatch</td>
-                                                        <td className="border border-gray-800 p-2 text-left font-bold">₹ {Number(data.paymentTerms.afterMaterialDispatch).toLocaleString()}</td>
+                                                        <td className="border border-gray-800 p-1 font-bold">After Material dispatch</td>
+                                                        <td className="border border-gray-800 p-1 text-left font-bold">₹ {Number(data.paymentTerms.afterMaterialDispatch).toLocaleString()}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -582,37 +578,37 @@ const QuotationGeneratorPage: React.FC = () => {
                                             </section>
                                         </div>
                                         
-                                        <section className="mt-2">
+                                        <section className="mt-1">
                                             <h3 className="font-bold text-xs mb-1 text-blue-900 uppercase tracking-wider">Terms & Conditions:</h3>
                                             <table className="w-full border-collapse border border-gray-800 text-[9px] leading-tight">
                                                 <tbody>
                                                     <tr>
-                                                        <td className="border border-gray-800 p-1.5 text-gray-800 italic">1. Quotation is valid for 10 days from Given Date.</td>
+                                                        <td className="border border-gray-800 p-1 text-gray-800 italic">1. Quotation is valid for 10 days from Given Date.</td>
                                                     </tr>
                                                     <tr>
-                                                        <td className="border border-gray-800 p-1.5 text-gray-800 italic">2. System Cost in Cash or Cheque and <span className="font-bold">Structure charge only in cash.</span></td>
+                                                        <td className="border border-gray-800 p-1 text-gray-800 italic">2. System Cost in Cash or Cheque and <span className="font-bold">Structure charge only in cash.</span></td>
                                                     </tr>
                                                     <tr>
-                                                        <td className="border border-gray-800 p-1.5 text-gray-800 italic">3. It is customer's responsibility to provide the appropriate place for earthing pit, which has no obstacles like pipelines, concrete layer, etc.</td>
+                                                        <td className="border border-gray-800 p-1 text-gray-800 italic">3. It is customer's responsibility to provide the appropriate place for earthing pit, which has no obstacles like pipelines, concrete layer, etc.</td>
                                                     </tr>
                                                     <tr>
-                                                        <td className="border border-gray-800 p-1.5 text-gray-800 italic">4. Once the design is ready according to customer's needs for shadow analysis design, further changes will be charged extra.</td>
+                                                        <td className="border border-gray-800 p-1 text-gray-800 italic">4. Once the design is ready according to customer's needs for shadow analysis design, further changes will be charged extra.</td>
                                                     </tr>
                                                     <tr>
-                                                        <td className="border border-gray-800 p-1.5 text-gray-800 italic">5. If customer deny to execute project after DISCOM approval, the registration fees will be charged as cancelation charges.</td>
+                                                        <td className="border border-gray-800 p-1 text-gray-800 italic">5. If customer deny to execute project after DISCOM approval, the registration fees will be charged as cancelation charges.</td>
                                                     </tr>
                                                     <tr>
-                                                        <td className="border border-gray-800 p-1.5 text-gray-800 italic">6. M/s VARCAS ENERGY is bounded to use above mentioned brandsor materials without fail. In case of availability problem then material will be finalize according to mutual decision between customer and VARCAS ENERGY</td>
+                                                        <td className="border border-gray-800 p-1 text-gray-800 italic">6. M/s VARCAS ENERGY is bounded to use above mentioned brandsor materials without fail. In case of availability problem then material will be finalize according to mutual decision between customer and VARCAS ENERGY</td>
                                                     </tr>
                                                     <tr>
-                                                        <td className="border border-gray-800 p-1.5 text-gray-800 italic">7. List of Documents: Light Bill, Pan Card, Aadhar Card, Cancel Cheque, Photo [2]</td>
+                                                        <td className="border border-gray-800 p-1 text-gray-800 italic">7. List of Documents: Light Bill, Pan Card, Aadhar Card, Cancel Cheque, Photo [2]</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </section>
                                     </div>
                                     
-                                    <div className="mt-4 flex justify-end">
+                                    <div className="mt-2 flex justify-end">
                                         <div className="text-right">
                                             <p className="font-bold text-[10px] text-blue-900 uppercase">SEALED & SIGNED BY</p>
                                             <p className="font-black text-xs text-blue-900 uppercase">VARCAS ENERGY</p>
